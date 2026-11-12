@@ -1,0 +1,260 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../../core/services/theme_service.dart';
+import '../../core/services/notification_service.dart';
+import 'models/parking_note.dart';
+import 'add_parking_note_screen.dart';
+
+class ParkingNotesScreen extends StatelessWidget {
+  const ParkingNotesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = ThemeService.instance.isDarkMode;
+    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFF9FAFB);
+    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textMain = isDark ? Colors.white : const Color(0xFF111827);
+    final textMuted = isDark ? const Color(0xFF9CA3AF) : const Color(0xFF6B7280);
+
+    final box = Hive.box('parking_notes');
+
+    return Scaffold(
+      backgroundColor: bg,
+      appBar: AppBar(
+        title: Text(
+          'Catatan & Pengingat Parkir',
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        backgroundColor: cardBg,
+        foregroundColor: textMain,
+        elevation: 0,
+        actions: [
+          IconButton(
+            tooltip: 'Tes Notifikasi Instan',
+            icon: const Icon(Icons.notifications_active_outlined),
+            onPressed: () async {
+              await NotificationService().showInstantNotification(
+                id: 888,
+                title: '🔔 Tes Notifikasi ParkSmart',
+                body: 'Notifikasi instan lokal (Modul 7) berhasil dipicu!',
+              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Notifikasi instan dikirim ke status bar!'),
+                    backgroundColor: Color(0xFF2563EB),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
+      ),
+      body: ValueListenableBuilder(
+        valueListenable: box.listenable(),
+        builder: (context, Box box, _) {
+          if (box.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.note_alt_outlined, size: 64, color: textMuted.withAlpha(120)),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Belum Ada Catatan Parkir',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: textMain,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Catat lokasi dan nomor slot tempat Anda memarkir kendaraan secara lokal di Hive (dapat diakses offline).',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13, color: textMuted),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const AddParkingNoteScreen()),
+                        );
+                      },
+                      icon: const Icon(Icons.add),
+                      label: const Text('Buat Catatan Baru'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2563EB),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            itemCount: box.length,
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final raw = box.getAt(index);
+              if (raw is! Map) return const SizedBox.shrink();
+              final note = ParkingNote.fromMap(raw);
+
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.withAlpha(40)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(isDark ? 30 : 10),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2563EB).withAlpha(30),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.local_parking, color: Color(0xFF2563EB), size: 24),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                note.locationName,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: textMain,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF10B981).withAlpha(25),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  'Slot: ${note.slotNumber}',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                    color: const Color(0xFF10B981),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuButton<String>(
+                          icon: Icon(Icons.more_vert, color: textMuted),
+                          onSelected: (val) {
+                            if (val == 'edit') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => AddParkingNoteScreen(noteIndex: index),
+                                ),
+                              );
+                            } else if (val == 'delete') {
+                              box.deleteAt(index);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Catatan dihapus dari Hive')),
+                              );
+                            }
+                          },
+                          itemBuilder: (_) => [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit, size: 18),
+                                  SizedBox(width: 8),
+                                  Text('Edit'),
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete, size: 18, color: Colors.red),
+                                  SizedBox(width: 8),
+                                  Text('Hapus', style: TextStyle(color: Colors.red)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (note.note.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        note.note,
+                        style: GoogleFonts.plusJakartaSans(fontSize: 13, color: textMain),
+                      ),
+                    ],
+                    if (note.reminderTime != null) ...[
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          const Icon(Icons.alarm, size: 16, color: Color(0xFFF59E0B)),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Pengingat: ${note.reminderTime!.day}/${note.reminderTime!.month} ${note.reminderTime!.hour.toString().padLeft(2, '0')}:${note.reminderTime!.minute.toString().padLeft(2, '0')}',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFFF59E0B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddParkingNoteScreen()),
+          );
+        },
+        backgroundColor: const Color(0xFF2563EB),
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add),
+        label: const Text('Catat Parkir'),
+      ),
+    );
+  }
+}
+

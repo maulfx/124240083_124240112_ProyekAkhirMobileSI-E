@@ -1,0 +1,1741 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:flutter/services.dart';
+import 'edit_profile_screen.dart';
+import 'ktp_camera_screen.dart';
+import '../auth/face_id_scanner_dialog.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../core/services/currency_service.dart';
+import '../../core/services/theme_service.dart';
+import '../../core/services/language_service.dart';
+import '../../core/services/maintenance_service.dart';
+import '../../core/services/app_image_cache_service.dart';
+import 'backend/profile_backend.dart';
+
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  String _userName = ProfileBackend.instance.name;
+  String _userEmail = ProfileBackend.instance.email;
+  String _userPhone = ProfileBackend.instance.phone;
+  String? _avatarUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+    _loadActualCacheSize();
+    CurrencyService.instance.addListener(_onCurrencyChanged);
+    ThemeService.instance.addListener(_onThemeChanged);
+    ProfileBackend.instance.addListener(_onProfileChanged);
+    LanguageService.instance.addListener(_onLanguageChanged);
+  }
+
+  Future<void> _loadActualCacheSize() async {
+    final size = await AppImageCacheService.instance.getFormattedCacheSize();
+    if (mounted) {
+      setState(() {
+        _cacheSize = size;
+        _isCacheCleared = size.startsWith('0');
+      });
+    }
+  }
+
+  void _onLanguageChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _onCurrencyChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _onThemeChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _onProfileChanged() {
+    if (mounted) {
+      setState(() {
+        _userName = ProfileBackend.instance.name;
+        _userEmail = ProfileBackend.instance.email;
+        _userPhone = ProfileBackend.instance.phone;
+        _avatarUrl = ProfileBackend.instance.avatarUrl;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    CurrencyService.instance.removeListener(_onCurrencyChanged);
+    ThemeService.instance.removeListener(_onThemeChanged);
+    ProfileBackend.instance.removeListener(_onProfileChanged);
+    LanguageService.instance.removeListener(_onLanguageChanged);
+    super.dispose();
+  }
+
+  Widget _buildFallbackAvatar(double size) {
+    final initial = _userName.trim().isNotEmpty ? _userName.trim()[0].toUpperCase() : 'U';
+    return Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(
+        color: Color(0xFF114177),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          initial,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: size * 0.4,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _loadUserProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool faceEnabled = prefs.getBool('face_id_enabled') ?? false;
+    final fpEnabled = prefs.getBool('fingerprint_enabled') ?? false;
+
+    final profile = ProfileBackend.instance;
+    await profile.fetchProfile();
+
+    final prefName = prefs.getString('user_profile_name');
+    final name = (prefName != null && prefName.isNotEmpty)
+        ? prefName
+        : profile.name;
+    final prefEmail = prefs.getString('user_profile_email');
+    final email = (prefEmail != null && prefEmail.isNotEmpty)
+        ? prefEmail
+        : profile.email;
+    final prefPhone = prefs.getString('user_profile_phone');
+    final phone = (prefPhone != null && prefPhone.isNotEmpty)
+        ? prefPhone
+        : profile.phone;
+
+    if (mounted) {
+      setState(() {
+        _userName = name;
+        _userEmail = email;
+        _userPhone = phone;
+        _avatarUrl = profile.avatarUrl;
+        _faceIdEnabled = faceEnabled;
+        _fingerprintEnabled = fpEnabled;
+      });
+    }
+  }
+
+  bool _faceIdEnabled = false;
+  bool _fingerprintEnabled = false;
+  bool _notifEnabled = true;
+  String _cacheSize = 'Menghitung...';
+  bool _isCacheCleared = false;
+  String _selectedParkingPref = 'Mobil SUV';
+
+
+  // ============================================================================
+  // [PETUNJUK PRESENTASI - BIOMETRIK 1: FACE ID (PEMINDAIAN WAJAH)]
+  // Komponen: FaceIdScannerDialog (Kamera Depan + Deteksi Wajah)
+  // Cara Kerja: Menampilkan kamera pemindai wajah interaktif. Saat wajah terverifikasi,
+  // kredensial user disimpan ke SharedPreferences ('face_id_enabled', 'face_id_user_email').
+  // Di halaman Login, user cukup klik tombol Face ID untuk otentikasi cepat.
+  // ============================================================================
+  Future<void> _handleFaceIdToggle(bool val) async {
+    if (!val) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('face_id_enabled', false);
+      setState(() => _faceIdEnabled = false);
+      _showSuccessToast('Face ID dinonaktifkan');
+      return;
+    }
+
+    try {
+      final bool authenticated = await FaceIdScannerDialog.show(
+        context,
+        title: 'Aktivasi Face ID',
+        subtitle: 'Posisikan wajah Anda di dalam lingkaran untuk aktivasi',
+      );
+
+      if (authenticated) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('face_id_enabled', true);
+        final currentEmail = ProfileBackend.instance.email;
+        final currentUserId = ProfileBackend.instance.userId;
+        await prefs.setString('face_id_user_email', currentEmail);
+        await prefs.setString('face_id_user_id', currentUserId);
+        // Fallback untuk biometrik umum jika belum diset
+        if (prefs.getString('biometric_user_email') == null) {
+          await prefs.setString('biometric_user_email', currentEmail);
+          await prefs.setString('biometric_user_id', currentUserId);
+        }
+        setState(() => _faceIdEnabled = true);
+        _showSuccessToast('Face ID berhasil diaktifkan untuk akun $currentEmail');
+      } else {
+        setState(() => _faceIdEnabled = false);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('face_id_enabled', false);
+      }
+    } catch (e) {
+      debugPrint('Face ID error: $e');
+      setState(() => _faceIdEnabled = false);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('face_id_enabled', false);
+    }
+  }
+
+  // ============================================================================
+  // [PETUNJUK PRESENTASI - BIOMETRIK 2: SIDIK JARI (FINGERPRINT / LOCAL_AUTH)]
+  // Package: local_auth (LocalAuthentication)
+  // Cara Kerja:
+  // 1. Memeriksa dukungan hardware perangkat (auth.isDeviceSupported & canCheckBiometrics).
+  // 2. Mengecek apakah tipe sensor sidik jari terdaftar (BiometricType.fingerprint).
+  // 3. Menjalankan sensor bawaan Android/iOS (auth.authenticate).
+  // 4. Jika sukses, menyimpan flag 'fingerprint_enabled' & 'biometric_user_email' di SharedPreferences.
+  // ============================================================================
+  Future<void> _handleFingerprintToggle(bool val) async {
+    if (!val) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('fingerprint_enabled', false);
+      await prefs.remove('biometric_user_email');
+      await prefs.remove('biometric_user_id');
+      setState(() => _fingerprintEnabled = false);
+      _showSuccessToast('Sidik Jari dinonaktifkan');
+      return;
+    }
+
+    final LocalAuthentication auth = LocalAuthentication();
+    try {
+      final bool isSupported = await auth.isDeviceSupported();
+      final bool canCheck = await auth.canCheckBiometrics;
+      final List<BiometricType> available = await auth.getAvailableBiometrics();
+
+      debugPrint('Biometrics FP check - supported: $isSupported, canCheck: $canCheck, available: $available');
+
+      final bool hasFingerprint = isSupported &&
+          canCheck &&
+          (available.contains(BiometricType.fingerprint) ||
+              available.contains(BiometricType.strong));
+
+      if (!hasFingerprint) {
+        _showBiometricSystemOffDialog(
+          title: 'Pengaturan Sidik Jari Sistem Mati',
+          message:
+              'Fitur Sidik Jari (Fingerprint) belum diaktifkan atau belum didaftarkan pada pengaturan keamanan sistem Android perangkat Anda.\n\nSilakan daftarkan sidik jari Anda terlebih dahulu di Pengaturan HP > Keamanan > Biometrik.',
+          icon: Icons.fingerprint,
+        );
+        setState(() => _fingerprintEnabled = false);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('fingerprint_enabled', false);
+        return;
+      }
+
+      final bool authenticated = await auth.authenticate(
+        localizedReason: 'Sentuh sensor sidik jari untuk mengaktifkan',
+        biometricOnly: true,
+      );
+
+      if (authenticated) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('fingerprint_enabled', true);
+        final currentEmail = ProfileBackend.instance.email;
+        final currentUserId = ProfileBackend.instance.userId;
+        await prefs.setString('biometric_user_email', currentEmail);
+        await prefs.setString('biometric_user_id', currentUserId);
+        setState(() => _fingerprintEnabled = true);
+        _showSuccessToast('Sidik Jari berhasil diaktifkan untuk akun $currentEmail');
+      } else {
+        setState(() => _fingerprintEnabled = false);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('fingerprint_enabled', false);
+        await prefs.remove('biometric_user_email');
+        await prefs.remove('biometric_user_id');
+      }
+    } on PlatformException catch (e) {
+      debugPrint('Fingerprint error: ${e.message}');
+      _showBiometricSystemOffDialog(
+        title: 'Pengaturan Sidik Jari Sistem Mati',
+        message:
+            'Sensor sidik jari tidak aktif atau belum didaftarkan pada sistem Android perangkat Anda (${e.message ?? 'Tidak aktif'}).',
+        icon: Icons.fingerprint,
+      );
+      setState(() => _fingerprintEnabled = false);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('fingerprint_enabled', false);
+      await prefs.remove('biometric_user_email');
+      await prefs.remove('biometric_user_id');
+    } catch (e) {
+      _showBiometricSystemOffDialog(
+        title: 'Pengaturan Sidik Jari Sistem Mati',
+        message:
+            'Gagal mengakses sensor sidik jari perangkat. Pastikan sensor biometrik diaktifkan pada pengaturan sistem perangkat Anda.',
+        icon: Icons.fingerprint,
+      );
+      setState(() => _fingerprintEnabled = false);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('fingerprint_enabled', false);
+      await prefs.remove('biometric_user_email');
+      await prefs.remove('biometric_user_id');
+    }
+  }
+
+  void _showBiometricSystemOffDialog({
+    required String title,
+    required String message,
+    required IconData icon,
+  }) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: ThemeService.instance.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFC05621).withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 30, color: const Color(0xFFC05621)),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: ThemeService.instance.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  color: ThemeService.instance.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 22),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ThemeService.instance.isDarkMode ? const Color(0xFF333C4A) : const Color(0xFF1C1C18),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  child: Text(
+                    'Mengerti',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSuccessToast(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+        ),
+        backgroundColor: const Color(0xFF1C1C18),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+
+  void _showCurrencySelectionModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final currencyService = CurrencyService.instance;
+            final currentCode = currencyService.currentCurrency;
+            const sampleAmount = 145000;
+            final theme = ThemeService.instance;
+            final isDark = theme.isDarkMode;
+
+            return Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.82,
+              ),
+              decoration: BoxDecoration(
+                color: theme.card,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                border: isDark ? Border(top: BorderSide(color: theme.border)) : null,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 12),
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: theme.border,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 22),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: isDark ? const Color(0xFF262C36) : const Color(0xFF1C1C18),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.currency_exchange,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Konversi Mata Uang',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 6,
+                                      height: 6,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFF15803D),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      'Live API Real-Time Kurs',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark ? const Color(0xFF4ADE80) : const Color(0xFF15803D),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        // Refresh button
+                        GestureDetector(
+                          onTap: () async {
+                            final success = await currencyService.fetchLatestRates();
+                            setModalState(() {});
+                            setState(() {});
+                            _showSuccessToast(
+                              success
+                                  ? 'Kurs real-time berhasil diperbarui!'
+                                  : 'Gagal memperbarui kurs live',
+                            );
+                          },
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: isDark ? const Color(0xFF262C36) : const Color(0xFFECE7DC),
+                              shape: BoxShape.circle,
+                            ),
+                            child: currencyService.isLoading
+                                ? Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.refresh,
+                                    size: 18,
+                                    color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Toggle Switch for Currency Conversion
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF1E242B) : const Color(0xFFF1EEE7),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: currencyService.isConversionEnabled
+                              ? (isDark ? const Color(0xFF4ADE80) : const Color(0xFF15803D))
+                              : (isDark ? theme.border : const Color(0xFFE5E2DB)),
+                          width: currencyService.isConversionEnabled ? 1.5 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Aktifkan Konversi Kurs Asing',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  currencyService.isConversionEnabled
+                                      ? 'Konversi aktif di layar (DB tetap Rupiah murni)'
+                                      : 'Mati (Harga tampil apa adanya dalam Rupiah)',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Switch(
+                            value: currencyService.isConversionEnabled,
+                            activeThumbColor: const Color(0xFF15803D),
+                            onChanged: (val) async {
+                              await currencyService.toggleConversion(val);
+                              setModalState(() {});
+                              setState(() {});
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Simulation Card
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF1E242B), Color(0xFF2C353F)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'SIMULASI KONVERSI BIAYA',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10.5,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF94A3B8),
+                                  letterSpacing: 0.8,
+                                ),
+                              ),
+                              Text(
+                                'Contoh: 1 Jam Parkir',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10.5,
+                                  color: const Color(0xFFFDBA74),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                currencyService.format(sampleAmount),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFFCBD5E1),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                '(${currencyService.currentInfo.symbol})',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                'Dasar: Rp 145.000',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  color: const Color(0xFF94A3B8),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Text(
+                                currencyService.getRateString('USD'),
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10.5,
+                                  color: const Color(0xFFCBD5E1),
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                'Terakhir: ${currencyService.lastUpdated != null ? "${currencyService.lastUpdated!.hour.toString().padLeft(2, "0")}:${currencyService.lastUpdated!.minute.toString().padLeft(2, "0")}" : "Tersimpan"}',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 10,
+                                  color: const Color(0xFF4ADE80),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Currency list
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: CurrencyService.supportedCurrencies.length,
+                      separatorBuilder: (ctx, i) => const SizedBox(height: 8),
+                      itemBuilder: (context, index) {
+                        final info = CurrencyService.supportedCurrencies.values.elementAt(index);
+                        final code = info.code;
+                        final isSelected = code == currentCode;
+
+                        return GestureDetector(
+                          onTap: () async {
+                            await currencyService.setCurrency(code);
+                            setModalState(() {});
+                            setState(() {});
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
+                            _showSuccessToast('Mata uang diubah ke $code (${info.name})');
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 160),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? (isDark ? const Color(0xFF262C36) : Colors.white)
+                                  : (isDark ? const Color(0xFF181C22) : const Color(0xFFF7F5EE)),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isSelected
+                                    ? (isDark ? Colors.white : const Color(0xFF1C1C18))
+                                    : (isDark ? const Color(0xFF2D3542) : const Color(0xFFEBE6DC)),
+                                width: isSelected ? 1.5 : 1,
+                              ),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.04),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  info.flag,
+                                  style: const TextStyle(fontSize: 24),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            info.code,
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: 14.5,
+                                              fontWeight: FontWeight.bold,
+                                              color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: isDark ? const Color(0xFF111418) : const Color(0xFFECE7DC),
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Text(
+                                              info.symbol,
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w700,
+                                                color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF1C1C18),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        info.name,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 12,
+                                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF62615B),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        currencyService.getRateString(code),
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 10.5,
+                                          fontWeight: FontWeight.w600,
+                                          color: isDark ? const Color(0xFF64748B) : const Color(0xFF9E9B90),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: 22,
+                                  height: 22,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isSelected
+                                        ? (isDark ? Colors.white : const Color(0xFF1C1C18))
+                                        : Colors.transparent,
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? (isDark ? Colors.white : const Color(0xFF1C1C18))
+                                          : (isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1)),
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: isSelected
+                                      ? Icon(
+                                          Icons.check,
+                                          size: 14,
+                                          color: isDark ? Colors.black : Colors.white,
+                                        )
+                                      : null,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showParkingPrefSelection(BuildContext context) {
+    final theme = ThemeService.instance;
+    final isDark = theme.isDarkMode;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: isDark ? theme.card : Colors.white,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                border: isDark ? Border(top: BorderSide(color: theme.border)) : null,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: isDark ? theme.border : const Color(0xFFE5E2DB),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Preferensi Parkir',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : const Color(0xFF1A1A18),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // SUV
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => _selectedParkingPref = 'Mobil SUV');
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      height: 64,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: _selectedParkingPref == 'Mobil SUV'
+                            ? (isDark ? theme.surfaceField : const Color(0xFFF1EEE7))
+                            : (isDark ? theme.card : Colors.transparent),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: _selectedParkingPref == 'Mobil SUV'
+                              ? (isDark ? Colors.white : const Color(0xFF1C1C18))
+                              : (isDark ? theme.border : Colors.transparent),
+                          width: _selectedParkingPref == 'Mobil SUV' ? 1.5 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.directions_car,
+                            color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              'Golongan Mobil SUV',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                              ),
+                            ),
+                          ),
+                          if (_selectedParkingPref == 'Mobil SUV')
+                            Icon(
+                              Icons.check_circle,
+                              color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Sedan/City
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => _selectedParkingPref = 'Mobil Sedan/City');
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      height: 64,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: _selectedParkingPref == 'Mobil Sedan/City'
+                            ? (isDark ? theme.surfaceField : const Color(0xFFF1EEE7))
+                            : (isDark ? theme.card : Colors.transparent),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: _selectedParkingPref == 'Mobil Sedan/City'
+                              ? (isDark ? Colors.white : const Color(0xFF1C1C18))
+                              : (isDark ? theme.border : Colors.transparent),
+                          width: _selectedParkingPref == 'Mobil Sedan/City' ? 1.5 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.directions_car,
+                            color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              'Golongan Mobil Sedan/City',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                              ),
+                            ),
+                          ),
+                          if (_selectedParkingPref == 'Mobil Sedan/City')
+                            Icon(
+                              Icons.check_circle,
+                              color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Motor Roda 2
+                  GestureDetector(
+                    onTap: () {
+                      setState(() => _selectedParkingPref = 'Motor Roda 2');
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      height: 64,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: _selectedParkingPref == 'Motor Roda 2'
+                            ? (isDark ? theme.surfaceField : const Color(0xFFF1EEE7))
+                            : (isDark ? theme.card : Colors.transparent),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: _selectedParkingPref == 'Motor Roda 2'
+                              ? (isDark ? Colors.white : const Color(0xFF1C1C18))
+                              : (isDark ? theme.border : Colors.transparent),
+                          width: _selectedParkingPref == 'Motor Roda 2' ? 1.5 : 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.two_wheeler,
+                            color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              'Motor Roda 2',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                              ),
+                            ),
+                          ),
+                          if (_selectedParkingPref == 'Motor Roda 2')
+                            Icon(
+                              Icons.check_circle,
+                              color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showLanguageSelection(BuildContext context) {
+    LanguageService.showLanguageSelectionModal(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: ThemeService.instance.bg,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Container(
+              height: 64,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: ThemeService.instance.bg.withValues(alpha: 0.9),
+                boxShadow: [
+                  BoxShadow(
+                    color: ThemeService.instance.isDarkMode 
+                        ? Colors.black.withValues(alpha: 0.3) 
+                        : Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 8, 
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 44, height: 44,
+                          decoration: BoxDecoration(
+                            color: ThemeService.instance.chipBg, 
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.arrow_back, size: 20, color: ThemeService.instance.iconColor),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.settings, 
+                            size: 24, 
+                            color: ThemeService.instance.isDarkMode ? const Color(0xFF60A5FA) : const Color(0xFF114177),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Pengaturan', 
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 18, 
+                              fontWeight: FontWeight.bold, 
+                              color: ThemeService.instance.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                children: [
+                  // Profile Banner
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: ThemeService.instance.card, 
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: ThemeService.instance.border.withValues(alpha: 0.6)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: ThemeService.instance.isDarkMode 
+                              ? Colors.black.withValues(alpha: 0.25) 
+                              : const Color(0xFF1C1D1F).withValues(alpha: 0.06), 
+                          blurRadius: 32, 
+                          offset: const Offset(0, 12),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Stack(
+                          children: [
+                            ClipOval(
+                              child: _avatarUrl != null && _avatarUrl!.isNotEmpty
+                                  ? AppCachedNetworkImage(
+                                      imageUrl: _avatarUrl!,
+                                      width: 56,
+                                      height: 56,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => _buildFallbackAvatar(56),
+                                    )
+                                  : _buildFallbackAvatar(56),
+                            ),
+                            Positioned(
+                              bottom: 0, right: 0,
+                              child: Container(
+                                width: 16, height: 16,
+                                decoration: BoxDecoration(color: const Color(0xFFBBEED4), shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 2)),
+                                child: const Icon(Icons.check, size: 10, color: Color(0xFF1F4F3C)),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      _userName,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: ThemeService.instance.textPrimary,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.verified, size: 16, color: Color(0xFF9A442D)),
+                                ],
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _userEmail,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  color: ThemeService.instance.textSecondary,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _userPhone,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  color: ThemeService.instance.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        // Tombol Icon Pensil Hitam Vertically Centered
+                        GestureDetector(
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditProfileScreen(
+                                  initialName: _userName,
+                                  initialEmail: _userEmail,
+                                  initialPhone: _userPhone,
+                                ),
+                              ),
+                            );
+                            if (result != null && result is Map<String, String>) {
+                              setState(() {
+                                _userName = result['name'] ?? _userName;
+                                _userEmail = result['email'] ?? _userEmail;
+                                _userPhone = result['phone'] ?? _userPhone;
+                              });
+                            }
+                          },
+                          child: Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: ThemeService.instance.chipBg,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.edit,
+                              size: 18,
+                              color: ThemeService.instance.iconColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Section 1: Akun & Keamanan
+                  _SectionTitle(title: 'Akun & Keamanan', icon: Icons.lock),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: ThemeService.instance.card, 
+                      borderRadius: BorderRadius.circular(16), 
+                      border: Border.all(color: ThemeService.instance.border.withValues(alpha: 0.6)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: ThemeService.instance.isDarkMode ? Colors.black.withValues(alpha: 0.2) : const Color(0xFF1C1D1F).withValues(alpha: 0.03), 
+                          blurRadius: 12, 
+                          offset: const Offset(0, 4)
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        ListenableBuilder(
+                          listenable: ProfileBackend.instance,
+                          builder: (context, _) {
+                            final kycStatus = ProfileBackend.instance.kycStatus.toLowerCase();
+                            final isApproved = kycStatus == 'approved';
+                            final isPending = kycStatus == 'pending';
+                            final isRejected = kycStatus == 'rejected';
+
+                            String kycSubtitle = 'Belum Terverifikasi';
+                            Color? kycSubtitleColor;
+                            Widget kycActionWidget = Icon(Icons.chevron_right, color: ThemeService.instance.iconColor);
+                            VoidCallback kycOnTap = () {
+                              if (MaintenanceService.instance.isKycMaintenance) {
+                                MaintenanceService.showModularMaintenanceDialog(
+                                  context,
+                                  title: 'Modul Wajib KYC KTP Sedang Maintenance',
+                                  message:
+                                      'Layanan verifikasi identitas KTP sementara dinonaktifkan untuk pembaharuan sistem. Fitur jelajah dan reservasi tetap berjalan.',
+                                  icon: Icons.shield_outlined,
+                                );
+                                return;
+                              }
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const KtpCameraScreen())).then((_) {
+                                ProfileBackend.instance.fetchProfile();
+                              });
+                            };
+
+                            if (isApproved) {
+                              kycSubtitle = 'Terverifikasi';
+                              kycSubtitleColor = const Color(0xFF10B981);
+                              kycActionWidget = Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.4)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.verified, size: 14, color: Color(0xFF10B981)),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'TERVERIFIKASI',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0xFF10B981),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              kycOnTap = () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Identitas e-KTP Anda telah terverifikasi resmi oleh Super Admin.'),
+                                    backgroundColor: Color(0xFF10B981),
+                                  ),
+                                );
+                              };
+                            } else if (isPending) {
+                              kycSubtitle = 'Menunggu Verifikasi (Sedang Ditinjau)';
+                              kycSubtitleColor = const Color(0xFFF59E0B);
+                              kycActionWidget = Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.4)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.schedule, size: 13, color: Color(0xFFF59E0B)),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'DITINJAU',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0xFFF59E0B),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              kycOnTap = () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Pengajuan verifikasi e-KTP Anda sedang dalam antrean review oleh Super Admin.'),
+                                    backgroundColor: Color(0xFFF59E0B),
+                                  ),
+                                );
+                              };
+                            } else if (isRejected) {
+                              kycSubtitle = 'Ditolak (Ketuk untuk Ajukan Ulang)';
+                              kycSubtitleColor = const Color(0xFFEF4444);
+                              kycActionWidget = Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.4)),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.error_outline, size: 13, color: Color(0xFFEF4444)),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'AJUKAN ULANG',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0xFFEF4444),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            return _SettingActionRow(
+                              icon: Icons.badge,
+                              title: 'Verifikasi KTP',
+                              subtitle: kycSubtitle,
+                              subtitleColor: kycSubtitleColor,
+                              actionWidget: kycActionWidget,
+                              onTap: kycOnTap,
+                            );
+                          },
+                        ),
+                        Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: Divider(color: ThemeService.instance.divider, height: 1)),
+
+                        _SettingToggleRow(
+                          icon: Icons.face, title: 'Face ID', subtitle: 'Login dengan pemindaian wajah',
+                          value: _faceIdEnabled,
+                          onChanged: (val) => _handleFaceIdToggle(val),
+                        ),
+                        Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: Divider(color: ThemeService.instance.divider, height: 1)),
+                        _SettingToggleRow(
+                          icon: Icons.fingerprint, title: 'Fingerprint', subtitle: 'Login dengan sidik jari',
+                          value: _fingerprintEnabled,
+                          onChanged: (val) => _handleFingerprintToggle(val),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Section 2: Preferensi Aplikasi
+                  _SectionTitle(title: 'Preferensi Aplikasi', icon: Icons.tune),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: ThemeService.instance.card, 
+                      borderRadius: BorderRadius.circular(16), 
+                      border: Border.all(color: ThemeService.instance.border.withValues(alpha: 0.6)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: ThemeService.instance.isDarkMode ? Colors.black.withValues(alpha: 0.2) : const Color(0xFF1C1D1F).withValues(alpha: 0.03), 
+                          blurRadius: 12, 
+                          offset: const Offset(0, 4)
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        _SettingActionRow(
+                          icon: Icons.language,
+                          title: 'Bahasa'.tr,
+                          subtitle: LanguageService.instance.isEnglish ? 'English' : 'Bahasa Indonesia',
+                          actionWidget: Icon(Icons.chevron_right, color: ThemeService.instance.isDarkMode ? Colors.white70 : const Color(0xFF1C1C18)),
+                          onTap: () => _showLanguageSelection(context),
+                        ),
+                        Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: Divider(color: ThemeService.instance.divider, height: 1)),
+                          _SettingActionRow(
+                            icon: Icons.local_parking, title: 'Preferensi Parkir', subtitle: _selectedParkingPref, actionWidget: const Icon(Icons.chevron_right, color: Color(0xFF1C1C18)),
+                            onTap: () => _showParkingPrefSelection(context),
+                          ),
+                          Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: Divider(color: ThemeService.instance.divider, height: 1)),
+                        _SettingActionRow(
+                          icon: Icons.payments,
+                          title: 'Mata Uang & Kurs Valuta',
+                          subtitle: CurrencyService.instance.isConversionEnabled
+                              ? '${CurrencyService.instance.currentCurrency} (${CurrencyService.instance.currentInfo.name}) - Konversi Aktif'
+                              : 'IDR (Rupiah Indonesia) - Standar',
+                          actionWidget: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: CurrencyService.instance.isConversionEnabled
+                                      ? const Color(0xFFDCFCE7)
+                                      : const Color(0xFFF1EEE7),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Text(
+                                  CurrencyService.instance.isConversionEnabled
+                                      ? CurrencyService.instance.currentCurrency
+                                      : 'IDR (OFF)',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: CurrencyService.instance.isConversionEnabled
+                                        ? const Color(0xFF15803D)
+                                        : const Color(0xFF1C1C18),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.chevron_right, size: 16, color: Color(0xFF1C1C18)),
+                            ],
+                          ),
+                          onTap: () => _showCurrencySelectionModal(context),
+                        ),
+                        Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: Divider(color: ThemeService.instance.divider, height: 1)),
+                        _SettingToggleRow(
+                          icon: Icons.notifications_active, title: 'Notifikasi Sesi & Promo', subtitle: 'Pemberitahuan durasi & cashback',
+                          value: _notifEnabled,
+                          onChanged: (val) => setState(() => _notifEnabled = val),
+                        ),
+                        Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: Divider(color: ThemeService.instance.divider, height: 1)),
+                        _SettingToggleRow(
+                          icon: ThemeService.instance.isDarkMode ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                          title: ThemeService.instance.isDarkMode ? 'Dark Mode' : 'Light Mode',
+                          subtitle: '',
+                          value: ThemeService.instance.isDarkMode,
+                          onChanged: (val) {
+                            ThemeService.instance.setDarkMode(val);
+                            _showSuccessToast(val ? 'Dark mode diaktifkan' : 'Light mode diaktifkan');
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Section 3: Privasi & Data
+                  _SectionTitle(title: 'Privasi & Data', icon: Icons.shield),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: ThemeService.instance.card, 
+                      borderRadius: BorderRadius.circular(16), 
+                      border: Border.all(color: ThemeService.instance.border.withValues(alpha: 0.6)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: ThemeService.instance.isDarkMode ? Colors.black.withValues(alpha: 0.2) : const Color(0xFF1C1D1F).withValues(alpha: 0.03), 
+                          blurRadius: 12, 
+                          offset: const Offset(0, 4)
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+
+                        Row(
+                          children: [
+                            Container(width: 40, height: 40, decoration: BoxDecoration(color: ThemeService.instance.chipBg, shape: BoxShape.circle), child: Icon(Icons.cleaning_services, size: 20, color: ThemeService.instance.iconColor)),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Hapus Riwayat Cache', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w600, color: ThemeService.instance.textPrimary)),
+                                  Text(_cacheSize, style: GoogleFonts.plusJakartaSans(fontSize: 13, color: ThemeService.instance.textSecondary)),
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: _isCacheCleared ? null : () async {
+                                final messenger = ScaffoldMessenger.of(context);
+                                await AppImageCacheService.instance.clearAllCache();
+                                if (!mounted) return;
+                                setState(() {
+                                  _cacheSize = '0 KB tersimpan';
+                                  _isCacheCleared = true;
+                                });
+                                messenger.showSnackBar(
+                                  SnackBar(
+                                    content: Text('Cache perangkat berhasil dibersihkan!'.tr),
+                                    backgroundColor: const Color(0xFF17A18A),
+                                    behavior: SnackBarBehavior.floating,
+                                    duration: const Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                decoration: BoxDecoration(color: ThemeService.instance.chipBg, borderRadius: BorderRadius.circular(16)),
+                                child: _isCacheCleared 
+                                  ? Row(children: [const Icon(Icons.done, size: 14, color: Color(0xFF45474A)), const SizedBox(width: 4), Text('Beres'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF45474A)))])
+                                  : Text('Bersihkan'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: ThemeService.instance.textPrimary)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+
+                  
+                  Center(
+                    child: Column(
+                      children: [
+                      
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.token, size: 14, color: Color(0xFF45474A)),
+                            const SizedBox(width: 6),
+                            Text('Made by Love 🗿', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: ThemeService.instance.textSecondary)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  final IconData icon;
+
+  const _SectionTitle({required this.title, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title.toUpperCase(), 
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 12, 
+            fontWeight: FontWeight.bold, 
+            color: ThemeService.instance.textSecondary, 
+            letterSpacing: 1.0,
+          ),
+        ),
+        Icon(icon, size: 16, color: ThemeService.instance.textSecondary),
+      ],
+    );
+  }
+}
+
+class _SettingToggleRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _SettingToggleRow({
+    required this.icon,
+    required this.title,
+    this.subtitle = '',
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: ThemeService.instance.chipBg,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 20, color: ThemeService.instance.iconColor),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w600,
+                  color: ThemeService.instance.textPrimary,
+                ),
+              ),
+              if (subtitle.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12.5,
+                    color: ThemeService.instance.textSecondary,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          activeThumbColor: Colors.white,
+          activeTrackColor: const Color(0xFFC05621),
+          inactiveThumbColor: Colors.white,
+          inactiveTrackColor: ThemeService.instance.isDarkMode
+              ? const Color(0xFF333C4A)
+              : const Color(0xFFD1D5DB),
+          trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+        ),
+      ],
+    );
+  }
+}
+
+class _SettingActionRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color? subtitleColor;
+  final Widget? actionWidget;
+  final VoidCallback? onTap;
+
+  const _SettingActionRow({
+    required this.icon, 
+    required this.title, 
+    required this.subtitle, 
+    this.subtitleColor,
+    this.actionWidget, 
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        children: [
+          Container(
+            width: 40, 
+            height: 40, 
+            decoration: BoxDecoration(
+              color: ThemeService.instance.chipBg, 
+              shape: BoxShape.circle,
+            ), 
+            child: Icon(icon, size: 20, color: ThemeService.instance.iconColor),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title, 
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 16, 
+                    fontWeight: FontWeight.w600, 
+                    color: ThemeService.instance.textPrimary,
+                  ),
+                ),
+                if (subtitle.isNotEmpty) 
+                  Text(
+                    subtitle, 
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13, 
+                      fontWeight: subtitleColor != null ? FontWeight.w600 : FontWeight.normal,
+                      color: subtitleColor ?? ThemeService.instance.textSecondary,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          ?actionWidget,
+        ],
+      ),
+    );
+  }
+}
+
+
