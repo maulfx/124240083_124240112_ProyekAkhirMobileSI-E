@@ -183,7 +183,7 @@ class ProfileBackend extends ChangeNotifier {
 
         if (_memberTier != expectedTier && _userId.isNotEmpty) {
           _memberTier = expectedTier;
-          // Panggil update agar trigger database menerbitkan kartu & hash code blockchain baru
+          // Update tier user jika ada perubahan tier
           try {
             await _client.from('users').update({
               'total_spent': _totalSpent,

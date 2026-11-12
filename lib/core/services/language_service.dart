@@ -911,7 +911,6 @@ class LanguageService extends ChangeNotifier {
     'Kode Sesi': 'Session Code',
     'Kode Transaksi': 'Transaction Code',
     'Nomor Transaksi': 'Transaction Number',
-    'Hash Blockchain': 'Blockchain Hash',
     'Hash': 'Hash',
     'Waktu Check-in': 'Check-in Time',
     'Waktu Check-out': 'Check-out Time',
