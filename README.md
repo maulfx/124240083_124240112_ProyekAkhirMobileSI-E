@@ -87,11 +87,7 @@ flutter pub get
 ```
 
 ### Langkah 3: Konfigurasi Variabel Lingkungan (`.env`)
-Salin file `.env.example` menjadi `.env`:
-```bash
-cp .env.example .env
-```
-Isi kredensial Supabase Anda di dalam `.env`:
+Pastikan file `.env` di root proyek berisi kredensial Supabase Anda:
 ```env
 SUPABASE_URL=https://your-project-id.supabase.co
 SUPABASE_ANON_KEY=your-supabase-anon-key
