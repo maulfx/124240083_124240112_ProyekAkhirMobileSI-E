@@ -41,11 +41,13 @@ class FeedbackBackend extends ChangeNotifier {
         fullComment = '[${selectedTopics.join(', ')}] $fullComment'.trim();
       }
 
+      final feedbackContent = fullComment.isNotEmpty ? fullComment : 'Ulasan pengguna ParkSmart bintang $rating';
       await _client.from('customer_feedbacks').insert({
         'user_id': activeUserId,
         'location_id': locationId,
         'rating': rating,
-        'comment': fullComment.isNotEmpty ? fullComment : 'Ulasan pengguna ParkSmart bintang $rating',
+        'comment': feedbackContent,
+        'feedback_text': feedbackContent,
         'is_resolved': false,
       });
 

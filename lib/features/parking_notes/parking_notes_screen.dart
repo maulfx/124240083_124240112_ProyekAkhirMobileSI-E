@@ -180,6 +180,8 @@ class ParkingNotesScreen extends StatelessWidget {
                                 ),
                               );
                             } else if (val == 'delete') {
+                              final notifId = index.abs() % 10000 + 100;
+                              NotificationService().cancelNotification(notifId);
                               box.deleteAt(index);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Catatan dihapus dari Hive')),

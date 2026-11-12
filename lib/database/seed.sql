@@ -86,7 +86,7 @@ VALUES
 ON CONFLICT (key) DO NOTHING;
 
 -- 7. NOTIFIKASI INFORMASI AWAL
-INSERT INTO public.system_notifications (title, message, type, is_read)
+INSERT INTO public.system_notifications (title, message, type, notification_type, target_role, is_read)
 VALUES
-('Selamat Datang di ParkSmart!', 'Pantau ketersediaan slot kosong dan simpan catatan lokasi parkir Anda secara langsung.', 'info', false),
-('Update Ketersediaan Slot', 'Sistem sensor slot real-time telah aktif di Pakuwon Mall Jogja & UPN Veteran.', 'info', false);
+('Selamat Datang di ParkSmart!', 'Pantau ketersediaan slot kosong dan simpan catatan lokasi parkir Anda secara langsung.', 'info', 'info', 'all', false),
+('Update Ketersediaan Slot', 'Sistem sensor slot real-time telah aktif di Pakuwon Mall Jogja & UPN Veteran.', 'info', 'info', 'all', false);

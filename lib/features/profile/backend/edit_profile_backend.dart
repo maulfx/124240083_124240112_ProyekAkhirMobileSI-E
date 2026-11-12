@@ -89,12 +89,19 @@ class EditProfileBackend extends ChangeNotifier {
             .update(updateData)
             .eq('auth_user_id', userId);
       } else {
-        // Update user yang aktif saat ini
+        // Update user yang aktif saat ini (dengan fallback email jika ID kosong)
         final activeId = ProfileBackend.instance.userId;
-        await _client
-            .from('users')
-            .update(updateData)
-            .eq('id', activeId);
+        if (activeId.isNotEmpty) {
+          await _client
+              .from('users')
+              .update(updateData)
+              .eq('id', activeId);
+        } else {
+          await _client
+              .from('users')
+              .update(updateData)
+              .eq('email', email.trim());
+        }
       }
 
       // Sinkronisasi data di ProfileBackend

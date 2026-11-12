@@ -878,7 +878,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                 }
                                 final loc = ParkingDetailBackend.instance.locationDetail;
                                 if (loc != null) {
-                                  if (ParkingDetailBackend.instance.availableSlots <= 0) {
+                                  if (ParkingDetailBackend.instance.totalSlots <= 0) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         backgroundColor: const Color(0xFFDC2626),

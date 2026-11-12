@@ -12,6 +12,7 @@ import 'settings_screen.dart' as settings;
 import '../../core/services/session_service.dart';
 import '../../core/services/language_service.dart';
 import '../../core/services/parking_notification_service.dart';
+import '../parking_notes/parking_notes_screen.dart';
 import 'edit_profile_screen.dart' as edit_profile;
 import 'backend/profile_backend.dart';
 import '../../core/services/app_image_cache_service.dart';
@@ -208,9 +209,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  
-                  
-
+                  // Menu Catatan Parkir (Modul 6 - Hive Offline Storage)
+                  _MenuItem(
+                    icon: Icons.note_alt_outlined,
+                    subtitle: 'OFFLINE HIVE STORAGE'.tr,
+                    title: 'Catatan & Pengingat Parkir'.tr,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ParkingNotesScreen()),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   _MenuItem(
                     icon: Icons.notifications_active, subtitle: 'DEVELOPER OPTIONS', title: 'Test Notification',
                     onTap: () {

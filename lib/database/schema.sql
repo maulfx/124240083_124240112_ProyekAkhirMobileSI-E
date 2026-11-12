@@ -123,15 +123,22 @@ CREATE TABLE IF NOT EXISTS public.customer_feedbacks (
     user_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
     location_id UUID REFERENCES public.parking_locations(id) ON DELETE CASCADE,
     rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
-    feedback_text TEXT NOT NULL,
+    comment TEXT NOT NULL DEFAULT '',
+    feedback_text TEXT DEFAULT '',
+    admin_reply TEXT,
+    is_resolved BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
 
 -- 9. TABEL NOTIFIKASI SISTEM & BROADCAST (SYSTEM_NOTIFICATIONS)
 CREATE TABLE IF NOT EXISTS public.system_notifications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    recipient_user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
+    target_role VARCHAR(50) NOT NULL DEFAULT 'all',
     title VARCHAR(200) NOT NULL,
     message TEXT NOT NULL,
+    notification_type VARCHAR(50) NOT NULL DEFAULT 'info',
+    action_type VARCHAR(60),
     type VARCHAR(50) DEFAULT 'info',
     is_read BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
@@ -151,10 +158,18 @@ CREATE TABLE IF NOT EXISTS public.user_kyc (
     user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
     nik VARCHAR(20),
     full_name VARCHAR(150),
-    birth_date VARCHAR(30),
+    birth_place_city VARCHAR(100),
+    birth_date DATE,
     address TEXT,
+    gender VARCHAR(20) DEFAULT 'Laki-laki',
+    religion VARCHAR(30),
+    occupation VARCHAR(100),
+    ktp_image_url TEXT,
+    selfie_image_url TEXT,
     ktp_photo_url TEXT,
     status VARCHAR(20) DEFAULT 'approved',
+    reject_reason TEXT,
+    submitted_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
     CONSTRAINT uq_user_kyc UNIQUE (user_id)
