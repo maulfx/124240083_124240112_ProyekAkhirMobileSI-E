@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/services/theme_service.dart';
+import '../../theme/app_colors.dart';
 import '../../core/services/supabase_storage_service.dart';
 import '../../core/services/language_service.dart';
 import '../vehicle/add_vehicle_screen.dart';
@@ -51,7 +52,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Foto kendaraan berhasil diupload!'.tr),
-              backgroundColor: const Color(0xFF10B981),
+              backgroundColor: AppColors.system.onlineGreen,
             ),
           );
         }
@@ -91,7 +92,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+              color: AppColors.slot.booked,
             ),
             child: hasPhoto
                 ? ClipRRect(
@@ -159,14 +160,14 @@ class _VehicleScreenState extends State<VehicleScreen> {
           Icon(
             Icons.directions_car_outlined,
             size: 48,
-            color: isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1),
+            color: AppColors.textMuted,
           ),
           const SizedBox(height: 8),
           Text(
             'Tap untuk tambah foto'.tr,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 12,
-              color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+              color: AppColors.textSecondary,
             ),
           ),
         ],
@@ -218,7 +219,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                     child: Container(
                       height: 52,
                       decoration: BoxDecoration(
-                        color: isDark ? theme.surfaceField : const Color(0xFF1C1C18),
+                        color: isDark ? theme.surfaceField : AppColors.primary,
                         borderRadius: BorderRadius.circular(24),
                         border: isDark ? Border.all(color: theme.border) : null,
                       ),
@@ -251,7 +252,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                     child: Container(
                       height: 52,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE53935), // Red
+                        color: AppColors.vehicle.deleteDanger,
                         borderRadius: BorderRadius.circular(24),
                       ),
                       alignment: Alignment.center,
@@ -323,7 +324,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                           const SizedBox(width: 12),
                           Row(
                             children: [
-                              Icon(Icons.local_parking, size: 24, color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177)),
+                              Icon(Icons.local_parking, size: 24, color: AppColors.auth.linkBlue),
                               const SizedBox(width: 8),
                               Text(
                                 widget.isSelectionMode ? 'Pilih Kendaraan'.tr : 'Live Spot Details',
@@ -396,13 +397,13 @@ class _VehicleScreenState extends State<VehicleScreen> {
                               width: 72,
                               height: 72,
                               decoration: BoxDecoration(
-                                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFEFF6FF),
+                                color: AppColors.favorite.filterChipActiveBg,
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.directions_car_outlined,
                                 size: 36,
-                                color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177),
+                                color: AppColors.auth.linkBlue,
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -439,7 +440,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                         border: Border.all(color: theme.border),
                         boxShadow: [
                           BoxShadow(
-                            color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0xFF1C1D1F).withValues(alpha: 0.06),
+                            color: AppColors.warmBorder.withValues(alpha: 0.2),
                             blurRadius: 32,
                             offset: const Offset(0, 12),
                           ),
@@ -453,7 +454,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: isDark ? const Color(0xFF064E3B) : const Color(0xFFBBEED4),
+                                  color: AppColors.accentTealSoft,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Row(
@@ -461,7 +462,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                                     Icon(
                                       Icons.stars,
                                       size: 14,
-                                      color: isDark ? const Color(0xFF6EE7B7) : const Color(0xFF1F4F3C),
+                                      color: AppColors.accentTeal,
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
@@ -469,7 +470,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                                       style: GoogleFonts.plusJakartaSans(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
-                                        color: isDark ? const Color(0xFF6EE7B7) : const Color(0xFF1F4F3C),
+                                        color: AppColors.accentTeal,
                                       ),
                                     ),
                                   ],
@@ -513,7 +514,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF020304).withValues(alpha: 0.8),
+                                    color: AppColors.vehicle.plateBg.withValues(alpha: 0.8),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Row(
@@ -679,7 +680,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF10B981),
+                                  backgroundColor: AppColors.system.onlineGreen,
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                                   elevation: 2,
@@ -731,7 +732,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                         await VehicleBackend.instance.fetchVehicles();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? Colors.white : const Color(0xFF020304),
+                        backgroundColor: AppColors.buttonPrimary,
                         foregroundColor: isDark ? Colors.black : Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
                         elevation: 12,
@@ -818,10 +819,10 @@ class _VehicleScreenState extends State<VehicleScreen> {
                   width: 42,
                   height: 42,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                    color: AppColors.system.onlineGreen.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.stars, color: Color(0xFF10B981), size: 22),
+                  child: Icon(Icons.stars, color: AppColors.system.onlineGreen, size: 22),
                 ),
                 title: Text(
                   'Jadikan Kendaraan Utama'.tr,
@@ -845,7 +846,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('${vehicle.displayName} sekarang menjadi kendaraan utama.'),
-                        backgroundColor: const Color(0xFF15803D),
+                        backgroundColor: AppColors.modal.currencyCheckmark,
                       ),
                     );
                   }
@@ -859,17 +860,17 @@ class _VehicleScreenState extends State<VehicleScreen> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+                  color: AppColors.vehicle.deleteDanger.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.delete_outline, color: Color(0xFFEF4444), size: 22),
+                child: Icon(Icons.delete_outline, color: AppColors.vehicle.deleteDanger, size: 22),
               ),
               title: Text(
                 'Hapus Kendaraan'.tr,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFFEF4444),
+                  color: AppColors.vehicle.deleteDanger,
                 ),
               ),
               subtitle: Text(
@@ -902,7 +903,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
           border: Border.all(color: theme.border),
           boxShadow: [
             BoxShadow(
-              color: isDark ? Colors.black.withValues(alpha: 0.3) : const Color(0xFF1C1D1F).withValues(alpha: 0.06),
+              color: AppColors.warmBorder.withValues(alpha: 0.2),
               blurRadius: 32,
               offset: const Offset(0, 12),
             ),
@@ -916,7 +917,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF78350F) : const Color(0xFFFEF3C7),
+                    color: AppColors.system.warningBg,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
@@ -924,7 +925,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                       Icon(
                         Icons.shield_outlined,
                         size: 13,
-                        color: isDark ? const Color(0xFFFCD34D) : const Color(0xFF92400E),
+                        color: AppColors.system.warningYellow,
                       ),
                       const SizedBox(width: 6),
                       Text(
@@ -932,7 +933,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? const Color(0xFFFCD34D) : const Color(0xFF92400E),
+                          color: AppColors.system.warningYellow,
                         ),
                       ),
                     ],
@@ -969,7 +970,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF020304).withValues(alpha: 0.8),
+                      color: AppColors.vehicle.plateBg.withValues(alpha: 0.8),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
@@ -1131,7 +1132,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF10B981),
+                    backgroundColor: AppColors.system.onlineGreen,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                     elevation: 2,
@@ -1150,7 +1151,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('${vehicle.displayName} berhasil dijadikan Kendaraan Utama!'),
-                            backgroundColor: const Color(0xFF15803D),
+                            backgroundColor: AppColors.modal.currencyCheckmark,
                           ),
                         );
                       }
@@ -1158,7 +1159,7 @@ class _VehicleScreenState extends State<VehicleScreen> {
                     child: Container(
                       height: 48,
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF0F766E) : const Color(0xFF114177),
+                        color: AppColors.auth.linkBlue,
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: Center(

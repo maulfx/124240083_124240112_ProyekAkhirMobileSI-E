@@ -97,7 +97,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
 
         if (!backend.isLoading && !backend.hasLocation) {
           return Scaffold(
-            backgroundColor: isDark ? theme.bg : AppColors.surface,
+            backgroundColor: AppColors.background,
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
@@ -123,13 +123,13 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E232B) : const Color(0xFFF1EEE7),
+                        color: AppColors.surfaceField,
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.location_off_outlined,
                         size: 64,
-                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF76777A),
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -139,7 +139,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -148,7 +148,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 14,
-                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF76777A),
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -157,8 +157,8 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                       icon: const Icon(Icons.arrow_back, size: 18),
                       label: Text('Kembali ke Peta'.tr),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? Colors.white : const Color(0xFF020304),
-                        foregroundColor: isDark ? Colors.black : Colors.white,
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       ),
@@ -171,7 +171,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
         }
 
         return Scaffold(
-          backgroundColor: isDark ? theme.bg : AppColors.surface,
+          backgroundColor: AppColors.background,
           body: Stack(
             children: [
               // Scrollable content
@@ -214,7 +214,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                               decoration: BoxDecoration(
                                 borderRadius: AppRadii.xl2Radius,
                                 border: Border.all(
-                                  color: isDark ? theme.border : const Color(0xFFEAE5DC).withValues(alpha: 0.5),
+                                  color: AppColors.warmBorder,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
@@ -240,9 +240,9 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                           imageUrl: photos[idx],
                                           fit: BoxFit.cover,
                                           errorBuilder: (context, error, stackTrace) => Container(
-                                            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFECE8E0),
-                                            child: const Center(
-                                              child: Icon(Icons.local_parking, size: 48, color: Color(0xFF9CA3AF)),
+                                            color: AppColors.surfaceField,
+                                            child: Center(
+                                              child: Icon(Icons.local_parking, size: 48, color: AppColors.parkingDetail.photoPlaceholder),
                                             ),
                                           ),
                                         );
@@ -394,7 +394,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: isDark ? const Color(0xFF1E232B) : const Color(0xFFF1EEE7),
+                                    color: AppColors.surfaceField,
                                     borderRadius: AppRadii.pillRadius,
                                   ),
                                   child: Text(
@@ -449,7 +449,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                     Icon(
                                       Icons.near_me,
                                       size: 18,
-                                      color: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF1F4F3C),
+                                      color: AppColors.parkingDetail.navAddressIcon,
                                     ),
                                     const SizedBox(width: 6),
                                     Expanded(
@@ -472,10 +472,10 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: isDark ? theme.card : AppColors.surfaceCard,
+                            color: AppColors.surfaceCard,
                             borderRadius: AppRadii.xl2Radius,
                             border: Border.all(
-                              color: isDark ? theme.border : const Color(0xFFEAE5DC).withValues(alpha: 0.5),
+                              color: AppColors.warmBorder,
                             ),
                             boxShadow: const [AppShadows.soft],
                           ),
@@ -509,7 +509,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                                   fontSize: 32,
                                                   fontWeight: FontWeight.w700,
                                                   letterSpacing: -0.5,
-                                                  color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                                                  color: AppColors.textPrimary,
                                                 ),
                                               ),
                                               Text(
@@ -531,7 +531,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                               Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: isDark ? theme.surfaceField : const Color(0xFF1C1C18),
+                                  color: AppColors.parkingDetail.zoneTipCardBg,
                                   borderRadius: AppRadii.lgRadius,
                                   border: isDark ? Border.all(color: theme.border) : null,
                                 ),
@@ -557,7 +557,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: isDark ? theme.card : AppColors.surfaceCard,
+                            color: AppColors.surfaceCard,
                             borderRadius: AppRadii.xl2Radius,
                             border: isDark ? Border.all(color: theme.border) : null,
                             boxShadow: const [AppShadows.soft],
@@ -582,8 +582,8 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
                                       color: _selectedVehicleRateType == 'ev'
-                                          ? const Color(0xFF17A18A)
-                                          : const Color(0xFFD96B43),
+                                          ? AppColors.parkingDetail.rateEv
+                                          : AppColors.parkingDetail.rateAccentDefault,
                                     ),
                                   ),
                                 ],
@@ -645,8 +645,8 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                           fontWeight: FontWeight.w800,
                                           letterSpacing: -0.5,
                                           color: _selectedVehicleRateType == 'ev'
-                                              ? const Color(0xFF17A18A)
-                                              : const Color(0xFFD96B43),
+                                              ? AppColors.parkingDetail.rateEv
+                                              : AppColors.parkingDetail.rateAccentDefault,
                                         ),
                                       ),
                                       Text(
@@ -670,7 +670,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                           decoration: BoxDecoration(
-                            color: isDark ? theme.card : AppColors.surfaceCard,
+                            color: AppColors.surfaceCard,
                             borderRadius: AppRadii.xl2Radius,
                             border: isDark ? Border.all(color: theme.border) : null,
                             boxShadow: const [AppShadows.soft],
@@ -725,7 +725,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  color: isDark ? theme.bg : AppColors.surface,
+                  color: AppColors.background,
                   child: SafeArea(
                     bottom: false,
                     child: Container(
@@ -748,7 +748,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                   final isFav = currentLocId != null && FavoriteBackend.instance.isFavorite(currentLocId);
                                   return _NavBtn(
                                     icon: isFav ? Icons.favorite : Icons.favorite_border,
-                                    iconColor: isFav ? const Color(0xFFEF4444) : null,
+                                    iconColor: isFav ? AppColors.parkingDetail.favoriteActive : null,
                                     isDark: isDark,
                                     onTap: () async {
                                       if (currentLocId == null || currentLocId.isEmpty) return;
@@ -776,7 +776,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                                 ),
                                               ],
                                             ),
-                                            backgroundColor: added ? const Color(0xFFEF4444) : const Color(0xFF475569),
+                                            backgroundColor: added ? AppColors.parkingDetail.favoriteActive : AppColors.parkingDetail.favoriteRemovedBg,
                                             duration: const Duration(seconds: 2),
                                             behavior: SnackBarBehavior.floating,
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -812,7 +812,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
                     decoration: BoxDecoration(
-                      color: isDark ? theme.bg : AppColors.surface,
+                      color: AppColors.background,
                       border: isDark ? Border(top: BorderSide(color: theme.border)) : null,
                       boxShadow: [
                         BoxShadow(
@@ -852,7 +852,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                        fontSize: 18,
                                        fontWeight: FontWeight.w800,
                                        letterSpacing: -0.3,
-                                       color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                                       color: AppColors.textPrimary,
                                      ),
                                    );
                                  },
@@ -881,7 +881,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                   if (ParkingDetailBackend.instance.totalSlots <= 0) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        backgroundColor: const Color(0xFFDC2626),
+                                        backgroundColor: AppColors.parkingDetail.statusClosed,
                                         content: Text('Belum ada slot parkir yang dialokasikan di lokasi ini.'.tr),
                                       ),
                                     );
@@ -948,7 +948,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
     required bool isDark,
   }) {
     final isSelected = _selectedVehicleRateType == typeKey;
-    final activeColor = typeKey == 'ev' ? const Color(0xFF17A18A) : const Color(0xFF114177);
+    final activeColor = typeKey == 'ev' ? AppColors.accentTeal : AppColors.primary;
     return GestureDetector(
       onTap: () => setState(() => _selectedVehicleRateType = typeKey),
       child: AnimatedContainer(
@@ -957,12 +957,12 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
         decoration: BoxDecoration(
           color: isSelected
               ? activeColor
-              : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF3F4F6)),
+              : AppColors.surfaceField,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected
                 ? activeColor
-                : (isDark ? const Color(0xFF334155) : const Color(0xFFE5E7EB)),
+                : AppColors.warmBorder,
           ),
         ),
         child: Row(
@@ -971,7 +971,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
             Icon(
               icon,
               size: 15,
-              color: isSelected ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF4B5563)),
+              color: isSelected ? Colors.white : AppColors.textSecondary,
             ),
             const SizedBox(width: 4),
             Text(
@@ -979,7 +979,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF4B5563)),
+                color: isSelected ? Colors.white : AppColors.textSecondary,
               ),
             ),
           ],
@@ -1021,17 +1021,16 @@ class _NavBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ThemeService.instance;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: isDark ? theme.card : AppColors.surfaceCard,
+          color: AppColors.surfaceCard,
           shape: BoxShape.circle,
           border: Border.all(
-            color: isDark ? theme.border : const Color(0xFFEAE5DC).withValues(alpha: 0.6),
+            color: AppColors.warmBorder,
           ),
           boxShadow: const [AppShadows.soft],
         ),
@@ -1061,7 +1060,7 @@ class _AmenityChip extends StatelessWidget {
         color: isDark ? theme.surfaceField : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? theme.border : const Color(0xFFE5E2DB),
+          color: AppColors.warmBorder,
         ),
       ),
       child: Row(
@@ -1069,7 +1068,7 @@ class _AmenityChip extends StatelessWidget {
           Icon(
             icon,
             size: 18,
-            color: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF45474A),
+            color: AppColors.parkingDetail.amenityIcon,
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -1078,7 +1077,7 @@ class _AmenityChip extends StatelessWidget {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                color: AppColors.textPrimary,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

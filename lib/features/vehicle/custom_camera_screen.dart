@@ -6,6 +6,7 @@ import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import '../../core/utils/stnk_expiry_formatter.dart';
+import '../../theme/app_colors.dart';
 import 'backend/custom_camera_backend.dart';
 
 class CustomCameraScreen extends StatefulWidget {
@@ -154,7 +155,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF141518),
+      backgroundColor: AppColors.camera.viewfinderOverlay,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -175,7 +176,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF047857),
+                      color: AppColors.camera.shieldGreen,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -197,14 +198,14 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.shield_outlined, size: 13, color: Color(0xFF34D399)),
+                        Icon(Icons.shield_outlined, size: 13, color: AppColors.camera.scannerGreen),
                         const SizedBox(width: 4),
                         Text(
                           'Gambar Tidak Disimpan',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF34D399),
+                            color: AppColors.camera.scannerGreen,
                           ),
                         ),
                       ],
@@ -226,7 +227,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                 subtitle,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
-                  color: const Color(0xFF94A3B8),
+                  color: AppColors.camera.cameraBtnMuted,
                   height: 1.4,
                 ),
               ),
@@ -236,9 +237,9 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0D0E11),
+                  color: AppColors.camera.cameraControlBar,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFF2E323B)),
+                  border: Border.all(color: AppColors.camera.viewfinderBorder),
                 ),
                 child: Row(
                   children: [
@@ -380,7 +381,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                     ),
                   )
                 : Container(
-                    color: const Color(0xFF141518),
+                    color: AppColors.camera.viewfinderOverlay,
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -403,7 +404,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                           Text(
                             'Foto hanya diolah di memori (tidak disimpan ke storage)',
                             style: GoogleFonts.plusJakartaSans(
-                              color: const Color(0xFF34D399),
+                              color: AppColors.camera.scannerGreen,
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                             ),
@@ -459,7 +460,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                       Text(
                         'Wajib 2x foto • Gambar tidak disimpan',
                         style: GoogleFonts.plusJakartaSans(
-                          color: const Color(0xFF34D399),
+                          color: AppColors.camera.scannerGreen,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                         ),
@@ -522,7 +523,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E2128),
+                      color: AppColors.camera.loadingDialogBg,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.white24),
                     ),
@@ -543,7 +544,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                         Text(
                           'In-memory OCR • Foto tidak disimpan',
                           style: GoogleFonts.plusJakartaSans(
-                            color: const Color(0xFF34D399),
+                            color: AppColors.camera.scannerGreen,
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                           ),
@@ -628,7 +629,7 @@ class _CustomCameraScreenState extends State<CustomCameraScreen> {
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white24),
                         ),
-                        child: const Icon(Icons.auto_fix_high, color: Color(0xFF34D399), size: 22),
+                        child: Icon(Icons.auto_fix_high, color: AppColors.camera.scannerGreen, size: 22),
                       ),
                       const SizedBox(height: 6),
                       Text(
@@ -682,7 +683,7 @@ class _ViewfinderPainter extends CustomPainter {
 
     // Garis sudut viewfinder
     final cornerPaint = Paint()
-      ..color = const Color(0xFF34D399)
+      ..color = AppColors.camera.scannerGreen
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.round;

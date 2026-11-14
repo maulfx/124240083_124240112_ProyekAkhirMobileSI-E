@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/network_security_service.dart';
 import '../services/language_service.dart';
+import '../../theme/app_colors.dart';
 
 /// Overlay Pop-up Pengaman Jaringan Global (User & Admin)
 /// Muncul otomatis di atas seluruh layar saat internet tidak tersedia,
@@ -20,10 +21,9 @@ class NoInternetOverlay extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        final cardBg = isDark ? const Color(0xFF1E232B) : Colors.white;
-        final titleColor = isDark ? Colors.white : const Color(0xFF1A1A18);
-        final descColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF5A5B60);
+        final cardBg = AppColors.surfaceCard;
+        final titleColor = AppColors.textPrimary;
+        final descColor = AppColors.textSecondary;
 
         return PopScope(
           canPop: false,
@@ -52,7 +52,7 @@ class NoInternetOverlay extends StatelessWidget {
                         color: cardBg,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                          color: AppColors.warmBorder,
                           width: 1.2,
                         ),
                         boxShadow: [
@@ -71,18 +71,18 @@ class NoInternetOverlay extends StatelessWidget {
                             width: 72,
                             height: 72,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFDE8E4),
+                              color: AppColors.system.offlineBadgeBg,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: const Color(0xFFFCA5A5),
+                                color: AppColors.system.offlineBadgeBorder,
                                 width: 2,
                               ),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Icon(
                                 Icons.wifi_off_rounded,
                                 size: 38,
-                                color: Color(0xFFD94B4B),
+                                color: AppColors.system.offlineIconRed,
                               ),
                             ),
                           ),
@@ -92,10 +92,10 @@ class NoInternetOverlay extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFDC2626).withValues(alpha: 0.1),
+                              color: AppColors.system.maintenanceRed.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(30),
                               border: Border.all(
-                                color: const Color(0xFFDC2626).withValues(alpha: 0.3),
+                                color: AppColors.system.maintenanceRed.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Row(
@@ -104,8 +104,8 @@ class NoInternetOverlay extends StatelessWidget {
                                 Container(
                                   width: 6,
                                   height: 6,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFDC2626),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.system.maintenanceRed,
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -115,7 +115,7 @@ class NoInternetOverlay extends StatelessWidget {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 10.5,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFFDC2626),
+                                    color: AppColors.system.maintenanceRed,
                                     letterSpacing: 0.8,
                                   ),
                                 ),
@@ -170,7 +170,7 @@ class NoInternetOverlay extends StatelessWidget {
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF114177),
+                                backgroundColor: AppColors.system.retryButton,
                                 foregroundColor: Colors.white,
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(vertical: 13),
@@ -203,7 +203,7 @@ class NoInternetOverlay extends StatelessWidget {
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFD94B4B),
+                                backgroundColor: AppColors.system.offlineIconRed,
                                 foregroundColor: Colors.white,
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(vertical: 13),
@@ -226,12 +226,12 @@ class NoInternetOverlay extends StatelessWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   if (service.isChecking) ...[
-                                    const SizedBox(
+                                    SizedBox(
                                       width: 14,
                                       height: 14,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF114177)),
+                                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.system.retryButton),
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -240,14 +240,14 @@ class NoInternetOverlay extends StatelessWidget {
                                       style: GoogleFonts.plusJakartaSans(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
-                                        color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177),
+                                        color: AppColors.system.retryButton,
                                       ),
                                     ),
                                   ] else ...[
                                     Icon(
                                       Icons.refresh_rounded,
                                       size: 16,
-                                      color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177),
+                                      color: AppColors.system.retryButton,
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
@@ -255,7 +255,7 @@ class NoInternetOverlay extends StatelessWidget {
                                       style: GoogleFonts.plusJakartaSans(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
-                                        color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177),
+                                        color: AppColors.system.retryButton,
                                         decoration: TextDecoration.underline,
                                       ),
                                     ),

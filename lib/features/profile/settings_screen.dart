@@ -12,6 +12,9 @@ import '../../core/services/language_service.dart';
 import '../../core/services/maintenance_service.dart';
 import '../../core/services/app_image_cache_service.dart';
 import 'backend/profile_backend.dart';
+import 'widgets/currency_selection_modal.dart';
+import 'widgets/parking_preference_modal.dart';
+import '../../theme/app_colors.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -84,8 +87,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       width: size,
       height: size,
-      decoration: const BoxDecoration(
-        color: Color(0xFF114177),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
         shape: BoxShape.circle,
       ),
       child: Center(
@@ -306,10 +309,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFC05621).withValues(alpha: 0.12),
+                  color: AppColors.secondary.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 30, color: const Color(0xFFC05621)),
+                child: Icon(icon, size: 30, color: AppColors.secondary),
               ),
               const SizedBox(height: 18),
               Text(
@@ -338,7 +341,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(ctx),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: ThemeService.instance.isDarkMode ? const Color(0xFF333C4A) : const Color(0xFF1C1C18),
+                    backgroundColor: AppColors.buttonPrimary,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -369,7 +372,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           message,
           style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF1C1C18),
+        backgroundColor: AppColors.primary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -378,652 +381,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
 
   void _showCurrencySelectionModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            final currencyService = CurrencyService.instance;
-            final currentCode = currencyService.currentCurrency;
-            const sampleAmount = 145000;
-            final theme = ThemeService.instance;
-            final isDark = theme.isDarkMode;
-
-            return Container(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.82,
-              ),
-              decoration: BoxDecoration(
-                color: theme.card,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-                border: isDark ? Border(top: BorderSide(color: theme.border)) : null,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 12),
-                  Center(
-                    child: Container(
-                      width: 44,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: theme.border,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Header
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 22),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 42,
-                              height: 42,
-                              decoration: BoxDecoration(
-                                color: isDark ? const Color(0xFF262C36) : const Color(0xFF1C1C18),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.currency_exchange,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Konversi Mata Uang',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 6,
-                                      height: 6,
-                                      decoration: const BoxDecoration(
-                                        color: Color(0xFF15803D),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      'Live API Real-Time Kurs',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: isDark ? const Color(0xFF4ADE80) : const Color(0xFF15803D),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        // Refresh button
-                        GestureDetector(
-                          onTap: () async {
-                            final success = await currencyService.fetchLatestRates();
-                            setModalState(() {});
-                            setState(() {});
-                            _showSuccessToast(
-                              success
-                                  ? 'Kurs real-time berhasil diperbarui!'
-                                  : 'Gagal memperbarui kurs live',
-                            );
-                          },
-                          child: Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF262C36) : const Color(0xFFECE7DC),
-                              shape: BoxShape.circle,
-                            ),
-                            child: currencyService.isLoading
-                                ? Padding(
-                                    padding: const EdgeInsets.all(8),
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                                    ),
-                                  )
-                                : Icon(
-                                    Icons.refresh,
-                                    size: 18,
-                                    color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                                  ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Toggle Switch for Currency Conversion
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E242B) : const Color(0xFFF1EEE7),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: currencyService.isConversionEnabled
-                              ? (isDark ? const Color(0xFF4ADE80) : const Color(0xFF15803D))
-                              : (isDark ? theme.border : const Color(0xFFE5E2DB)),
-                          width: currencyService.isConversionEnabled ? 1.5 : 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Aktifkan Konversi Kurs Asing',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  currencyService.isConversionEnabled
-                                      ? 'Konversi aktif di layar (DB tetap Rupiah murni)'
-                                      : 'Mati (Harga tampil apa adanya dalam Rupiah)',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 11,
-                                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Switch(
-                            value: currencyService.isConversionEnabled,
-                            activeThumbColor: const Color(0xFF15803D),
-                            onChanged: (val) async {
-                              await currencyService.toggleConversion(val);
-                              setModalState(() {});
-                              setState(() {});
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Simulation Card
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF1E242B), Color(0xFF2C353F)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(18),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'SIMULASI KONVERSI BIAYA',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF94A3B8),
-                                  letterSpacing: 0.8,
-                                ),
-                              ),
-                              Text(
-                                'Contoh: 1 Jam Parkir',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 10.5,
-                                  color: const Color(0xFFFDBA74),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
-                            children: [
-                              Text(
-                                currencyService.format(sampleAmount),
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFFCBD5E1),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                '(${currencyService.currentInfo.symbol})',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const Spacer(),
-                              Text(
-                                'Dasar: Rp 145.000',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 11,
-                                  color: const Color(0xFF94A3B8),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          Row(
-                            children: [
-                              Text(
-                                currencyService.getRateString('USD'),
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 10.5,
-                                  color: const Color(0xFFCBD5E1),
-                                ),
-                              ),
-                              const Spacer(),
-                              Text(
-                                'Terakhir: ${currencyService.lastUpdated != null ? "${currencyService.lastUpdated!.hour.toString().padLeft(2, "0")}:${currencyService.lastUpdated!.minute.toString().padLeft(2, "0")}" : "Tersimpan"}',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 10,
-                                  color: const Color(0xFF4ADE80),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Currency list
-                  Expanded(
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: CurrencyService.supportedCurrencies.length,
-                      separatorBuilder: (ctx, i) => const SizedBox(height: 8),
-                      itemBuilder: (context, index) {
-                        final info = CurrencyService.supportedCurrencies.values.elementAt(index);
-                        final code = info.code;
-                        final isSelected = code == currentCode;
-
-                        return GestureDetector(
-                          onTap: () async {
-                            await currencyService.setCurrency(code);
-                            setModalState(() {});
-                            setState(() {});
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                            }
-                            _showSuccessToast('Mata uang diubah ke $code (${info.name})');
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 160),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? (isDark ? const Color(0xFF262C36) : Colors.white)
-                                  : (isDark ? const Color(0xFF181C22) : const Color(0xFFF7F5EE)),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: isSelected
-                                    ? (isDark ? Colors.white : const Color(0xFF1C1C18))
-                                    : (isDark ? const Color(0xFF2D3542) : const Color(0xFFEBE6DC)),
-                                width: isSelected ? 1.5 : 1,
-                              ),
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.04),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ]
-                                  : null,
-                            ),
-                            child: Row(
-                              children: [
-                                Text(
-                                  info.flag,
-                                  style: const TextStyle(fontSize: 24),
-                                ),
-                                const SizedBox(width: 14),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            info.code,
-                                            style: GoogleFonts.plusJakartaSans(
-                                              fontSize: 14.5,
-                                              fontWeight: FontWeight.bold,
-                                              color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: isDark ? const Color(0xFF111418) : const Color(0xFFECE7DC),
-                                              borderRadius: BorderRadius.circular(6),
-                                            ),
-                                            child: Text(
-                                              info.symbol,
-                                              style: GoogleFonts.plusJakartaSans(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w700,
-                                                color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF1C1C18),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        info.name,
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 12,
-                                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF62615B),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        currencyService.getRateString(code),
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 10.5,
-                                          fontWeight: FontWeight.w600,
-                                          color: isDark ? const Color(0xFF64748B) : const Color(0xFF9E9B90),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  width: 22,
-                                  height: 22,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: isSelected
-                                        ? (isDark ? Colors.white : const Color(0xFF1C1C18))
-                                        : Colors.transparent,
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? (isDark ? Colors.white : const Color(0xFF1C1C18))
-                                          : (isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1)),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: isSelected
-                                      ? Icon(
-                                          Icons.check,
-                                          size: 14,
-                                          color: isDark ? Colors.black : Colors.white,
-                                        )
-                                      : null,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-                ],
-              ),
-            );
-          },
-        );
-      },
+    CurrencySelectionModal.show(
+      context,
+      onToast: _showSuccessToast,
+      onUpdated: () => setState(() {}),
     );
   }
 
   void _showParkingPrefSelection(BuildContext context) {
-    final theme = ThemeService.instance;
-    final isDark = theme.isDarkMode;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: isDark ? theme.card : Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                border: isDark ? Border(top: BorderSide(color: theme.border)) : null,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        color: isDark ? theme.border : const Color(0xFFE5E2DB),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-                  Text(
-                    'Preferensi Parkir',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF1A1A18),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // SUV
-                  GestureDetector(
-                    onTap: () {
-                      setState(() => _selectedParkingPref = 'Mobil SUV');
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      height: 64,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: _selectedParkingPref == 'Mobil SUV'
-                            ? (isDark ? theme.surfaceField : const Color(0xFFF1EEE7))
-                            : (isDark ? theme.card : Colors.transparent),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: _selectedParkingPref == 'Mobil SUV'
-                              ? (isDark ? Colors.white : const Color(0xFF1C1C18))
-                              : (isDark ? theme.border : Colors.transparent),
-                          width: _selectedParkingPref == 'Mobil SUV' ? 1.5 : 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.directions_car,
-                            color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              'Golongan Mobil SUV',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                              ),
-                            ),
-                          ),
-                          if (_selectedParkingPref == 'Mobil SUV')
-                            Icon(
-                              Icons.check_circle,
-                              color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Sedan/City
-                  GestureDetector(
-                    onTap: () {
-                      setState(() => _selectedParkingPref = 'Mobil Sedan/City');
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      height: 64,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: _selectedParkingPref == 'Mobil Sedan/City'
-                            ? (isDark ? theme.surfaceField : const Color(0xFFF1EEE7))
-                            : (isDark ? theme.card : Colors.transparent),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: _selectedParkingPref == 'Mobil Sedan/City'
-                              ? (isDark ? Colors.white : const Color(0xFF1C1C18))
-                              : (isDark ? theme.border : Colors.transparent),
-                          width: _selectedParkingPref == 'Mobil Sedan/City' ? 1.5 : 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.directions_car,
-                            color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              'Golongan Mobil Sedan/City',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                              ),
-                            ),
-                          ),
-                          if (_selectedParkingPref == 'Mobil Sedan/City')
-                            Icon(
-                              Icons.check_circle,
-                              color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Motor Roda 2
-                  GestureDetector(
-                    onTap: () {
-                      setState(() => _selectedParkingPref = 'Motor Roda 2');
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      height: 64,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: _selectedParkingPref == 'Motor Roda 2'
-                            ? (isDark ? theme.surfaceField : const Color(0xFFF1EEE7))
-                            : (isDark ? theme.card : Colors.transparent),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: _selectedParkingPref == 'Motor Roda 2'
-                              ? (isDark ? Colors.white : const Color(0xFF1C1C18))
-                              : (isDark ? theme.border : Colors.transparent),
-                          width: _selectedParkingPref == 'Motor Roda 2' ? 1.5 : 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.two_wheeler,
-                            color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              'Motor Roda 2',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                              ),
-                            ),
-                          ),
-                          if (_selectedParkingPref == 'Motor Roda 2')
-                            Icon(
-                              Icons.check_circle,
-                              color: isDark ? Colors.white : const Color(0xFF1C1C18),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 16),
-                ],
-              ),
-            );
-          },
-        );
-      },
+    ParkingPreferenceModal.show(
+      context,
+      currentPref: _selectedParkingPref,
+      onSelected: (val) => setState(() => _selectedParkingPref = val),
     );
   }
-
   void _showLanguageSelection(BuildContext context) {
     LanguageService.showLanguageSelectionModal(context);
   }
@@ -1073,7 +444,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Icon(
                             Icons.settings, 
                             size: 24, 
-                            color: ThemeService.instance.isDarkMode ? const Color(0xFF60A5FA) : const Color(0xFF114177),
+                            color: AppColors.auth.linkBlue,
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -1107,7 +478,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         BoxShadow(
                           color: ThemeService.instance.isDarkMode 
                               ? Colors.black.withValues(alpha: 0.25) 
-                              : const Color(0xFF1C1D1F).withValues(alpha: 0.06), 
+                              : AppColors.warmBorder.withValues(alpha: 0.2), 
                           blurRadius: 32, 
                           offset: const Offset(0, 12),
                         ),
@@ -1133,8 +504,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               bottom: 0, right: 0,
                               child: Container(
                                 width: 16, height: 16,
-                                decoration: BoxDecoration(color: const Color(0xFFBBEED4), shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 2)),
-                                child: const Icon(Icons.check, size: 10, color: Color(0xFF1F4F3C)),
+                                decoration: BoxDecoration(color: AppColors.slot.tertiaryFixed, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 2)),
+                                child: Icon(Icons.check, size: 10, color: AppColors.slot.ev),
                               ),
                             ),
                           ],
@@ -1158,7 +529,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  const Icon(Icons.verified, size: 16, color: Color(0xFF9A442D)),
+                                  Icon(Icons.verified, size: 16, color: AppColors.warmTerracotta),
                                 ],
                               ),
                               const SizedBox(height: 2),
@@ -1233,7 +604,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       border: Border.all(color: ThemeService.instance.border.withValues(alpha: 0.6)),
                       boxShadow: [
                         BoxShadow(
-                          color: ThemeService.instance.isDarkMode ? Colors.black.withValues(alpha: 0.2) : const Color(0xFF1C1D1F).withValues(alpha: 0.03), 
+                          color: ThemeService.instance.isDarkMode ? Colors.black.withValues(alpha: 0.2) : AppColors.warmBorder.withValues(alpha: 0.2), 
                           blurRadius: 12, 
                           offset: const Offset(0, 4)
                         ),
@@ -1270,25 +641,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                             if (isApproved) {
                               kycSubtitle = 'Terverifikasi';
-                              kycSubtitleColor = const Color(0xFF10B981);
+                              kycSubtitleColor = AppColors.profile.kycVerified;
                               kycActionWidget = Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                                  color: AppColors.profile.kycVerified.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.4)),
+                                  border: Border.all(color: AppColors.profile.kycVerified.withValues(alpha: 0.4)),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.verified, size: 14, color: Color(0xFF10B981)),
+                                    Icon(Icons.verified, size: 14, color: AppColors.profile.kycVerified),
                                     const SizedBox(width: 4),
                                     Text(
                                       'TERVERIFIKASI',
                                       style: GoogleFonts.plusJakartaSans(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
-                                        color: const Color(0xFF10B981),
+                                        color: AppColors.profile.kycVerified,
                                       ),
                                     ),
                                   ],
@@ -1296,33 +667,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               );
                               kycOnTap = () {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Identitas e-KTP Anda telah terverifikasi resmi oleh Super Admin.'),
-                                    backgroundColor: Color(0xFF10B981),
+                                  SnackBar(
+                                    content: const Text('Identitas e-KTP Anda telah terverifikasi resmi oleh Super Admin.'),
+                                    backgroundColor: AppColors.profile.kycVerified,
                                   ),
                                 );
                               };
                             } else if (isPending) {
                               kycSubtitle = 'Menunggu Verifikasi (Sedang Ditinjau)';
-                              kycSubtitleColor = const Color(0xFFF59E0B);
+                              kycSubtitleColor = AppColors.profile.kycPending;
                               kycActionWidget = Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
+                                  color: AppColors.profile.kycPending.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.4)),
+                                  border: Border.all(color: AppColors.profile.kycPending.withValues(alpha: 0.4)),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.schedule, size: 13, color: Color(0xFFF59E0B)),
+                                    Icon(Icons.schedule, size: 13, color: AppColors.profile.kycPending),
                                     const SizedBox(width: 4),
                                     Text(
                                       'DITINJAU',
                                       style: GoogleFonts.plusJakartaSans(
                                         fontSize: 10.5,
                                         fontWeight: FontWeight.bold,
-                                        color: const Color(0xFFF59E0B),
+                                        color: AppColors.profile.kycPending,
                                       ),
                                     ),
                                   ],
@@ -1330,33 +701,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               );
                               kycOnTap = () {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Pengajuan verifikasi e-KTP Anda sedang dalam antrean review oleh Super Admin.'),
-                                    backgroundColor: Color(0xFFF59E0B),
+                                  SnackBar(
+                                    content: const Text('Pengajuan verifikasi e-KTP Anda sedang dalam antrean review oleh Super Admin.'),
+                                    backgroundColor: AppColors.profile.kycPending,
                                   ),
                                 );
                               };
                             } else if (isRejected) {
                               kycSubtitle = 'Ditolak (Ketuk untuk Ajukan Ulang)';
-                              kycSubtitleColor = const Color(0xFFEF4444);
+                              kycSubtitleColor = AppColors.profile.kycRejected;
                               kycActionWidget = Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+                                  color: AppColors.profile.kycRejected.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.4)),
+                                  border: Border.all(color: AppColors.profile.kycRejected.withValues(alpha: 0.4)),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.error_outline, size: 13, color: Color(0xFFEF4444)),
+                                    Icon(Icons.error_outline, size: 13, color: AppColors.profile.kycRejected),
                                     const SizedBox(width: 4),
                                     Text(
                                       'AJUKAN ULANG',
                                       style: GoogleFonts.plusJakartaSans(
                                         fontSize: 10,
                                         fontWeight: FontWeight.bold,
-                                        color: const Color(0xFFEF4444),
+                                        color: AppColors.profile.kycRejected,
                                       ),
                                     ),
                                   ],
@@ -1403,7 +774,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       border: Border.all(color: ThemeService.instance.border.withValues(alpha: 0.6)),
                       boxShadow: [
                         BoxShadow(
-                          color: ThemeService.instance.isDarkMode ? Colors.black.withValues(alpha: 0.2) : const Color(0xFF1C1D1F).withValues(alpha: 0.03), 
+                          color: ThemeService.instance.isDarkMode ? Colors.black.withValues(alpha: 0.2) : AppColors.warmBorder.withValues(alpha: 0.2), 
                           blurRadius: 12, 
                           offset: const Offset(0, 4)
                         ),
@@ -1415,12 +786,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           icon: Icons.language,
                           title: 'Bahasa'.tr,
                           subtitle: LanguageService.instance.isEnglish ? 'English' : 'Bahasa Indonesia',
-                          actionWidget: Icon(Icons.chevron_right, color: ThemeService.instance.isDarkMode ? Colors.white70 : const Color(0xFF1C1C18)),
+                          actionWidget: Icon(Icons.chevron_right, color: AppColors.textPrimary),
                           onTap: () => _showLanguageSelection(context),
                         ),
                         Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: Divider(color: ThemeService.instance.divider, height: 1)),
                           _SettingActionRow(
-                            icon: Icons.local_parking, title: 'Preferensi Parkir', subtitle: _selectedParkingPref, actionWidget: const Icon(Icons.chevron_right, color: Color(0xFF1C1C18)),
+                            icon: Icons.local_parking, title: 'Preferensi Parkir', subtitle: _selectedParkingPref, actionWidget: Icon(Icons.chevron_right, color: AppColors.textPrimary),
                             onTap: () => _showParkingPrefSelection(context),
                           ),
                           Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: Divider(color: ThemeService.instance.divider, height: 1)),
@@ -1437,8 +808,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: CurrencyService.instance.isConversionEnabled
-                                      ? const Color(0xFFDCFCE7)
-                                      : const Color(0xFFF1EEE7),
+                                      ? AppColors.home.promoTagBg
+                                      : AppColors.surfaceField,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Text(
@@ -1449,13 +820,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: CurrencyService.instance.isConversionEnabled
-                                        ? const Color(0xFF15803D)
-                                        : const Color(0xFF1C1C18),
+                                        ? AppColors.home.promoTagText
+                                        : AppColors.textPrimary,
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(Icons.chevron_right, size: 16, color: Color(0xFF1C1C18)),
+                              Icon(Icons.chevron_right, size: 16, color: AppColors.textPrimary),
                             ],
                           ),
                           onTap: () => _showCurrencySelectionModal(context),
@@ -1493,7 +864,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       border: Border.all(color: ThemeService.instance.border.withValues(alpha: 0.6)),
                       boxShadow: [
                         BoxShadow(
-                          color: ThemeService.instance.isDarkMode ? Colors.black.withValues(alpha: 0.2) : const Color(0xFF1C1D1F).withValues(alpha: 0.03), 
+                          color: ThemeService.instance.isDarkMode ? Colors.black.withValues(alpha: 0.2) : AppColors.warmBorder.withValues(alpha: 0.2), 
                           blurRadius: 12, 
                           offset: const Offset(0, 4)
                         ),
@@ -1527,7 +898,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 messenger.showSnackBar(
                                   SnackBar(
                                     content: Text('Cache perangkat berhasil dibersihkan!'.tr),
-                                    backgroundColor: const Color(0xFF17A18A),
+                                    backgroundColor: AppColors.accentTeal,
                                     behavior: SnackBarBehavior.floating,
                                     duration: const Duration(seconds: 2),
                                   ),
@@ -1537,7 +908,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                                 decoration: BoxDecoration(color: ThemeService.instance.chipBg, borderRadius: BorderRadius.circular(16)),
                                 child: _isCacheCleared 
-                                  ? Row(children: [const Icon(Icons.done, size: 14, color: Color(0xFF45474A)), const SizedBox(width: 4), Text('Beres'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF45474A)))])
+                                  ? Row(children: [Icon(Icons.done, size: 14, color: AppColors.textSecondary), const SizedBox(width: 4), Text('Beres'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary))])
                                   : Text('Bersihkan'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: ThemeService.instance.textPrimary)),
                               ),
                             ),
@@ -1557,7 +928,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.token, size: 14, color: Color(0xFF45474A)),
+                            Icon(Icons.token, size: 14, color: AppColors.textSecondary),
                             const SizedBox(width: 6),
                             Text('Made by Love 🗿', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: ThemeService.instance.textSecondary)),
                           ],
@@ -1661,11 +1032,9 @@ class _SettingToggleRow extends StatelessWidget {
           value: value,
           onChanged: onChanged,
           activeThumbColor: Colors.white,
-          activeTrackColor: const Color(0xFFC05621),
+          activeTrackColor: AppColors.secondary,
           inactiveThumbColor: Colors.white,
-          inactiveTrackColor: ThemeService.instance.isDarkMode
-              ? const Color(0xFF333C4A)
-              : const Color(0xFFD1D5DB),
+          inactiveTrackColor: AppColors.warmBorder,
           trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
         ),
       ],

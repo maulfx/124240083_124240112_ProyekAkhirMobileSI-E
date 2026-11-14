@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'app_colors.dart';
 
 class AppTheme {
   static ThemeData get light {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      // ─── [USER] WARNA BACKGROUND GLOBAL LIGHT MODE ───
-      scaffoldBackgroundColor: const Color(0xFFFCF9F2), // <-- Ubah warna Background Global Scaffold (Light Mode)
-      cardColor: Colors.white,
-      dividerColor: const Color(0xFFF1EEE7),
+      // Terikat langsung ke AppColors (Single Source of Truth)
+      scaffoldBackgroundColor: AppColors.backgroundLight,
+      cardColor: AppColors.surfaceCardLight,
+      dividerColor: AppColors.warmBorderLight,
       colorScheme: const ColorScheme.light(
         primary: Color(0xFF1C1C18),
         secondary: Color(0xFFC05621),
@@ -93,10 +94,10 @@ class AppTheme {
       return ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        // ─── [USER] WARNA BACKGROUND GLOBAL DARK MODE ───
-        scaffoldBackgroundColor: const Color(0xFF111418), // <-- Ubah warna Background Global Scaffold (Dark Mode)
-        cardColor: const Color(0xFF1E232B),
-        dividerColor: const Color(0xFF252B35),
+        // Terikat langsung ke AppColors (Single Source of Truth)
+        scaffoldBackgroundColor: AppColors.backgroundDark,
+        cardColor: AppColors.surfaceCardDark,
+        dividerColor: AppColors.warmBorderDark,
         colorScheme: const ColorScheme.dark(
           primary: Color(0xFFF8FAFC),
           secondary: Color(0xFFE07A5F),

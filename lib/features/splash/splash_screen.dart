@@ -6,6 +6,7 @@ import '../../core/services/session_service.dart';
 import '../../core/services/sound_service.dart';
 import '../auth/login_screen.dart';
 import '../home/home_screen.dart';
+import '../../theme/app_colors.dart';
 
 /// SplashScreen dengan rendering GPU Hardware-Accelerated:
 /// - Menggunakan RepaintBoundary untuk mengalokasikan tekstur GPU layer terisolasi.
@@ -106,7 +107,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF070B12), // Deep Obsidian Canvas
+      backgroundColor: AppColors.splash.splashCanvasBg, // Deep Obsidian Canvas
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: _navigateToDestination, // Tap to skip
@@ -168,19 +169,19 @@ class _SplashScreenState extends State<SplashScreen>
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: const Color(0xFF0F172A).withValues(alpha: 0.85),
+                                  color: AppColors.splash.logoCenterBg.withValues(alpha: 0.85),
                                   border: Border.all(
-                                    color: const Color(0xFFF97316).withValues(alpha: 0.6),
+                                    color: AppColors.splash.ambientOrange.withValues(alpha: 0.6),
                                     width: 2.2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFFF97316).withValues(alpha: 0.4),
+                                      color: AppColors.splash.ambientOrange.withValues(alpha: 0.4),
                                       blurRadius: 30,
                                       spreadRadius: 4,
                                     ),
                                     BoxShadow(
-                                      color: const Color(0xFF0D9488).withValues(alpha: 0.35),
+                                      color: AppColors.splash.ambientTeal.withValues(alpha: 0.35),
                                       blurRadius: 45,
                                       spreadRadius: 2,
                                     ),
@@ -189,10 +190,10 @@ class _SplashScreenState extends State<SplashScreen>
                                 child: Image.asset(
                                   'assets/images/app_icon.png',
                                   fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) => const Icon(
+                                  errorBuilder: (context, error, stackTrace) => Icon(
                                     Icons.local_parking_rounded,
                                     size: 55,
-                                    color: Color(0xFFF97316),
+                                    color: AppColors.splash.ambientOrange,
                                   ),
                                 ),
                               ),
@@ -208,7 +209,7 @@ class _SplashScreenState extends State<SplashScreen>
                                   color: Colors.white,
                                   shadows: [
                                     Shadow(
-                                      color: const Color(0xFFF97316).withValues(alpha: 0.6),
+                                      color: AppColors.splash.ambientOrange.withValues(alpha: 0.6),
                                       blurRadius: 18,
                                     ),
                                   ],
@@ -336,8 +337,8 @@ class _GpuFluidVortexPainter extends CustomPainter {
 
       // Warna spiral bergantian dari Teal ke Sunset Orange
       final color = ring % 2 == 0
-          ? const Color(0xFF0D9488).withValues(alpha: 0.18 * (1.0 - ringProgress))
-          : const Color(0xFFF97316).withValues(alpha: 0.22 * (1.0 - ringProgress));
+          ? AppColors.splash.ambientTeal.withValues(alpha: 0.18 * (1.0 - ringProgress))
+          : AppColors.splash.ambientOrange.withValues(alpha: 0.22 * (1.0 - ringProgress));
 
       vortexPaint.color = color;
       vortexPaint.strokeWidth = 3.5 + (ring * 1.5);
@@ -373,8 +374,8 @@ class _GpuFluidVortexPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          const Color(0xFF0D9488).withValues(alpha: 0.45),
-          const Color(0xFF064E3B).withValues(alpha: 0.85),
+          AppColors.splash.waveTop.withValues(alpha: 0.45),
+          AppColors.splash.waveBottom.withValues(alpha: 0.85),
         ],
       ).createShader(Rect.fromLTWH(0, baseElevation - 30, w, h - baseElevation + 30));
 
@@ -409,9 +410,9 @@ class _GpuFluidVortexPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          const Color(0xFFF97316).withValues(alpha: 0.70 * surgeProgress),
-          const Color(0xFFC05621).withValues(alpha: 0.85 * surgeProgress),
-          const Color(0xFF7C2D12).withValues(alpha: 0.95 * surgeProgress),
+          AppColors.splash.ambientOrange.withValues(alpha: 0.70 * surgeProgress),
+          AppColors.splash.ambientDarkOrange.withValues(alpha: 0.85 * surgeProgress),
+          AppColors.splash.ambientDeepRust.withValues(alpha: 0.95 * surgeProgress),
         ],
         stops: const [0.0, 0.45, 1.0],
       ).createShader(Rect.fromLTWH(0, surgeHeight - 35, w, h - surgeHeight + 35));
@@ -439,8 +440,8 @@ class _GpuFluidVortexPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          const Color(0xFFFBBF24).withValues(alpha: 0.60 * surgeProgress),
-          const Color(0xFFF59E0B).withValues(alpha: 0.35 * surgeProgress),
+          AppColors.splash.ambientGold.withValues(alpha: 0.60 * surgeProgress),
+          AppColors.splash.ambientAmber.withValues(alpha: 0.35 * surgeProgress),
           Colors.transparent,
         ],
       ).createShader(Rect.fromLTWH(0, crestHeight - 20, w, 60));
@@ -465,10 +466,10 @@ class _GpuFluidVortexPainter extends CustomPainter {
 
       // Warna bertransisi antara Orange, Cyan, dan Amber
       final color = (b.hueOffset % 3 == 0)
-          ? const Color(0xFFF97316).withValues(alpha: 0.55)
+          ? AppColors.splash.ambientOrange.withValues(alpha: 0.55)
           : (b.hueOffset % 3 == 1)
-              ? const Color(0xFF0D9488).withValues(alpha: 0.50)
-              : const Color(0xFFF59E0B).withValues(alpha: 0.60);
+              ? AppColors.splash.ambientTeal.withValues(alpha: 0.50)
+              : AppColors.splash.ambientAmber.withValues(alpha: 0.60);
 
       bubblePaint.color = color;
       canvas.drawCircle(Offset(x, y), b.size, bubblePaint);

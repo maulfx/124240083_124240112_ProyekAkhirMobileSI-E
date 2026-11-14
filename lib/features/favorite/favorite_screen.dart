@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_colors.dart';
 import '../../core/services/theme_service.dart';
 import '../../core/services/currency_service.dart';
 import '../../core/services/language_service.dart';
@@ -60,12 +61,12 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         final isDark = theme.isDarkMode;
         final backend = FavoriteBackend.instance;
 
-        final bg = isDark ? theme.bg : Colors.white;
-        final textMain = isDark ? Colors.white : const Color(0xFF1F1F1F);
-        final textSub = isDark ? theme.textMuted : const Color(0xFF6B7280);
-        final cardBg = isDark ? theme.card : Colors.white;
-        final cardBorder = isDark ? theme.border : const Color(0xFFF3F4F6);
-        final searchBg = isDark ? theme.surfaceField : const Color(0xFFF3F4F6);
+        final bg = AppColors.background;
+        final textMain = AppColors.textPrimary;
+        final textSub = AppColors.textSecondary;
+        final cardBg = AppColors.surfaceCard;
+        final cardBorder = AppColors.warmBorder;
+        final searchBg = AppColors.surfaceField;
 
         final allFavorites = backend.favorites;
         final displayedFavorites = _searchQuery.isEmpty
@@ -136,7 +137,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     ? Center(
                         child: CircularProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177),
+                            AppColors.favorite.filterChipActiveText,
                           ),
                         ),
                       )
@@ -151,13 +152,13 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                     width: 72,
                                     height: 72,
                                     decoration: BoxDecoration(
-                                      color: isDark ? const Color(0xFF1E293B) : const Color(0xFFEFF6FF),
+                                      color: AppColors.favorite.filterChipActiveBg,
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       Icons.favorite_border_rounded,
                                       size: 36,
-                                      color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177),
+                                      color: AppColors.favorite.filterChipActiveText,
                                     ),
                                   ),
                                   const SizedBox(height: 20),
@@ -248,9 +249,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                   ),
                                                 ),
                                                 IconButton(
-                                                  icon: const Icon(
+                                                  icon: Icon(
                                                     Icons.favorite,
-                                                    color: Color(0xFFEF4444),
+                                                    color: AppColors.favorite.activeHeart,
                                                     size: 20,
                                                   ),
                                                   padding: EdgeInsets.zero,
@@ -281,12 +282,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                                   decoration: BoxDecoration(
                                                     color: isEv
-                                                        ? (isDark
-                                                            ? const Color(0xFF064E3B).withValues(alpha: 0.5)
-                                                            : const Color(0xFFDEF7EC))
-                                                        : (isDark
-                                                            ? const Color(0xFF1E3A8A).withValues(alpha: 0.5)
-                                                            : const Color(0xFFE1EFFE)),
+                                                        ? AppColors.favorite.badgeEcoBg
+                                                        : AppColors.favorite.badgeFastBg,
                                                     borderRadius: BorderRadius.circular(6),
                                                   ),
                                                   child: Text(
@@ -295,8 +292,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                       fontSize: 10,
                                                       fontWeight: FontWeight.w600,
                                                       color: isEv
-                                                          ? (isDark ? const Color(0xFF6EE7B7) : const Color(0xFF03543F))
-                                                          : (isDark ? const Color(0xFF93C5FD) : const Color(0xFF1E429F)),
+                                                          ? AppColors.favorite.badgeEcoText
+                                                          : AppColors.favorite.badgeFastText,
                                                     ),
                                                   ),
                                                 ),
@@ -309,7 +306,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                     child: Container(
                                                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                                                       decoration: BoxDecoration(
-                                                        color: const Color(0xFF1A73E8),
+                                                        color: AppColors.favorite.verifiedBadge,
                                                         borderRadius: BorderRadius.circular(8),
                                                       ),
                                                       child: Text(

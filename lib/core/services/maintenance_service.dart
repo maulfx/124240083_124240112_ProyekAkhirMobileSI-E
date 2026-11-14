@@ -7,6 +7,7 @@ import 'notification_service.dart';
 import 'session_service.dart';
 import '../../main.dart' show navigatorKey;
 import '../../features/auth/login_screen.dart';
+import '../../theme/app_colors.dart';
 
 /// Service sentral untuk mengelola status Maintenance Global, Mode Peringatan, dan Modular Platform
 class MaintenanceService extends ChangeNotifier {
@@ -344,7 +345,7 @@ class MaintenanceService extends ChangeNotifier {
         s._activeDialogContext = ctx;
         bool isChecking = false;
         String? feedbackMessage;
-        Color feedbackColor = const Color(0xFFDC2626);
+        Color feedbackColor = AppColors.system.maintenanceRed;
 
         return PopScope(
           canPop: false,
@@ -363,20 +364,20 @@ class MaintenanceService extends ChangeNotifier {
                       width: 72,
                       height: 72,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFDE8E4),
+                        color: AppColors.system.maintenanceBg,
                         shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFFFCA5A5), width: 2),
+                        border: Border.all(color: AppColors.system.maintenanceBorder, width: 2),
                       ),
-                      child: const Icon(Icons.build_circle_rounded, size: 40, color: Color(0xFFD94B4B)),
+                      child: Icon(Icons.build_circle_rounded, size: 40, color: AppColors.system.maintenanceRed),
                     ),
                     const SizedBox(height: 18),
                     // Badge Status
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFDC2626).withValues(alpha: 0.1),
+                        color: AppColors.system.maintenanceRed.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: const Color(0xFFDC2626).withValues(alpha: 0.3)),
+                        border: Border.all(color: AppColors.system.maintenanceRed.withValues(alpha: 0.3)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -384,7 +385,7 @@ class MaintenanceService extends ChangeNotifier {
                           Container(
                             width: 6,
                             height: 6,
-                            decoration: const BoxDecoration(color: Color(0xFFDC2626), shape: BoxShape.circle),
+                            decoration: BoxDecoration(color: AppColors.system.maintenanceRed, shape: BoxShape.circle),
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -392,7 +393,7 @@ class MaintenanceService extends ChangeNotifier {
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFDC2626),
+                              color: AppColors.system.maintenanceRed,
                               letterSpacing: 0.8,
                             ),
                           ),
@@ -407,7 +408,7 @@ class MaintenanceService extends ChangeNotifier {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1A1A18),
+                        color: AppColors.textPrimary,
                         height: 1.3,
                       ),
                     ),
@@ -418,7 +419,7 @@ class MaintenanceService extends ChangeNotifier {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 13,
-                        color: const Color(0xFF5A5B60),
+                        color: AppColors.textSecondary,
                         height: 1.5,
                       ),
                     ),
@@ -428,14 +429,14 @@ class MaintenanceService extends ChangeNotifier {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
+                          color: AppColors.system.adminLogBg,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                          border: Border.all(color: AppColors.system.adminLogBorder),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.access_time_filled, size: 16, color: Color(0xFF475569)),
+                            Icon(Icons.access_time_filled, size: 16, color: AppColors.textSecondary),
                             const SizedBox(width: 8),
                             Flexible(
                               child: Text(
@@ -443,7 +444,7 @@ class MaintenanceService extends ChangeNotifier {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF334155),
+                                  color: AppColors.system.adminLogText,
                                 ),
                               ),
                             ),
@@ -502,7 +503,7 @@ class MaintenanceService extends ChangeNotifier {
                                             'Status normal terverifikasi. Layanan aplikasi kembali beroperasi!',
                                             style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
                                           ),
-                                          backgroundColor: const Color(0xFF10B981),
+                                          backgroundColor: AppColors.system.onlineGreen,
                                           behavior: SnackBarBehavior.floating,
                                         ),
                                       );
@@ -512,7 +513,7 @@ class MaintenanceService extends ChangeNotifier {
                                     setDialogState(() {
                                       isChecking = false;
                                       feedbackMessage = 'Sistem masih dalam pemeliharaan terjadwal. Harap menunggu hingga perbaikan selesai.';
-                                      feedbackColor = const Color(0xFFDC2626);
+                                      feedbackColor = AppColors.system.maintenanceRed;
                                     });
                                   }
                                 } catch (e) {
@@ -520,7 +521,7 @@ class MaintenanceService extends ChangeNotifier {
                                   setDialogState(() {
                                     isChecking = false;
                                     feedbackMessage = 'Gagal memeriksa status jaringan. Pembatasan tetap diberlakukan demi kestabilan.';
-                                    feedbackColor = const Color(0xFFDC2626);
+                                    feedbackColor = AppColors.system.maintenanceRed;
                                   });
                                 }
                               },
@@ -536,7 +537,7 @@ class MaintenanceService extends ChangeNotifier {
                           style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1C1D1F),
+                          backgroundColor: AppColors.system.maintenanceBtnBg,
                           padding: const EdgeInsets.symmetric(vertical: 13),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
@@ -560,13 +561,13 @@ class MaintenanceService extends ChangeNotifier {
                           );
                         }
                       },
-                      icon: const Icon(Icons.logout, size: 15, color: Color(0xFF76777B)),
+                      icon: Icon(Icons.logout, size: 15, color: AppColors.textSecondary),
                       label: Text(
                         'Keluar Akun (Ke Halaman Masuk / Portal Admin)',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF76777B),
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ),
@@ -605,20 +606,20 @@ class MaintenanceService extends ChangeNotifier {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF3C7),
+                color: AppColors.system.warningBg,
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFFDE68A), width: 2),
+                border: Border.all(color: AppColors.system.warningBorder, width: 2),
               ),
-              child: const Icon(Icons.info_outline_rounded, size: 38, color: Color(0xFFD97706)),
+              child: Icon(Icons.info_outline_rounded, size: 38, color: AppColors.system.warningYellow),
             ),
             const SizedBox(height: 18),
             // Badge Status
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFD97706).withValues(alpha: 0.12),
+                color: AppColors.system.warningYellow.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: const Color(0xFFD97706).withValues(alpha: 0.3)),
+                border: Border.all(color: AppColors.system.warningYellow.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -626,7 +627,7 @@ class MaintenanceService extends ChangeNotifier {
                   Container(
                     width: 6,
                     height: 6,
-                    decoration: const BoxDecoration(color: Color(0xFFD97706), shape: BoxShape.circle),
+                    decoration: BoxDecoration(color: AppColors.system.warningYellow, shape: BoxShape.circle),
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -634,7 +635,7 @@ class MaintenanceService extends ChangeNotifier {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFFD97706),
+                      color: AppColors.system.warningYellow,
                       letterSpacing: 0.8,
                     ),
                   ),
@@ -649,7 +650,7 @@ class MaintenanceService extends ChangeNotifier {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF1A1A18),
+                color: AppColors.textPrimary,
                 height: 1.3,
               ),
             ),
@@ -660,7 +661,7 @@ class MaintenanceService extends ChangeNotifier {
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
-                color: const Color(0xFF5A5B60),
+                color: AppColors.textSecondary,
                 height: 1.5,
               ),
             ),
@@ -671,7 +672,7 @@ class MaintenanceService extends ChangeNotifier {
               child: ElevatedButton(
                 onPressed: () => Navigator.of(ctx).pop(),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1C1D1F),
+                  backgroundColor: AppColors.system.maintenanceBtnBg,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 13),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -713,10 +714,10 @@ class MaintenanceService extends ChangeNotifier {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFFEF3C7),
+                color: AppColors.system.warningBg,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: const Color(0xFFD97706), size: 24),
+              child: Icon(icon, color: AppColors.system.warningYellow, size: 24),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -726,7 +727,7 @@ class MaintenanceService extends ChangeNotifier {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD97706).withValues(alpha: 0.12),
+                      color: AppColors.system.warningYellow.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
@@ -734,7 +735,7 @@ class MaintenanceService extends ChangeNotifier {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 9.5,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFFD97706),
+                        color: AppColors.system.warningYellow,
                       ),
                     ),
                   ),
@@ -744,7 +745,7 @@ class MaintenanceService extends ChangeNotifier {
                     style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: const Color(0xFF1A1A18),
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ],
@@ -761,27 +762,27 @@ class MaintenanceService extends ChangeNotifier {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
                 height: 1.45,
-                color: const Color(0xFF4A4B4F),
+                color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: AppColors.system.adminLogBg,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: AppColors.system.adminLogBorder),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.info_outline, size: 16, color: Color(0xFF0F766E)),
+                  Icon(Icons.info_outline, size: 16, color: AppColors.accentTeal),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Fitur lain pada aplikasi tetap dapat beroperasi normal.',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 11.5,
-                        color: const Color(0xFF0F766E),
+                        color: AppColors.accentTeal,
                         fontWeight: FontWeight.w500,
                         height: 1.35,
                       ),
@@ -798,7 +799,7 @@ class MaintenanceService extends ChangeNotifier {
             child: ElevatedButton(
               onPressed: () => Navigator.of(ctx).pop(),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1C1D1F),
+                backgroundColor: AppColors.system.maintenanceBtnBg,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 padding: const EdgeInsets.symmetric(vertical: 12),

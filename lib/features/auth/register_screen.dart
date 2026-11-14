@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/services/session_service.dart';
 import '../../core/services/theme_service.dart';
+import '../../theme/app_colors.dart';
 import '../home/backend/home_backend.dart';
 import '../home/home_screen.dart';
 import '../profile/backend/profile_backend.dart';
@@ -193,7 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Registrasi akun berhasil! Selamat datang, $name.'),
-            backgroundColor: const Color(0xFF0D9488),
+            backgroundColor: AppColors.accentTeal,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -228,7 +229,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         final isDark = theme.isDarkMode;
 
         return Scaffold(
-          backgroundColor: isDark ? const Color(0xFF111418) : const Color(0xFFF6F3EC),
+          backgroundColor: AppColors.background,
           body: SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -244,16 +245,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         width: 44,
                         height: 44,
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF181C22) : Colors.white,
+                          color: AppColors.surfaceCard,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isDark ? const Color(0xFF28303C) : const Color(0xFFE5E2DB),
+                            color: AppColors.warmBorder,
                           ),
                         ),
                         child: Icon(
                           Icons.arrow_back,
                           size: 20,
-                          color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ),
@@ -263,10 +264,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF0D2824) : const Color(0xFF1C1C18),
+                        color: AppColors.auth.avatarHeaderBg,
                         borderRadius: BorderRadius.circular(20),
                         border: isDark
-                            ? Border.all(color: const Color(0xFF2DD4BF).withValues(alpha: 0.6), width: 1.2)
+                            ? Border.all(color: AppColors.auth.faceBorder.withValues(alpha: 0.6), width: 1.2)
                             : null,
                       ),
                       child: Row(
@@ -275,7 +276,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Icon(
                             Icons.stars_rounded,
                             size: 15,
-                            color: isDark ? const Color(0xFF2DD4BF) : Colors.white,
+                            color: isDark ? AppColors.auth.faceBorder : Colors.white,
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -283,7 +284,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 11.5,
                               fontWeight: FontWeight.bold,
-                              color: isDark ? const Color(0xFF2DD4BF) : Colors.white,
+                              color: isDark ? AppColors.auth.faceBorder : Colors.white,
                               letterSpacing: 0.5,
                             ),
                           ),
@@ -296,7 +297,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 36,
                         fontWeight: FontWeight.w800,
-                        color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                        color: AppColors.textPrimary,
                         height: 1.15,
                         letterSpacing: -1.0,
                       ),
@@ -306,7 +307,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       'Isi data di bawah untuk menikmati kemudahan parkir pintar tanpa hambatan.',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 15,
-                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF45474A),
+                        color: AppColors.textSecondary,
                         height: 1.5,
                       ),
                     ),
@@ -315,10 +316,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     // Grouped Form Card (Sleek dark card in dark mode, clean white in light mode)
                     Container(
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF181C22) : Colors.white,
+                        color: AppColors.surfaceCard,
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: isDark ? const Color(0xFF28303C) : const Color(0xFFE5E2DB),
+                          color: AppColors.warmBorder,
                           width: 1.2,
                         ),
                         boxShadow: [
@@ -340,7 +341,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           Divider(
                             height: 1,
-                            color: isDark ? const Color(0xFF262C36) : const Color(0xFFF1EEE7),
+                            color: AppColors.warmBorder,
                             indent: 70,
                           ),
                           _FloatingRegisterField(
@@ -352,7 +353,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           Divider(
                             height: 1,
-                            color: isDark ? const Color(0xFF262C36) : const Color(0xFFF1EEE7),
+                            color: AppColors.warmBorder,
                             indent: 70,
                           ),
                           _FloatingRegisterField(
@@ -364,7 +365,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           Divider(
                             height: 1,
-                            color: isDark ? const Color(0xFF262C36) : const Color(0xFFF1EEE7),
+                            color: AppColors.warmBorder,
                             indent: 70,
                           ),
                           _FloatingRegisterField(
@@ -379,7 +380,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               child: Icon(
                                 _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                                 size: 20,
-                                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFFA29F98),
+                                color: AppColors.textMuted,
                               ),
                             ),
                           ),
@@ -396,7 +397,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _handleRegister,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark ? Colors.white : const Color(0xFF1C1C18),
+                          backgroundColor: isDark ? Colors.white : AppColors.primary,
                           foregroundColor: isDark ? Colors.black : Colors.white,
                           elevation: isDark ? 6 : 0,
                           shadowColor: isDark ? Colors.white.withValues(alpha: 0.15) : Colors.transparent,
@@ -454,7 +455,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           text: TextSpan(
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 14,
-                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF45474A),
+                              color: AppColors.textSecondary,
                             ),
                             children: [
                               const TextSpan(text: 'Sudah punya akun? '),
@@ -463,7 +464,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF1C1C18),
+                                  color: AppColors.auth.linkBlue,
                                   decoration: TextDecoration.underline,
                                 ),
                               ),
@@ -579,15 +580,15 @@ class _FloatingRegisterFieldState extends State<_FloatingRegisterField> {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF262C36) : const Color(0xFFF5F2EA),
+                color: AppColors.surfaceField,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
                 widget.icon,
                 size: 20,
                 color: _isFocused
-                    ? (isDark ? const Color(0xFF2DD4BF) : const Color(0xFF114177))
-                    : (isDark ? const Color(0xFF2DD4BF) : const Color(0xFF7A7874)),
+                    ? AppColors.auth.inputFocus
+                    : (isDark ? AppColors.auth.faceBorder : AppColors.textSecondary),
               ),
             ),
             const SizedBox(width: 14),
@@ -610,8 +611,8 @@ class _FloatingRegisterFieldState extends State<_FloatingRegisterField> {
                             fontSize: isFloating ? 11.5 : 15.0,
                             fontWeight: isFloating ? FontWeight.w700 : FontWeight.w500,
                             color: _isFocused
-                                ? (isDark ? const Color(0xFF2DD4BF) : const Color(0xFF114177))
-                                : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF7A7874)),
+                                ? AppColors.auth.inputFocus
+                                : AppColors.textSecondary,
                             letterSpacing: isFloating ? 0.3 : 0.0,
                           ),
                           child: Text(widget.label),
@@ -629,11 +630,11 @@ class _FloatingRegisterFieldState extends State<_FloatingRegisterField> {
                         focusNode: _focusNode,
                         obscureText: widget.obscure,
                         keyboardType: widget.type,
-                        cursorColor: isDark ? const Color(0xFF2DD4BF) : const Color(0xFF114177),
+                        cursorColor: AppColors.auth.inputFocus,
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                          color: AppColors.textPrimary,
                         ),
                         decoration: const InputDecoration(
                           border: InputBorder.none,

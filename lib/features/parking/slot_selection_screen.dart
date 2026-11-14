@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../core/services/theme_service.dart';
 import '../../core/services/language_service.dart';
+import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import '../../theme/app_radii.dart';
 import '../../theme/app_shadows.dart';
@@ -14,13 +15,11 @@ import 'backend/slot_selection_backend.dart';
 import '../parking_notes/parking_notes_screen.dart';
 import '../parking_notes/add_parking_note_screen.dart';
 
-// Stitch Material3 slot colors
-const _kSecondary = Color(0xFF9A442D);
-const _kPrimaryContainer = Color(0xFF1C1D1F);
-const _kTertiaryFixed = Color(0xFFBBEED4);
-const _kSurfaceContainerLow = Color(0xFFF6F3EC);
-const _kSurfaceContainerHigh = Color(0xFFEBE8E1);
-const _kSurfaceContainerLowest = Color(0xFFFFFFFF);
+// Stitch Material3 slot colors (Centralized in AppColors.slot)
+final _kPrimaryContainer = AppColors.slot.primaryContainer;
+final _kTertiaryFixed = AppColors.slot.tertiaryFixed;
+final _kSurfaceContainerLow = AppColors.slot.surfaceContainerLow;
+final _kSurfaceContainerHigh = AppColors.slot.surfaceContainerHigh;
 
 class SlotSelectionScreen extends StatefulWidget {
   final String? locationId;
@@ -108,7 +107,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
 
         if (!SlotSelectionBackend.instance.isLoading && SlotSelectionBackend.instance.currentLocation == null) {
           return Scaffold(
-            backgroundColor: isDark ? theme.bg : const Color(0xFFFCF9F2),
+            backgroundColor: AppColors.background,
             appBar: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0,
@@ -134,13 +133,13 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E232B) : const Color(0xFFF1EEE7),
+                        color: AppColors.slot.floorInactive,
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.grid_off_outlined,
                         size: 64,
-                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF76777A),
+                        color: AppColors.slot.floorIcon,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -150,7 +149,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -159,7 +158,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 14,
-                        color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF76777A),
+                        color: AppColors.slot.floorIcon,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -168,7 +167,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                       icon: const Icon(Icons.arrow_back, size: 18),
                       label: Text('Kembali ke Peta'.tr),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? Colors.white : const Color(0xFF020304),
+                        backgroundColor: AppColors.slot.compassBg,
                         foregroundColor: isDark ? Colors.black : Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -182,7 +181,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
         }
 
         return Scaffold(
-          backgroundColor: isDark ? theme.bg : const Color(0xFFFCF9F2),
+          backgroundColor: AppColors.background,
           body: Stack(
             children: [
               // Scrollable content
@@ -202,7 +201,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: isDark ? theme.card : _kSurfaceContainerLowest,
+                            color: AppColors.surfaceCard,
                             borderRadius: BorderRadius.circular(16),
                             border: isDark ? Border.all(color: theme.border) : null,
                             boxShadow: [
@@ -229,7 +228,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      const Icon(Icons.location_on, size: 18, color: Color(0xFFFB923C)),
+                                      Icon(Icons.location_on, size: 18, color: AppColors.slot.pinOrange),
                                       const SizedBox(width: 6),
                                       ListenableBuilder(
                                         listenable: SlotSelectionBackend.instance,
@@ -243,7 +242,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
                                               letterSpacing: 0.5,
-                                              color: isDark ? theme.textMuted : const Color(0xFF45474A),
+                                              color: AppColors.slot.textSubtle,
                                             ),
                                           );
                                         },
@@ -285,7 +284,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                           return Text(
                                             'Siap pakai di $fName'.tr,
                                             style: AppTypography.bodySm(
-                                              color: isDark ? theme.textMuted : const Color(0xFF45474A),
+                                              color: AppColors.slot.textSubtle,
                                             ),
                                           );
                                         },
@@ -301,7 +300,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                       Align(
                                         widthFactor: 0.75,
                                         child: _AmenityBadge(
-                                          color: isDark ? const Color(0xFF334155) : const Color(0xFFEBE8E1),
+                                          color: AppColors.slot.divider,
                                           icon: Icons.accessible,
                                         ),
                                       ),
@@ -318,18 +317,18 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                   color: isDark ? theme.surfaceField : Colors.white,
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: isDark ? theme.border : const Color(0xFFE5E2DB),
+                                    color: AppColors.warmBorder,
                                   ),
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.tips_and_updates_outlined, size: 18, color: Color(0xFF2DD4BF)),
+                                    Icon(Icons.tips_and_updates_outlined, size: 18, color: AppColors.slot.tipTeal),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
                                         'Zona A untuk Mobil Reguler. Zona B untuk Stasiun EV Charging & Campuran.'.tr,
                                         style: AppTypography.bodySm(
-                                          color: isDark ? Colors.white : const Color(0xFF45474A),
+                                          color: AppColors.slot.tipText,
                                         ),
                                       ),
                                     ),
@@ -371,7 +370,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                       decoration: BoxDecoration(
                                         color: active
                                             ? (isDark ? Colors.white : _kPrimaryContainer)
-                                            : (isDark ? theme.card : _kSurfaceContainerLowest),
+                                            : AppColors.surfaceCard,
                                         borderRadius: AppRadii.pillRadius,
                                         border: isDark && !active ? Border.all(color: theme.border) : null,
                                         boxShadow: const [AppShadows.soft],
@@ -384,8 +383,8 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                               color: active
-                                                  ? (isDark ? Colors.black : const Color(0xFFFCF9F2))
-                                                  : (isDark ? Colors.white : const Color(0xFF45474A)),
+                                                  ? AppColors.slot.btnVehicleText
+                                                  : AppColors.slot.tipText,
                                             ),
                                           ),
                                           if (active) ...[
@@ -394,7 +393,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                               width: 6,
                                               height: 6,
                                               decoration: BoxDecoration(
-                                                color: isDark ? const Color(0xFF9A442D) : const Color(0xFFFC9174),
+                                                color: AppColors.slot.btnVehicleBadge,
                                                 shape: BoxShape.circle,
                                               ),
                                             ),
@@ -404,7 +403,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                               style: GoogleFonts.plusJakartaSans(
                                                 fontSize: 11,
                                                 fontWeight: FontWeight.w500,
-                                                color: isDark ? Colors.black87 : const Color(0xFFFCF9F2).withValues(alpha: 0.8),
+                                                color: AppColors.slot.btnVehicleBadgeText,
                                               ),
                                             ),
                                           ],
@@ -463,20 +462,20 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                       width: double.infinity,
                                       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                                       decoration: BoxDecoration(
-                                        color: isDark ? theme.card : Colors.white,
+                                        color: AppColors.surfaceCard,
                                         borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: isDark ? theme.border : const Color(0xFFE5E7EB)),
+                                        border: Border.all(color: AppColors.warmBorder),
                                       ),
                                       child: Column(
                                         children: [
-                                          Icon(Icons.crop_free_rounded, size: 28, color: isDark ? theme.textMuted : const Color(0xFF94A3B8)),
+                                          Icon(Icons.crop_free_rounded, size: 28, color: AppColors.slot.scanIcon),
                                           const SizedBox(height: 6),
                                           Text(
                                             'Belum ada slot di Zona A ($activeFloorName)'.tr,
                                             style: GoogleFonts.plusJakartaSans(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
-                                              color: isDark ? Colors.white : const Color(0xFF64748B),
+                                              color: AppColors.slot.scanText,
                                             ),
                                           ),
                                         ],
@@ -515,26 +514,26 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                         Icon(
                                           Icons.east,
                                           size: 14,
-                                          color: isDark ? theme.textMuted : const Color(0xFF45474A),
+                                          color: AppColors.slot.textSubtle,
                                         ),
                                         const SizedBox(width: 6),
                                         Text(
                                           'Jalur Sirkulasi $activeFloorName'.tr,
                                           style: AppTypography.caption(
-                                            color: isDark ? theme.textMuted : const Color(0xFF45474A),
+                                            color: AppColors.slot.textSubtle,
                                           ),
                                         ),
                                         const SizedBox(width: 6),
                                         Icon(
                                           Icons.navigation_outlined,
                                           size: 14,
-                                          color: isDark ? theme.textMuted : const Color(0xFF45474A),
+                                          color: AppColors.slot.textSubtle,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
                                           'Satu Arah'.tr,
                                           style: AppTypography.caption(
-                                            color: isDark ? theme.textMuted : const Color(0xFF45474A),
+                                            color: AppColors.slot.textSubtle,
                                           ),
                                         ),
                                       ],
@@ -556,20 +555,20 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                       width: double.infinity,
                                       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                                       decoration: BoxDecoration(
-                                        color: isDark ? theme.card : Colors.white,
+                                        color: AppColors.surfaceCard,
                                         borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: isDark ? theme.border : const Color(0xFFE5E7EB)),
+                                        border: Border.all(color: AppColors.warmBorder),
                                       ),
                                       child: Column(
                                         children: [
-                                          const Icon(Icons.bolt_outlined, size: 28, color: Color(0xFF17A18A)),
+                                          Icon(Icons.bolt_outlined, size: 28, color: AppColors.slot.ev),
                                           const SizedBox(height: 6),
                                           Text(
                                             'Belum ada slot di Zona B ($activeFloorName)'.tr,
                                             style: GoogleFonts.plusJakartaSans(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
-                                              color: isDark ? Colors.white : const Color(0xFF64748B),
+                                              color: AppColors.slot.scanText,
                                             ),
                                           ),
                                         ],
@@ -599,18 +598,18 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
                                       _LegendItem(
-                                        color: isDark ? theme.card : _kSurfaceContainerLowest,
+                                        color: AppColors.surfaceCard,
                                         label: 'Tersedia'.tr,
-                                        border: isDark ? Colors.white : const Color(0xFFC6C6CA),
+                                        border: AppColors.slot.legendBorder,
                                         isDark: isDark,
                                       ),
                                       _LegendItem(
-                                        color: isDark ? const Color(0xFF1E293B) : _kSurfaceContainerHigh.withValues(alpha: 0.6),
+                                        color: AppColors.slot.legendBg,
                                         label: 'Terisi Mobil'.tr,
                                         isDark: isDark,
                                       ),
                                       _LegendItem(
-                                        color: const Color(0xFF114177),
+                                        color: AppColors.brandNavy,
                                         label: 'Pilihan Anda'.tr,
                                         isDark: isDark,
                                       ),
@@ -635,7 +634,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  color: isDark ? theme.bg : const Color(0xFFFCF9F2),
+                  color: AppColors.surfaceBackground,
                   child: SafeArea(
                     bottom: false,
                     child: Container(
@@ -711,7 +710,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isDark ? theme.card : _kSurfaceContainerLowest,
+                      color: AppColors.surfaceCard,
                       borderRadius: BorderRadius.circular(24),
                       border: isDark ? Border.all(color: theme.border) : null,
                       boxShadow: [
@@ -735,7 +734,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                 Text(
                                   'STATUS SLOT TERPILIH'.tr,
                                   style: AppTypography.overline(
-                                    color: isDark ? theme.textMuted : const Color(0xFF45474A),
+                                    color: AppColors.slot.textSubtle,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -753,7 +752,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                 Text(
                                   'Kapasitas: ${SlotSelectionBackend.instance.getSlotTypeLabel(_selectedSlot)}'.tr,
                                   style: AppTypography.caption(
-                                    color: isDark ? theme.textMuted : const Color(0xFF45474A),
+                                    color: AppColors.slot.textSubtle,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -767,16 +766,16 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF16A34A).withValues(alpha: 0.15),
+                                color: AppColors.slot.bookingBarBg.withValues(alpha: 0.15),
                                 borderRadius: AppRadii.pillRadius,
-                                border: Border.all(color: const Color(0xFF16A34A).withValues(alpha: 0.4)),
+                                border: Border.all(color: AppColors.slot.bookingBarBg.withValues(alpha: 0.4)),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.check_circle_outline,
                                     size: 16,
-                                    color: Color(0xFF16A34A),
+                                    color: AppColors.slot.bookingBarBg,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
@@ -784,7 +783,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF16A34A),
+                                      color: AppColors.slot.bookingBarBg,
                                     ),
                                   ),
                                 ],
@@ -806,7 +805,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                               icon: const Icon(Icons.bookmark_add_outlined, size: 16),
                               label: Text('Catat'.tr),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF2563EB),
+                                backgroundColor: AppColors.slot.bookingButton,
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -839,12 +838,12 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
     final bool isVip = slotTypeStr == 'vip';
 
     final Color badgeColor = isEV
-        ? const Color(0xFF17A18A)
+        ? AppColors.slot.ev
         : (isDifabel
-            ? const Color(0xFF8B5CF6)
+            ? AppColors.slot.disabled
             : (isMotor
-                ? const Color(0xFFF59E0B)
-                : (isVip ? const Color(0xFFEAB308) : const Color(0xFF114177))));
+                ? AppColors.slot.ladies
+                : (isVip ? AppColors.slot.vip : AppColors.slot.selected)));
 
     String typeLabel = 'Reguler'.tr;
     if (isEV) {
@@ -861,15 +860,15 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
     Border? border;
 
     if (isSelected) {
-      bg = const Color(0xFF114177);
-      border = Border.all(color: const Color(0xFF114177), width: 1.5);
+      bg = AppColors.slot.selected;
+      border = Border.all(color: AppColors.slot.selectedBorder, width: 1.5);
     } else if (!isAvailable) {
-      bg = isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9);
-      border = Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0));
+      bg = AppColors.slot.booked;
+      border = Border.all(color: AppColors.slot.bookedBorder);
     } else {
-      bg = isDark ? theme.card : (isEV ? const Color(0xFFE8F7F4) : Colors.white);
+      bg = isDark ? theme.card : (isEV ? AppColors.slot.evBg : Colors.white);
       border = Border.all(
-        color: isEV ? const Color(0xFF17A18A) : (isDark ? theme.border : const Color(0xFFE5E7EB)),
+        color: isEV ? AppColors.slot.ev : AppColors.warmBorder,
         width: isEV ? 1.5 : 1,
       );
     }
@@ -889,7 +888,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF114177).withValues(alpha: 0.3),
+                      color: AppColors.brandNavy.withValues(alpha: 0.3),
                       offset: const Offset(0, 4),
                       blurRadius: 10,
                     ),
@@ -924,7 +923,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.white : (isDark ? Colors.white : const Color(0xFF1A1A18)),
+                  color: isSelected ? Colors.white : AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 4),
@@ -946,7 +945,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 8.5,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                    color: AppColors.slot.slotNumber,
                   ),
                 )
               else
@@ -955,7 +954,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 8.5,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF17A18A),
+                    color: AppColors.slot.ev,
                   ),
                 ),
             ],
@@ -974,7 +973,6 @@ class _ZoneLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ThemeService.instance;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -984,7 +982,7 @@ class _ZoneLabel extends StatelessWidget {
             fontSize: 12,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
-            color: isDark ? theme.textMuted : const Color(0xFF45474A),
+            color: AppColors.slot.textSubtle,
           ),
         ),
         Text(
@@ -992,7 +990,7 @@ class _ZoneLabel extends StatelessWidget {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: isDark ? const Color(0xFFFB923C) : _kSecondary,
+            color: AppColors.slot.pinOrange,
           ),
         ),
       ],
@@ -1010,7 +1008,7 @@ class _AmenityBadge extends StatelessWidget {
         width: 32,
         height: 32,
         decoration: BoxDecoration(color: color, shape: BoxShape.circle, boxShadow: const [AppShadows.soft]),
-        child: Icon(icon, size: 16, color: const Color(0xFF002115)),
+        child: Icon(icon, size: 16, color: AppColors.slot.iconDarkGreen),
       );
 }
 
@@ -1022,14 +1020,14 @@ class _CountBadge extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         width: 32,
         height: 32,
-        decoration: const BoxDecoration(color: Color(0xFFFC9174), shape: BoxShape.circle),
+        decoration: BoxDecoration(color: AppColors.slot.badgeSalmon, shape: BoxShape.circle),
         child: Center(
           child: Text(
             count,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF742814),
+              color: AppColors.slot.badgeSalmonText,
             ),
           ),
         ),
@@ -1045,7 +1043,6 @@ class _LegendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ThemeService.instance;
     return Row(
       children: [
         Container(
@@ -1063,7 +1060,7 @@ class _LegendItem extends StatelessWidget {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 11,
             fontWeight: FontWeight.w500,
-            color: isDark ? theme.textMuted : const Color(0xFF45474A),
+            color: AppColors.slot.textSubtle,
           ),
         ),
       ],

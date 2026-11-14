@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'theme_service.dart';
+import '../../theme/app_colors.dart';
 
 /// Layanan Pengelola Bahasa Aplikasi (Indonesian <-> English) - ParkSmart ID
 /// Mengatur switch bahasa khusus di sisi pengguna (Client-side UI display).
@@ -69,7 +70,7 @@ class LanguageService extends ChangeNotifier {
             return Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: isDark ? theme.card : Colors.white,
+                color: AppColors.surfaceCard,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                 border: isDark ? Border(top: BorderSide(color: theme.border)) : null,
               ),
@@ -83,7 +84,7 @@ class LanguageService extends ChangeNotifier {
                       height: 4,
                       margin: const EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
-                        color: isDark ? theme.border : const Color(0xFFE5E2DB),
+                        color: AppColors.warmBorder,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -93,7 +94,7 @@ class LanguageService extends ChangeNotifier {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : const Color(0xFF1A1A18),
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -111,13 +112,13 @@ class LanguageService extends ChangeNotifier {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
                         color: !isEn
-                            ? (isDark ? theme.surfaceField : const Color(0xFFF6F3EC))
-                            : (isDark ? theme.card : Colors.white),
+                            ? AppColors.surfaceField
+                            : AppColors.surfaceCard,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: !isEn
-                              ? (isDark ? Colors.white : const Color(0xFF1A1A18))
-                              : (isDark ? theme.border : const Color(0xFFE5E2DB)),
+                              ? AppColors.textPrimary
+                              : AppColors.warmBorder,
                           width: !isEn ? 1.5 : 1.0,
                         ),
                       ),
@@ -141,15 +142,15 @@ class LanguageService extends ChangeNotifier {
                                 fontSize: 14,
                                 fontWeight: !isEn ? FontWeight.bold : FontWeight.w600,
                                 color: !isEn
-                                    ? (isDark ? Colors.white : const Color(0xFF1A1A18))
-                                    : (isDark ? theme.textSecondary : const Color(0xFF76777B)),
+                                    ? AppColors.textPrimary
+                                    : AppColors.textSecondary,
                               ),
                             ),
                           ),
                           if (!isEn)
                             Icon(
                               Icons.check_circle,
-                              color: isDark ? Colors.white : const Color(0xFF1A1A18),
+                              color: AppColors.textPrimary,
                               size: 20,
                             ),
                         ],
@@ -171,13 +172,13 @@ class LanguageService extends ChangeNotifier {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
                         color: isEn
-                            ? (isDark ? theme.surfaceField : const Color(0xFFF6F3EC))
-                            : (isDark ? theme.card : Colors.white),
+                            ? AppColors.surfaceField
+                            : AppColors.surfaceCard,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isEn
-                              ? (isDark ? Colors.white : const Color(0xFF1A1A18))
-                              : (isDark ? theme.border : const Color(0xFFE5E2DB)),
+                              ? AppColors.textPrimary
+                              : AppColors.warmBorder,
                           width: isEn ? 1.5 : 1.0,
                         ),
                       ),
@@ -201,15 +202,15 @@ class LanguageService extends ChangeNotifier {
                                 fontSize: 14,
                                 fontWeight: isEn ? FontWeight.bold : FontWeight.w600,
                                 color: isEn
-                                    ? (isDark ? Colors.white : const Color(0xFF1A1A18))
-                                    : (isDark ? theme.textSecondary : const Color(0xFF76777B)),
+                                    ? AppColors.textPrimary
+                                    : AppColors.textSecondary,
                               ),
                             ),
                           ),
                           if (isEn)
                             Icon(
                               Icons.check_circle,
-                              color: isDark ? Colors.white : const Color(0xFF1A1A18),
+                              color: AppColors.textPrimary,
                               size: 20,
                             ),
                         ],

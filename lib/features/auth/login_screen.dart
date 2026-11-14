@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   ),
                 ],
               ),
-              backgroundColor: const Color(0xFFC05621),
+              backgroundColor: AppColors.secondary,
               behavior: SnackBarBehavior.floating,
               duration: const Duration(seconds: 5),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -382,7 +382,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Selamat datang kembali, ${response['full_name']}!'),
-            backgroundColor: const Color(0xFF0D9488),
+            backgroundColor: AppColors.accentTeal,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -507,7 +507,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Akses diterima ($role). Selamat bertugas, $adminName!'),
-            backgroundColor: const Color(0xFF0D9488),
+            backgroundColor: AppColors.accentTeal,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -667,7 +667,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     RichText(
                       text: TextSpan(
                         style: AppTypography.logoTitle().copyWith(
-                          color: const Color(0xFF1E293B),
+                          color: AppColors.textPrimary,
                           fontWeight: FontWeight.w800,
                         ),
                         children: [
@@ -681,7 +681,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                     ),
                     Text(
                       'SEAMLESS PARKING',
-                      style: AppTypography.overline(color: const Color(0xFF475569)).copyWith(
+                      style: AppTypography.overline(color: AppColors.textSecondary).copyWith(
                         letterSpacing: 1.5,
                         fontWeight: FontWeight.w700,
                       ),
@@ -701,7 +701,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             height: sheetHeight + 150.0,
             child: Container(
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF262C36) : const Color(0xFFFAF7F2), // Background yang dapat diseret lebih terang di darkmode (tidak pekat)
+                color: AppColors.surface, // Mengikuti AppColors.surface (Single Source of Truth)
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(38)),
                 border: isDark ? Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.15), width: 1)) : null,
                 boxShadow: [
@@ -743,7 +743,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             decoration: BoxDecoration(
                               color: isDark
                                   ? Colors.white.withValues(alpha: 0.35)
-                                  : const Color(0xFF1E293B).withValues(alpha: 0.20),
+                                  : AppColors.auth.dragHandle,
                               borderRadius: BorderRadius.circular(3),
                             ),
                           ),
@@ -755,7 +755,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             decoration: BoxDecoration(
                               color: isDark
                                   ? Colors.white.withValues(alpha: 0.22)
-                                  : const Color(0xFF1E293B).withValues(alpha: 0.14),
+                                  : AppColors.auth.dragHandle.withValues(alpha: 0.7),
                               borderRadius: BorderRadius.circular(3),
                             ),
                           ),
@@ -838,7 +838,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                     child: Text(
                                       'Lupa Sandi?',
                                       style: AppTypography.labelSm(
-                                        color: isDark ? const Color(0xFFFB923C) : AppColors.warmTerracotta,
+                                        color: AppColors.auth.accentOrange,
                                       ),
                                     ),
                                   ),
@@ -881,7 +881,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                       shape: BoxShape.circle,
                                       color: _remember
                                           ? (isDark ? Colors.white : AppColors.primary)
-                                          : (isDark ? const Color(0xFF1E232B) : AppColors.surfaceCard),
+                                          : AppColors.surfaceCard,
                                       border: Border.all(
                                         color: _remember
                                             ? (isDark ? Colors.white : AppColors.primary)
@@ -1049,7 +1049,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                                   ScaffoldMessenger.of(context).showSnackBar(
                                                     SnackBar(
                                                       content: Text('Selamat datang kembali, ${userResponse['full_name']}!'),
-                                                      backgroundColor: const Color(0xFF0D9488),
+                                                      backgroundColor: AppColors.accentTeal,
                                                       duration: const Duration(seconds: 2),
                                                     ),
                                                   );
@@ -1138,7 +1138,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                       TextSpan(
                                         text: 'Daftar Sekarang',
                                         style: AppTypography.bodySm(
-                                          color: isDark ? const Color(0xFFFB923C) : AppColors.warmTerracotta,
+                                          color: AppColors.auth.accentOrange,
                                         ).copyWith(
                                           fontWeight: FontWeight.w700,
                                           decoration: TextDecoration.underline,
@@ -1216,7 +1216,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF1E293B).withValues(alpha: 0.35),
+                                    color: AppColors.auth.dragHandle,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Row(
@@ -1269,7 +1269,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(25),
-                                border: Border.all(color: const Color(0xFFE2E8F0)),
+                                border: Border.all(color: AppColors.auth.adminModalBorder),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withValues(alpha: 0.04),
@@ -1281,16 +1281,16 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               padding: const EdgeInsets.symmetric(horizontal: 16),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.email_outlined, size: 19, color: Color(0xFF64748B)),
+                                  Icon(Icons.email_outlined, size: 19, color: AppColors.auth.adminModalIcon),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: TextField(
                                       controller: _adminEmailController,
                                       keyboardType: TextInputType.emailAddress,
-                                      style: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF0F172A)),
+                                      style: GoogleFonts.inter(fontSize: 14, color: AppColors.auth.adminModalText),
                                       decoration: InputDecoration(
                                         hintText: 'Email',
-                                        hintStyle: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF94A3B8)),
+                                        hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.auth.adminModalHint),
                                         border: InputBorder.none,
                                         enabledBorder: InputBorder.none,
                                         focusedBorder: InputBorder.none,
@@ -1314,7 +1314,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(25),
-                                border: Border.all(color: const Color(0xFFE2E8F0)),
+                                border: Border.all(color: AppColors.auth.adminModalBorder),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withValues(alpha: 0.04),
@@ -1326,16 +1326,16 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               padding: const EdgeInsets.symmetric(horizontal: 16),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.lock_outline, size: 19, color: Color(0xFF64748B)),
+                                  Icon(Icons.lock_outline, size: 19, color: AppColors.auth.adminModalIcon),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: TextField(
                                       controller: _adminPasswordController,
                                       obscureText: _adminObscure,
-                                      style: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF0F172A)),
+                                      style: GoogleFonts.inter(fontSize: 14, color: AppColors.auth.adminModalText),
                                       decoration: InputDecoration(
                                         hintText: 'Password',
-                                        hintStyle: GoogleFonts.inter(fontSize: 14, color: const Color(0xFF94A3B8)),
+                                        hintStyle: GoogleFonts.inter(fontSize: 14, color: AppColors.auth.adminModalHint),
                                         border: InputBorder.none,
                                         enabledBorder: InputBorder.none,
                                         focusedBorder: InputBorder.none,
@@ -1353,7 +1353,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                     child: Icon(
                                       _adminObscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                                       size: 18,
-                                      color: const Color(0xFF64748B),
+                                      color: AppColors.auth.adminModalIcon,
                                     ),
                                   ),
                                 ],
@@ -1367,7 +1367,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               child: ElevatedButton(
                                 onPressed: _isAdminLoggingIn ? null : _handleAdminLogin,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF0F172A),
+                                  backgroundColor: AppColors.auth.adminModalButton,
                                   foregroundColor: Colors.white,
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
@@ -1436,7 +1436,7 @@ class _PillInput extends StatelessWidget {
         color: isDark ? Colors.white : AppColors.surfaceCard, // Kolom field putih saat darkmode
         borderRadius: AppRadii.pillRadius,
         border: Border.all(
-          color: isDark ? const Color(0xFFE5E2DB) : AppColors.warmBorder,
+          color: isDark ? AppColors.warmBorderLight : AppColors.warmBorder,
         ),
         boxShadow: const [AppShadows.field],
       ),
@@ -1578,7 +1578,7 @@ class _SecondaryButton extends StatelessWidget {
           color: isDark ? Colors.white : AppColors.surfaceCard,
           borderRadius: AppRadii.pillRadius,
           border: Border.all(
-            color: isDark ? const Color(0xFFE5E2DB) : AppColors.warmBorder.withValues(alpha: 0.9),
+            color: isDark ? AppColors.warmBorderLight : AppColors.warmBorder.withValues(alpha: 0.9),
           ),
           boxShadow: const [AppShadows.soft],
         ),
@@ -1589,7 +1589,7 @@ class _SecondaryButton extends StatelessWidget {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFFF1EEE7) : AppColors.surfaceField,
+                color: isDark ? AppColors.chipBgLight : AppColors.surfaceField,
                 shape: BoxShape.circle,
               ),
               child: customIcon != null

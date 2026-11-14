@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/services/theme_service.dart';
 import '../../core/services/language_service.dart';
+import '../../theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'backend/notification_backend.dart';
 
@@ -45,15 +46,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Color _getColorForType(String? type) {
     switch (type) {
       case 'promo':
-        return const Color(0xFF2A9D8F);
+        return AppColors.notification.typePromo;
       case 'warning':
       case 'expiry':
-        return const Color(0xFFD94B4B);
+        return AppColors.notification.typeWarning;
       case 'success':
       case 'kyc':
-        return const Color(0xFF10B981);
+        return AppColors.notification.typeSuccess;
       default:
-        return const Color(0xFF006A9A);
+        return AppColors.notification.typeDefault;
     }
   }
 
@@ -62,15 +63,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return ListenableBuilder(
       listenable: Listenable.merge([ThemeService.instance, LanguageService.instance]),
       builder: (context, _) {
-        final theme = ThemeService.instance;
-        final isDark = theme.isDarkMode;
-
-        final bg = isDark ? theme.bg : const Color(0xFFF6F3EC);
-        final cardBg = isDark ? theme.card : Colors.white;
-        final cardBorder = isDark ? theme.border : const Color(0xFFE5E2DB);
-        final textMain = isDark ? Colors.white : const Color(0xFF1C1C18);
-        final textSub = isDark ? theme.textMuted : const Color(0xFF45474A);
-        final textHeader = isDark ? theme.textMuted : const Color(0xFFA29F98);
+        final bg = AppColors.background;
+        final cardBg = AppColors.surfaceCard;
+        final cardBorder = AppColors.warmBorder;
+        final textMain = AppColors.textPrimary;
+        final textSub = AppColors.textSecondary;
+        final textHeader = AppColors.textMuted;
 
         return Scaffold(
           backgroundColor: bg,
@@ -111,7 +109,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF10B981),
+                        color: AppColors.notification.markReadBtn,
                       ),
                     ),
                   );
@@ -121,7 +119,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ),
           body: RefreshIndicator(
             onRefresh: () => NotificationBackend.instance.fetchNotifications(),
-            color: const Color(0xFF10B981),
+            color: AppColors.notification.refreshIndicator,
             child: ListenableBuilder(
               listenable: NotificationBackend.instance,
               builder: (context, _) {
@@ -142,13 +140,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               width: 64,
                               height: 64,
                               decoration: BoxDecoration(
-                                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFEFF6FF),
+                                color: AppColors.notification.emptyStateIconBg,
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.notifications_none_rounded,
                                 size: 32,
-                                color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177),
+                                color: AppColors.notification.emptyStateIcon,
                               ),
                             ),
                             const SizedBox(height: 16),

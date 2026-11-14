@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../theme/app_colors.dart';
 
 // ============================================================================
 // [PETUNJUK PRESENTASI - BIOMETRIK PEMINDAIAN WAJAH (FACE ID CAMERA SCANNER)]
@@ -173,7 +174,7 @@ class _FaceIdScannerDialogState extends State<FaceIdScannerDialog> with SingleTi
           width: 320,
           padding: const EdgeInsets.all(22),
           decoration: BoxDecoration(
-            color: const Color(0xFF131822),
+            color: AppColors.backgroundDark,
             borderRadius: BorderRadius.circular(28),
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.12),
@@ -199,12 +200,12 @@ class _FaceIdScannerDialogState extends State<FaceIdScannerDialog> with SingleTi
                       Container(
                         padding: const EdgeInsets.all(7),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0D9488).withValues(alpha: 0.2),
+                          color: AppColors.auth.faceRadarRing.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.face_retouching_natural,
-                          color: Color(0xFF2DD4BF),
+                          color: AppColors.auth.faceBorder,
                           size: 20,
                         ),
                       ),
@@ -263,10 +264,10 @@ class _FaceIdScannerDialogState extends State<FaceIdScannerDialog> with SingleTi
                                       child: CameraPreview(_cameraController!),
                                     ),
                                   )
-                                : const Center(
+                                : Center(
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2.5,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2DD4BF)),
+                                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.auth.faceProgress),
                                     ),
                                   ),
                       ),
@@ -289,15 +290,15 @@ class _FaceIdScannerDialogState extends State<FaceIdScannerDialog> with SingleTi
                                 gradient: LinearGradient(
                                   colors: [
                                     Colors.transparent,
-                                    const Color(0xFF2DD4BF),
+                                    AppColors.auth.faceProgress,
                                     Colors.white,
-                                    const Color(0xFF2DD4BF),
+                                    AppColors.auth.faceProgress,
                                     Colors.transparent,
                                   ],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF2DD4BF).withValues(alpha: 0.8),
+                                    color: AppColors.auth.faceProgress.withValues(alpha: 0.8),
                                     blurRadius: 8,
                                     spreadRadius: 2,
                                   ),
@@ -315,7 +316,7 @@ class _FaceIdScannerDialogState extends State<FaceIdScannerDialog> with SingleTi
                         height: 240,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(110),
-                          color: const Color(0xFF0D9488).withValues(alpha: 0.45),
+                          color: AppColors.auth.faceRadarRing.withValues(alpha: 0.45),
                         ),
                         child: const Center(
                           child: Icon(
@@ -335,8 +336,8 @@ class _FaceIdScannerDialogState extends State<FaceIdScannerDialog> with SingleTi
                           borderRadius: BorderRadius.circular(110),
                           border: Border.all(
                             color: _scanStatus == 1
-                                ? const Color(0xFF10B981)
-                                : const Color(0xFF2DD4BF).withValues(alpha: 0.75),
+                                ? AppColors.auth.faceLaser
+                                : AppColors.auth.faceProgress.withValues(alpha: 0.75),
                             width: 2.8,
                           ),
                         ),
@@ -356,7 +357,7 @@ class _FaceIdScannerDialogState extends State<FaceIdScannerDialog> with SingleTi
                   key: ValueKey<String>(_statusText),
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
-                    color: _scanStatus == 1 ? const Color(0xFF34D399) : Colors.white70,
+                    color: _scanStatus == 1 ? AppColors.auth.faceSuccess : Colors.white70,
                     fontSize: 13,
                     fontWeight: _scanStatus == 1 ? FontWeight.w700 : FontWeight.w500,
                   ),

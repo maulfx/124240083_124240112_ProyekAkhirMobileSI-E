@@ -11,6 +11,7 @@ import 'settings_screen.dart' as settings;
 
 import '../../core/services/session_service.dart';
 import '../../core/services/language_service.dart';
+import '../../theme/app_colors.dart';
 import '../../core/services/parking_notification_service.dart';
 import '../parking_notes/parking_notes_screen.dart';
 import 'edit_profile_screen.dart' as edit_profile;
@@ -136,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     backgroundImage: AppImageCacheService.instance.provider(profile.avatarUrl!),
                                   )
                                 : CircleAvatar(
-                                    backgroundColor: const Color(0xFF114177),
+                                    backgroundColor: AppColors.primary,
                                     child: Text(
                                       profile.name.trim().isNotEmpty ? profile.name.trim()[0].toUpperCase() : 'J',
                                       style: GoogleFonts.plusJakartaSans(
@@ -184,7 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: [
                               Text('PENGHEMATAN'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w500, color: ThemeService.instance.textSecondary, letterSpacing: 0.5)),
                               const SizedBox(height: 2),
-                              Text(CurrencyService.instance.format(profile.totalSavings), style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.bold, color: const Color(0xFFC05621))),
+                              Text(CurrencyService.instance.format(profile.totalSavings), style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.profile.savingsOrange)),
                             ],
                           ),
                         ),
@@ -245,7 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       },
                       style: TextButton.styleFrom(
-                        backgroundColor: const Color(0xFF8B0000), // Merah darah tua
+                        backgroundColor: AppColors.profile.logoutRed,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                       child: Row(
@@ -310,16 +311,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFEEF2FF),
+                  color: AppColors.surfaceDim,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                    color: isDark ? const Color(0xFF3B82F6).withValues(alpha: 0.4) : const Color(0xFFC7D2FE),
+                    color: AppColors.warmBorder,
                   ),
                 ),
                 child: Icon(
                   Icons.school_rounded,
                   size: 22,
-                  color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF4338CA),
+                  color: AppColors.auth.linkBlue,
                 ),
               ),
               const SizedBox(width: 14),
@@ -332,7 +333,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 10.5,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF4338CA),
+                        color: AppColors.auth.linkBlue,
                         letterSpacing: 0.8,
                       ),
                     ),
@@ -351,7 +352,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               if (hasSavedData && !showForm)
                 IconButton(
                   tooltip: 'Ubah Saran & Pesan',
-                  icon: Icon(Icons.edit_note_rounded, color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF2563EB), size: 24),
+                  icon: Icon(Icons.edit_note_rounded, color: AppColors.auth.linkBlue, size: 24),
                   onPressed: () {
                     setState(() {
                       _isEditingKuliahFeedback = true;
@@ -381,14 +382,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: isDark ? theme.surfaceField : const Color(0xFFF8FAFC),
+                  color: AppColors.profile.feedbackFieldBg,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: theme.border.withValues(alpha: 0.6)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.lightbulb_outline, size: 18, color: isDark ? const Color(0xFFFBBF24) : const Color(0xFFD97706)),
+                    Icon(Icons.lightbulb_outline, size: 18, color: AppColors.profile.feedbackIdeaYellow),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -421,14 +422,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: isDark ? theme.surfaceField : const Color(0xFFF8FAFC),
+                  color: AppColors.profile.feedbackFieldBg,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: theme.border.withValues(alpha: 0.6)),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.chat_bubble_outline_rounded, size: 18, color: isDark ? const Color(0xFF34D399) : const Color(0xFF059669)),
+                    Icon(Icons.chat_bubble_outline_rounded, size: 18, color: AppColors.profile.feedbackMessageGreen),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -470,7 +471,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: theme.textSecondary.withValues(alpha: 0.6),
                 ),
                 filled: true,
-                fillColor: isDark ? theme.surfaceField : const Color(0xFFF8FAFC),
+                fillColor: AppColors.profile.feedbackFieldBg,
                 contentPadding: const EdgeInsets.all(12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -483,7 +484,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF2563EB),
+                    color: AppColors.profile.feedbackFocusBorder,
                     width: 1.5,
                   ),
                 ),
@@ -514,7 +515,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: theme.textSecondary.withValues(alpha: 0.6),
                 ),
                 filled: true,
-                fillColor: isDark ? theme.surfaceField : const Color(0xFFF8FAFC),
+                fillColor: AppColors.profile.feedbackFieldBg,
                 contentPadding: const EdgeInsets.all(12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -527,7 +528,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF2563EB),
+                    color: AppColors.profile.feedbackFocusBorder,
                     width: 1.5,
                   ),
                 ),
@@ -584,7 +585,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ? 'Saran & pesan perkuliahan berhasil disimpan!'
                                         : 'Gagal menyimpan, silakan coba lagi.',
                                   ),
-                                  backgroundColor: success ? const Color(0xFF059669) : const Color(0xFFDC2626),
+                                  backgroundColor: success ? AppColors.statusSuccess : AppColors.statusError,
                                   duration: const Duration(seconds: 2),
                                 ),
                               );
@@ -605,7 +606,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isDark ? const Color(0xFF2563EB) : const Color(0xFF1E3A8A),
+                      backgroundColor: AppColors.profile.feedbackSaveBtn,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -647,7 +648,7 @@ void _showNotificationTestMenu(BuildContext context) {
                 width: 48,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: isDark ? theme.border : const Color(0xFFE4DFD5),
+                  color: AppColors.modal.dragHandle,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -663,14 +664,14 @@ void _showNotificationTestMenu(BuildContext context) {
               const SizedBox(height: 16),
               Container(
                 decoration: BoxDecoration(
-                  color: isDark ? theme.surfaceField : const Color(0xFFF9F7F2),
+                  color: AppColors.surfaceField,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: theme.border),
                 ),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: isDark ? const Color(0xFF7F1D1D).withValues(alpha: 0.35) : const Color(0xFFFDE8E8),
-                    child: Icon(Icons.timer_off, color: isDark ? const Color(0xFFF87171) : const Color(0xFF9B1C1C)),
+                    backgroundColor: AppColors.notification.urgentBg,
+                    child: Icon(Icons.timer_off, color: AppColors.notification.urgentIcon),
                   ),
                   title: Text(
                     'Urgent Action (10 Min Left)',
@@ -696,14 +697,14 @@ void _showNotificationTestMenu(BuildContext context) {
               const SizedBox(height: 12),
               Container(
                 decoration: BoxDecoration(
-                  color: isDark ? theme.surfaceField : const Color(0xFFF9F7F2),
+                  color: AppColors.surfaceField,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: theme.border),
                 ),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.35) : const Color(0xFFE1EFFE),
-                    child: Icon(Icons.info_outline, color: isDark ? const Color(0xFF60A5FA) : const Color(0xFF1E429F)),
+                    backgroundColor: AppColors.notification.infoBg,
+                    child: Icon(Icons.info_outline, color: AppColors.notification.infoIcon),
                   ),
                   title: Text(
                     'Info Notification (Success)',
@@ -873,37 +874,21 @@ class _ShimmerMemberBadgeState extends State<_ShimmerMemberBadge>
 
     if (normTier.contains('BRONZE')) {
       label = 'MEMBER BRONZE';
-      gradientColors = const [
-        Color(0xFF8C532B), // Bronze copper edge
-        Color(0xFFBF7B46), // Rich metallic bronze highlight
-        Color(0xFF6E3E1C), // Deep bronze shadow
-      ];
-      shadowColor = const Color(0xFFBF7B46).withValues(alpha: 0.45);
+      gradientColors = AppColors.profile.badgeBronze;
+      shadowColor = AppColors.profile.badgeBronze[1].withValues(alpha: 0.45);
     } else if (normTier.contains('SILVER')) {
       label = 'MEMBER SILVER';
-      gradientColors = const [
-        Color(0xFF7E8B9B), // Silver edge
-        Color(0xFFBDC7D0), // Lustrous silver center
-        Color(0xFF6C7887), // Rich shadow edge
-      ];
-      shadowColor = const Color(0xFFBDC7D0).withValues(alpha: 0.5);
+      gradientColors = AppColors.profile.badgeSilver;
+      shadowColor = AppColors.profile.badgeSilver[1].withValues(alpha: 0.5);
     } else if (normTier.contains('GOLD')) {
       label = 'MEMBER GOLD';
-      gradientColors = const [
-        Color(0xFFC5942B), // Deep rich gold
-        Color(0xFFFFD56B), // Brilliant gold highlight
-        Color(0xFF9E6E17), // Antique gold shadow
-      ];
-      shadowColor = const Color(0xFFFFD56B).withValues(alpha: 0.5);
+      gradientColors = AppColors.profile.badgeGold;
+      shadowColor = AppColors.profile.badgeGold[1].withValues(alpha: 0.5);
     } else {
       // PLATINUM (default)
       label = 'MEMBER PLATINUM';
-      gradientColors = const [
-        Color(0xFFA2AAB3), // Platinum darker edge
-        Color(0xFFD4D8DD), // Platinum body
-        Color(0xFF8B95A1), // Platinum darker edge
-      ];
-      shadowColor = const Color(0xFFE0E5E9).withValues(alpha: 0.6);
+      gradientColors = AppColors.profile.badgePlatinum;
+      shadowColor = AppColors.profile.badgePlatinum[1].withValues(alpha: 0.6);
     }
 
     return Container(

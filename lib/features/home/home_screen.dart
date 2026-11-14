@@ -19,6 +19,7 @@ import '../parking_notes/parking_notes_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:geocoding/geocoding.dart';
 import '../../widgets/bottom_dock_navigation.dart';
+import '../../widgets/category_pill.dart';
 import '../../core/services/theme_service.dart';
 import '../../core/services/maintenance_service.dart';
 import '../../theme/app_colors.dart';
@@ -258,9 +259,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Color get _trafficStatusColor {
     final density = _trafficDensity;
-    if (density >= 80) return const Color(0xFFEA4335); // Merah Macet
-    if (density >= 50) return const Color(0xFFFBBC04); // Kuning/Oranye Ramai
-    return const Color(0xFF34A853); // Hijau Lancar
+    if (density >= 80) return AppColors.map.trafficCongested;
+    if (density >= 50) return AppColors.map.trafficSlow;
+    return AppColors.map.trafficSmooth;
   }
 
   String get _trafficAreaText {
@@ -349,7 +350,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              backgroundColor: const Color(0xFF1E8E3E),
+              backgroundColor: AppColors.statusSuccess,
               duration: const Duration(seconds: 2),
               content: Row(
                 children: [
@@ -584,7 +585,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFEF4444),
+                                          color: AppColors.statusOccupied,
                                           borderRadius: BorderRadius.circular(10),
                                         ),
                                         constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
@@ -642,14 +643,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 margin: const EdgeInsets.only(top: 14),
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFFEF3C7),
+                                  color: AppColors.home.activeBookingBannerBg,
                                   borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(color: const Color(0xFFFDE68A)),
+                                  border: Border.all(color: AppColors.home.activeBookingBannerBorder),
                                 ),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Icon(Icons.info_outline, color: Color(0xFFD97706), size: 18),
+                                    Icon(Icons.info_outline, color: AppColors.home.activeBookingBannerIcon, size: 18),
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Column(
@@ -660,7 +661,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             style: GoogleFonts.plusJakartaSans(
                                               fontSize: 12.5,
                                               fontWeight: FontWeight.bold,
-                                              color: const Color(0xFF92400E),
+                                              color: AppColors.home.activeBookingBannerTitle,
                                             ),
                                           ),
                                           const SizedBox(height: 2),
@@ -668,7 +669,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             service.warningMessage,
                                             style: GoogleFonts.plusJakartaSans(
                                               fontSize: 11,
-                                              color: const Color(0xFFB45309),
+                                              color: AppColors.home.activeBookingBannerSub,
                                               height: 1.35,
                                             ),
                                           ),
@@ -686,15 +687,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             margin: const EdgeInsets.only(top: 14),
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF8B0000), Color(0xFFC0392B)],
+                              gradient: LinearGradient(
+                                colors: AppColors.home.overstayGradient,
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               borderRadius: BorderRadius.circular(16),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFC0392B).withValues(alpha: 0.35),
+                                  color: AppColors.home.overstayRed.withValues(alpha: 0.35),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -741,7 +742,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           style: GoogleFonts.plusJakartaSans(
                                             fontSize: 10.5,
                                             fontWeight: FontWeight.bold,
-                                            color: const Color(0xFFC0392B),
+                                            color: AppColors.home.overstayRed,
                                           ),
                                         ),
                                       ),
@@ -1026,7 +1027,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 44,
                                     height: 44,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF1A73E8).withValues(alpha: 0.18),
+                                      color: AppColors.home.searchGpsAura,
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -1151,10 +1152,10 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: const Color(0xFF10B981), width: 1.5),
+        border: Border.all(color: AppColors.home.radarGreen, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF10B981).withValues(alpha: 0.3),
+            color: AppColors.home.radarGreen.withValues(alpha: 0.3),
             blurRadius: 18,
             spreadRadius: 2,
           ),
@@ -1218,21 +1219,21 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECFDF5),
+                  color: AppColors.home.satelliteBannerBg,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFA7F3D0)),
+                  border: Border.all(color: AppColors.home.satelliteBannerBorder),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.satellite_alt_rounded, size: 13, color: Color(0xFF059669)),
+                    Icon(Icons.satellite_alt_rounded, size: 13, color: AppColors.home.satelliteBannerGreen),
                     const SizedBox(width: 5),
                     Text(
                       'GPS PRESISI TINGGI',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 10.5,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF059669),
+                        color: AppColors.home.satelliteBannerGreen,
                         letterSpacing: 0.8,
                       ),
                     ),
@@ -1244,11 +1245,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () => setState(() => _showLocationOverlay = false),
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF3F4F6),
+                  decoration: BoxDecoration(
+                    color: AppColors.home.modalCloseBtnBg,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.close, size: 16, color: Color(0xFF6B7280)),
+                  child: Icon(Icons.close, size: 16, color: AppColors.home.modalCloseBtnIcon),
                 ),
               ),
             ],
@@ -1268,7 +1269,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.location_on, size: 14, color: Color(0xFF059669)),
+              Icon(Icons.location_on, size: 14, color: AppColors.home.satelliteBannerGreen),
               const SizedBox(width: 4),
               Text(
                 'Kelurahan aktif • Wilayah terdeteksi',
@@ -1282,54 +1283,54 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           const SizedBox(height: 14),
-          Container(height: 1, color: const Color(0xFFF3F4F6)),
+          Container(height: 1, color: AppColors.home.modalDivider),
           const SizedBox(height: 14),
 
           // Detailed Breakdown List
           _buildAddressRow(
             icon: Icons.signpost_outlined,
-            iconBg: const Color(0xFFEEF2FF),
-            iconColor: const Color(0xFF4F46E5),
+            iconBg: AppColors.home.catMallBg,
+            iconColor: AppColors.home.catMallIcon,
             label: 'Alamat / RT / RW',
             value: _locationDetails['jalan'] ?? '-',
           ),
           const SizedBox(height: 10),
           _buildAddressRow(
             icon: Icons.holiday_village_outlined,
-            iconBg: const Color(0xFFECFDF5),
-            iconColor: const Color(0xFF059669),
+            iconBg: AppColors.home.catAirportBg,
+            iconColor: AppColors.home.catAirportIcon,
             label: 'Kelurahan / Desa',
             value: _locationDetails['kelurahan'] ?? '-',
           ),
           const SizedBox(height: 10),
           _buildAddressRow(
             icon: Icons.apartment_outlined,
-            iconBg: const Color(0xFFEFF6FF),
-            iconColor: const Color(0xFF2563EB),
+            iconBg: AppColors.home.catStationBg,
+            iconColor: AppColors.home.catStationIcon,
             label: 'Kecamatan',
             value: _locationDetails['kecamatan'] ?? '-',
           ),
           const SizedBox(height: 10),
           _buildAddressRow(
             icon: Icons.location_city_outlined,
-            iconBg: const Color(0xFFFFF7ED),
-            iconColor: const Color(0xFFD97706),
+            iconBg: AppColors.home.catTourismBg,
+            iconColor: AppColors.home.catTourismIcon,
             label: 'Kabupaten / Kota',
             value: _locationDetails['kota'] ?? '-',
           ),
           const SizedBox(height: 10),
           _buildAddressRow(
             icon: Icons.map_outlined,
-            iconBg: const Color(0xFFFAF5FF),
-            iconColor: const Color(0xFF9333EA),
+            iconBg: AppColors.home.catCampusBg,
+            iconColor: AppColors.home.catCampusIcon,
             label: 'Provinsi / Daerah',
             value: _locationDetails['provinsi'] ?? '-',
           ),
           const SizedBox(height: 10),
           _buildAddressRow(
             icon: Icons.markunread_mailbox_outlined,
-            iconBg: const Color(0xFFFFF1F2),
-            iconColor: const Color(0xFFE11D48),
+            iconBg: AppColors.home.catHospitalBg,
+            iconColor: AppColors.home.catHospitalIcon,
             label: 'Kode Pos',
             value: _locationDetails['kodePos'] ?? '-',
           ),
@@ -1340,13 +1341,13 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
+              color: AppColors.home.gpsLocationCardBg,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
+              border: Border.all(color: AppColors.home.gpsLocationCardBorder),
             ),
             child: Row(
               children: [
-                const Icon(Icons.my_location, size: 14, color: Color(0xFF6B7280)),
+                Icon(Icons.my_location, size: 14, color: AppColors.home.gpsLocationCardIcon),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -1354,7 +1355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: GoogleFonts.jetBrainsMono(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF4B5563),
+                      color: AppColors.home.gpsLocationCardText,
                     ),
                   ),
                 ),
@@ -1369,14 +1370,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.touch_app_outlined, size: 13, color: Color(0xFF9CA3AF)),
+                Icon(Icons.touch_app_outlined, size: 13, color: AppColors.home.searchMutedText),
                 const SizedBox(width: 6),
                 Text(
                   'Lepas sentuhan untuk menutup',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    color: const Color(0xFF9CA3AF),
+                    color: AppColors.home.searchMutedText,
                   ),
                 ),
               ],
@@ -1416,7 +1417,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF9CA3AF),
+                  color: AppColors.home.searchMutedText,
                 ),
               ),
               const SizedBox(height: 1),
@@ -1425,7 +1426,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF1F2937),
+                  color: AppColors.home.searchResultDarkText,
                 ),
               ),
             ],
@@ -1508,7 +1509,7 @@ class _BlinkingGpsDotState extends State<_BlinkingGpsDot>
                 height: widget.size + (6 * val),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFF10B981).withValues(alpha: 0.35 * (1.0 - val * 0.3)),
+                  color: AppColors.home.radarGreen.withValues(alpha: 0.35 * (1.0 - val * 0.3)),
                 ),
               ),
               // Core dot utama (berkedip terang-redup stabil)
@@ -1518,13 +1519,13 @@ class _BlinkingGpsDotState extends State<_BlinkingGpsDot>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Color.lerp(
-                    const Color(0xFF059669),
-                    const Color(0xFF34D399),
+                    AppColors.home.radarPulseDark,
+                    AppColors.home.radarPulseLight,
                     val,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.3 + 0.6 * val),
+                      color: AppColors.home.radarGreen.withValues(alpha: 0.3 + 0.6 * val),
                       blurRadius: 4 + 4 * val,
                       spreadRadius: 1 * val,
                     ),
@@ -1535,36 +1536,6 @@ class _BlinkingGpsDotState extends State<_BlinkingGpsDot>
           ),
         );
       },
-    );
-  }
-}
-
-class _CategoryPill extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool active;
-  final bool tealIcon;
-  final VoidCallback? onTap;
-  const _CategoryPill({required this.label, required this.icon, this.active = false, this.tealIcon = false, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(right: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: active ? Colors.black : AppColors.surfaceCard,
-          borderRadius: AppRadii.pillRadius,
-          boxShadow: active ? null : const [AppShadows.soft],
-        ),
-        child: Row(children: [
-          Icon(icon, size: 16, color: active ? AppColors.white : tealIcon ? AppColors.accentTeal : AppColors.textSecondary),
-          const SizedBox(width: 6),
-          Text(label, style: AppTypography.labelSm(color: active ? AppColors.white : AppColors.textSecondary)),
-        ]),
-      ),
     );
   }
 }
@@ -1595,14 +1566,14 @@ class _FilterPopupState extends State<_FilterPopup> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF00E676) : Colors.white,
+          color: isSelected ? AppColors.home.filterChipGreen : Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: isSelected ? const Color(0xFF00E676) : const Color(0xFFE4DFD5),
+            color: isSelected ? AppColors.home.filterChipGreen : AppColors.warmBorder,
             width: 1.5,
           ),
           boxShadow: isSelected ? [
-            BoxShadow(color: const Color(0xFF00E676).withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4))
+            BoxShadow(color: AppColors.home.filterChipGreen.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4))
           ] : null,
         ),
         child: Text(
@@ -1610,7 +1581,7 @@ class _FilterPopupState extends State<_FilterPopup> {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : const Color(0xFF62615B),
+            color: isSelected ? Colors.white : AppColors.home.filterChipText,
           ),
         ),
       ),
@@ -1642,7 +1613,7 @@ class _FilterPopupState extends State<_FilterPopup> {
                       onTap: () => Navigator.pop(context),
                       child: Container(
                         padding: const EdgeInsets.all(8),
-                        child: Icon(Icons.close, size: 20, color: Color(0xFF1A1A18)),
+                        child: Icon(Icons.close, size: 20, color: AppColors.primary),
                       ),
                     ),
                   ),
@@ -1651,7 +1622,7 @@ class _FilterPopupState extends State<_FilterPopup> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1A1A18),
+                      color: AppColors.primary,
                       letterSpacing: -0.3,
                     ),
                   ),
@@ -1718,33 +1689,33 @@ class _CategoryListState extends State<_CategoryList> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             children: [
-              _CategoryPill(
+              CategoryPill(
                 label: 'Terdekat'.tr, 
                 icon: Icons.near_me, 
                 active: selected == 'Terdekat',
                 onTap: () => HomeBackend.instance.setFilterCategory('Terdekat'),
               ),
-              _CategoryPill(
+              CategoryPill(
                 label: 'Mall'.tr, 
                 icon: Icons.storefront_outlined,
                 active: selected == 'Mall',
                 onTap: () => HomeBackend.instance.setFilterCategory('Mall'),
               ),
-              _CategoryPill(
+              CategoryPill(
                 label: 'Parkir EV'.tr, 
                 icon: Icons.bolt, 
                 tealIcon: true,
                 active: selected == 'Parkir EV',
                 onTap: () => HomeBackend.instance.setFilterCategory('Parkir EV'),
               ),
-              _CategoryPill(
+              CategoryPill(
                 label: 'Motor'.tr, 
                 icon: Icons.two_wheeler, 
                 tealIcon: false,
                 active: selected == 'Motor',
                 onTap: () => HomeBackend.instance.setFilterCategory('Motor'),
               ),
-              _CategoryPill(
+              CategoryPill(
                 label: 'Catatan Parkir'.tr,
                 icon: Icons.note_alt_outlined,
                 tealIcon: false,
@@ -1803,7 +1774,7 @@ class _RecommendationsListState extends State<_RecommendationsList> {
           color: AppColors.surfaceCard,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: isDark ? const Color(0xFF2D3542) : Colors.black.withValues(alpha: 0.06),
+            color: AppColors.home.cardShadowBorder,
           ),
           boxShadow: [
             BoxShadow(
@@ -1823,9 +1794,9 @@ class _RecommendationsListState extends State<_RecommendationsList> {
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
-                    color: const Color(0xFFE5E7EB),
-                    child: const Center(
-                      child: Icon(Icons.local_parking, size: 52, color: Color(0xFF9CA3AF)),
+                    color: AppColors.home.cardPhotoPlaceholderBg,
+                    child: Center(
+                      child: Icon(Icons.local_parking, size: 52, color: AppColors.home.cardPhotoPlaceholderIcon),
                     ),
                   ),
                 ),
@@ -1838,7 +1809,7 @@ class _RecommendationsListState extends State<_RecommendationsList> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
                   decoration: BoxDecoration(
-                    color: isEv ? const Color(0xFF0F766E).withValues(alpha: 0.94) : Colors.black.withValues(alpha: 0.72),
+                    color: isEv ? AppColors.home.cardEvBadgeBg : Colors.black.withValues(alpha: 0.72),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(color: Colors.black.withValues(alpha: 0.25), blurRadius: 6, offset: const Offset(0, 2)),
@@ -1913,7 +1884,7 @@ class _RecommendationsListState extends State<_RecommendationsList> {
                             const SizedBox(width: 6),
                             Row(
                               children: [
-                                const Icon(Icons.star, color: Color(0xFFF4B400), size: 15),
+                                Icon(Icons.star, color: AppColors.home.starYellow, size: 15),
                                 const SizedBox(width: 2),
                                 Text(
                                   rating,
@@ -1936,7 +1907,7 @@ class _RecommendationsListState extends State<_RecommendationsList> {
                           Icon(
                             Icons.near_me_outlined,
                             size: 13,
-                            color: isDark ? Colors.white : const Color(0xFF5F6368),
+                            color: AppColors.home.cardSecondaryText,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -1944,7 +1915,7 @@ class _RecommendationsListState extends State<_RecommendationsList> {
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: isDark ? Colors.white : const Color(0xFF5F6368),
+                              color: AppColors.home.cardSecondaryText,
                             ),
                           ),
                         ],
@@ -1964,7 +1935,7 @@ class _RecommendationsListState extends State<_RecommendationsList> {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 9.5,
                                   fontWeight: FontWeight.w700,
-                                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF76777B),
+                                  color: AppColors.home.cardDistanceText,
                                   letterSpacing: 0.3,
                                 ),
                               ),
@@ -1973,7 +1944,7 @@ class _RecommendationsListState extends State<_RecommendationsList> {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w800,
-                                  color: isDark ? Colors.white : const Color(0xFF0F766E),
+                                  color: AppColors.home.cardPriceText,
                                 ),
                               ),
                             ],
@@ -1981,7 +1952,7 @@ class _RecommendationsListState extends State<_RecommendationsList> {
                           // Tombol Explore
                           ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: isDark ? Colors.white : const Color(0xFF1C1D1F),
+                              backgroundColor: isDark ? Colors.white : AppColors.buttonPrimary,
                               foregroundColor: isDark ? Colors.black : Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),

@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'backend/ktp_camera_backend.dart';
 import 'backend/profile_backend.dart';
 import '../../core/services/maintenance_service.dart';
+import '../../theme/app_colors.dart';
 
 class KtpCameraScreen extends StatefulWidget {
   const KtpCameraScreen({super.key});
@@ -78,10 +79,10 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Foto KTP berhasil disimpan! Lanjut ke foto selfie bersama KTP.'),
-          backgroundColor: Color(0xFF10B981),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: const Text('Foto KTP berhasil disimpan! Lanjut ke foto selfie bersama KTP.'),
+          backgroundColor: AppColors.profile.kycVerified,
+          duration: const Duration(seconds: 2),
         ),
       );
     } else {
@@ -90,9 +91,9 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
 
       if (_ktpBytes == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Foto KTP belum tersedia, silakan ambil foto KTP terlebih dahulu.'),
-            backgroundColor: Color(0xFFEF4444),
+          SnackBar(
+            content: const Text('Foto KTP belum tersedia, silakan ambil foto KTP terlebih dahulu.'),
+            backgroundColor: AppColors.profile.kycRejected,
           ),
         );
         setState(() {
@@ -146,10 +147,10 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
           barrierDismissible: false,
           builder: (ctx) => AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            backgroundColor: const Color(0xFF1E232B),
+            backgroundColor: AppColors.surfaceCardDark,
             title: Row(
               children: [
-                const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 28),
+                Icon(Icons.check_circle, color: AppColors.profile.kycVerified, size: 28),
                 const SizedBox(width: 10),
                 Text(
                   'KYC Berhasil Diajukan',
@@ -164,7 +165,7 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
             content: Text(
               'Kedua foto (KTP & Selfie) berhasil dikompresi 95% dan diunggah secara bersamaan ke Supabase Storage (kyc-documents). Berkas telah tersimpan di antrean verifikasi Super Admin (ACC).',
               style: GoogleFonts.plusJakartaSans(
-                color: const Color(0xFFCBD5E1),
+                color: AppColors.textPrimaryDark,
                 fontSize: 14,
                 height: 1.5,
               ),
@@ -172,8 +173,8 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
             actions: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF38BDF8),
-                  foregroundColor: const Color(0xFF0F172A),
+                  backgroundColor: AppColors.auth.linkBlue,
+                  foregroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: () {
@@ -192,7 +193,7 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(backend.errorMessage ?? 'Gagal memproses pengajuan KYC.'),
-            backgroundColor: const Color(0xFFEF4444),
+            backgroundColor: AppColors.profile.kycRejected,
             duration: const Duration(seconds: 4),
           ),
         );
@@ -254,7 +255,7 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
                     ),
                   )
                 : Container(
-                    color: const Color(0xFF1C1D1F),
+                    color: AppColors.primary,
                     child: const Center(
                       child: CircularProgressIndicator(color: Colors.white),
                     ),
@@ -345,15 +346,15 @@ class _KtpCameraScreenState extends State<KtpCameraScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E232B),
+                      color: AppColors.surfaceCardDark,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFF38BDF8), width: 1.5),
+                      border: Border.all(color: AppColors.profile.ktpGuideBorder, width: 1.5),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF38BDF8)),
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(AppColors.profile.ktpGuideBorder),
                         ),
                         const SizedBox(height: 16),
                         Text(

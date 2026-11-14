@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../core/services/theme_service.dart';
 import '../../core/services/notification_service.dart';
+import '../../theme/app_colors.dart';
 import 'models/parking_note.dart';
 import 'add_parking_note_screen.dart';
 
@@ -12,10 +13,10 @@ class ParkingNotesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = ThemeService.instance.isDarkMode;
-    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFF9FAFB);
-    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final textMain = isDark ? Colors.white : const Color(0xFF111827);
-    final textMuted = isDark ? const Color(0xFF9CA3AF) : const Color(0xFF6B7280);
+    final bg = AppColors.background;
+    final cardBg = AppColors.surfaceCard;
+    final textMain = AppColors.textPrimary;
+    final textMuted = AppColors.textMuted;
 
     final box = Hive.box('parking_notes');
 
@@ -41,10 +42,10 @@ class ParkingNotesScreen extends StatelessWidget {
               );
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Notifikasi instan dikirim ke status bar!'),
-                    backgroundColor: Color(0xFF2563EB),
-                    duration: Duration(seconds: 2),
+                  SnackBar(
+                    content: const Text('Notifikasi instan dikirim ke status bar!'),
+                    backgroundColor: AppColors.notes.primaryBlue,
+                    duration: const Duration(seconds: 2),
                   ),
                 );
               }
@@ -89,7 +90,7 @@ class ParkingNotesScreen extends StatelessWidget {
                       icon: const Icon(Icons.add),
                       label: const Text('Buat Catatan Baru'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2563EB),
+                        backgroundColor: AppColors.notes.primaryBlue,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
@@ -132,10 +133,10 @@ class ParkingNotesScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2563EB).withAlpha(30),
+                            color: AppColors.notes.primaryBlue.withAlpha(30),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.local_parking, color: Color(0xFF2563EB), size: 24),
+                          child: Icon(Icons.local_parking, color: AppColors.notes.primaryBlue, size: 24),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -154,7 +155,7 @@ class ParkingNotesScreen extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF10B981).withAlpha(25),
+                                  color: AppColors.notes.activeStatusBg,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -162,7 +163,7 @@ class ParkingNotesScreen extends StatelessWidget {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 12,
-                                    color: const Color(0xFF10B981),
+                                    color: AppColors.notes.activeStatusText,
                                   ),
                                 ),
                               ),
@@ -224,14 +225,14 @@ class ParkingNotesScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          const Icon(Icons.alarm, size: 16, color: Color(0xFFF59E0B)),
+                          Icon(Icons.alarm, size: 16, color: AppColors.notes.alarmWarning),
                           const SizedBox(width: 6),
                           Text(
                             'Pengingat: ${note.reminderTime!.day}/${note.reminderTime!.month} ${note.reminderTime!.hour.toString().padLeft(2, '0')}:${note.reminderTime!.minute.toString().padLeft(2, '0')}',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFFF59E0B),
+                              color: AppColors.notes.alarmWarning,
                             ),
                           ),
                         ],
@@ -251,7 +252,7 @@ class ParkingNotesScreen extends StatelessWidget {
             MaterialPageRoute(builder: (_) => const AddParkingNoteScreen()),
           );
         },
-        backgroundColor: const Color(0xFF2563EB),
+        backgroundColor: AppColors.notes.primaryBlue,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text('Catat Parkir'),

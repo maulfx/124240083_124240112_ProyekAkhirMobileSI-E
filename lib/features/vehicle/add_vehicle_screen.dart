@@ -6,6 +6,7 @@ import '../../core/services/theme_service.dart';
 import '../../core/services/language_service.dart';
 import '../../core/utils/image_compression_util.dart';
 import '../../core/utils/stnk_expiry_formatter.dart';
+import '../../theme/app_colors.dart';
 import 'custom_camera_screen.dart';
 import 'backend/add_vehicle_backend.dart';
 
@@ -77,7 +78,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Foto kendaraan berhasil dikompres 70%: $_compressionInfo'),
-            backgroundColor: const Color(0xFF10B981),
+            backgroundColor: AppColors.vehicle.ocrSuccess,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -138,7 +139,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                     icon: const Icon(Icons.camera_alt, size: 18),
                     label: Text('Kamera'.tr),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isDark ? theme.surfaceField : const Color(0xFF141518),
+                      backgroundColor: AppColors.vehicle.modalHeaderBg,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -185,7 +186,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Foto 2x berhasil diolah! Plat: ${_plateController.text} • Masa Berlaku: ${_expiryController.text}'),
-          backgroundColor: const Color(0xFF10B981),
+          backgroundColor: AppColors.vehicle.ocrSuccess,
         ),
       );
     }
@@ -199,7 +200,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF1E232B) : Colors.white,
+      backgroundColor: AppColors.vehicle.dialogBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -239,7 +240,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                 'Masukkan plat nomor kendaraan Anda (bebas menambahkan banyak kendaraan)'.tr,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 12,
-                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  color: AppColors.vehicle.ocrHelpText,
                 ),
               ),
               const SizedBox(height: 16),
@@ -258,7 +259,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                   hintText: 'Contoh: B 1234 ABC',
                   prefixIcon: const Icon(Icons.pin),
                   filled: true,
-                  fillColor: isDark ? const Color(0xFF2E3848) : const Color(0xFFF1F5F9),
+                  fillColor: AppColors.vehicle.ocrInputFill,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
@@ -281,7 +282,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                   hintText: 'MM • YY (Contoh: 10 • 28)',
                   prefixIcon: const Icon(Icons.date_range),
                   filled: true,
-                  fillColor: isDark ? const Color(0xFF2E3848) : const Color(0xFFF1F5F9),
+                  fillColor: AppColors.vehicle.ocrInputFill,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
@@ -296,10 +297,10 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                     margin: const EdgeInsets.only(top: 14, bottom: 4),
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF111215),
+                      color: AppColors.vehicle.physicalPlatePreviewBg,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: plate.isNotEmpty ? const Color(0xFF34D399) : const Color(0xFF2E3848),
+                        color: plate.isNotEmpty ? AppColors.vehicle.plateBorderActive : AppColors.vehicle.plateBorderInactive,
                         width: 1.5,
                       ),
                     ),
@@ -323,7 +324,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                 'KORLANTAS POLRI',
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 7.5,
-                                  color: const Color(0xFFA3A3A3),
+                                  color: AppColors.vehicle.plateMutedText,
                                   letterSpacing: 1.2,
                                 ),
                               ),
@@ -345,7 +346,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFF34D399),
+                                color: AppColors.vehicle.plateVerifiedGreen,
                                 letterSpacing: 1.5,
                               ),
                             ),
@@ -354,7 +355,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 8,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFFA3A3A3),
+                                color: AppColors.vehicle.plateMutedText,
                                 letterSpacing: 1,
                               ),
                             ),
@@ -388,7 +389,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                     Navigator.pop(ctx);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF10B981),
+                    backgroundColor: AppColors.vehicle.ocrSuccess,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -477,15 +478,15 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF3B2720) : const Color(0xFFFFFBEB),
+                            color: AppColors.vehicle.warningBannerBg,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: isDark ? const Color(0xFF7C2D12) : const Color(0xFFFDE68A),
+                              color: AppColors.vehicle.warningBannerBorder,
                             ),
                           ),
                           child: Icon(
                             Icons.document_scanner,
-                            color: isDark ? const Color(0xFFFB923C) : const Color(0xFF92400E),
+                            color: AppColors.vehicle.warningBannerText,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -505,7 +506,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: isDark ? const Color(0xFF064E3B) : const Color(0xFFD1FAE5),
+                                  color: AppColors.vehicle.ocrLiveStatusCardBg,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -513,7 +514,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: isDark ? const Color(0xFF6EE7B7) : const Color(0xFF065F46),
+                                    color: AppColors.vehicle.ocrLiveStatusCardText,
                                   ),
                                 ),
                               ),
@@ -523,7 +524,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                         ElevatedButton(
                           onPressed: _openCameraScanner,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isDark ? Colors.white : const Color(0xFF141518),
+                            backgroundColor: AppColors.vehicle.primaryActionButton,
                             foregroundColor: isDark ? Colors.black : Colors.white,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -639,13 +640,13 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
                                 color: _scannedPlate != null
-                                    ? (isDark ? const Color(0xFF064E3B) : const Color(0xFFECFDF5))
-                                    : (isDark ? const Color(0xFF451A03) : const Color(0xFFFFFBEB)),
+                                    ? AppColors.vehicle.confScoreBgSuccess
+                                    : AppColors.vehicle.confScoreBgWarning,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: _scannedPlate != null
-                                      ? (isDark ? const Color(0xFF047857) : const Color(0xFFA7F3D0))
-                                      : (isDark ? const Color(0xFFB45309) : const Color(0xFFFDE68A)),
+                                      ? AppColors.vehicle.confScoreBorderSuccess
+                                      : AppColors.vehicle.confScoreBorderWarning,
                                 ),
                               ),
                               child: Row(
@@ -655,8 +656,8 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                     height: 6,
                                     decoration: BoxDecoration(
                                       color: _scannedPlate != null
-                                          ? const Color(0xFF10B981)
-                                          : const Color(0xFFF59E0B),
+                                          ? AppColors.vehicle.confScoreIconSuccess
+                                          : AppColors.vehicle.confScoreIconWarning,
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -669,8 +670,8 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                       color: _scannedPlate != null
-                                          ? (isDark ? const Color(0xFF6EE7B7) : const Color(0xFF047857))
-                                          : (isDark ? const Color(0xFFFCD34D) : const Color(0xFFB45309)),
+                                          ? AppColors.vehicle.confScoreTextSuccess
+                                          : AppColors.vehicle.confScoreTextWarning,
                                     ),
                                   ),
                                 ],
@@ -687,12 +688,12 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             width: double.infinity,
                             height: 72,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF111215),
+                              color: AppColors.vehicle.physicalPlatePreviewBg,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: _plateController.text.isNotEmpty
-                                    ? const Color(0xFF34D399)
-                                    : (isDark ? theme.border : const Color(0xFF2B2D33)),
+                                    ? AppColors.vehicle.plateBorderActive
+                                    : AppColors.vehicle.ocrPlatePreviewBorder,
                                 width: 2,
                               ),
                               boxShadow: [
@@ -746,7 +747,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                               'KORLANTAS POLRI',
                                               style: GoogleFonts.plusJakartaSans(
                                                 fontSize: 8,
-                                                color: const Color(0xFFA3A3A3),
+                                                color: AppColors.vehicle.plateMutedText,
                                                 letterSpacing: 1.5,
                                               ),
                                             ),
@@ -767,7 +768,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                             style: GoogleFonts.plusJakartaSans(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w800,
-                                              color: const Color(0xFFE5E5E5),
+                                              color: AppColors.vehicle.plateHighlightText,
                                               letterSpacing: 2,
                                             ),
                                           ),
@@ -776,14 +777,14 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                             style: GoogleFonts.plusJakartaSans(
                                               fontSize: 9,
                                               fontWeight: FontWeight.bold,
-                                              color: const Color(0xFFA3A3A3),
+                                              color: AppColors.vehicle.plateMutedText,
                                               letterSpacing: 1,
                                             ),
                                           ),
                                         ],
                                       ),
                                       const SizedBox(width: 8),
-                                      const Icon(Icons.edit, size: 16, color: Color(0xFF34D399)),
+                                      Icon(Icons.edit, size: 16, color: AppColors.vehicle.plateVerifiedGreen),
                                     ],
                                   ),
                           ),
@@ -825,8 +826,8 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                               _plateController.text.isNotEmpty ? Icons.verified : Icons.info_outline,
                               size: 13,
                               color: _plateController.text.isNotEmpty
-                                  ? const Color(0xFF10B981)
-                                  : const Color(0xFFF59E0B),
+                                  ? AppColors.vehicle.confScoreIconSuccess
+                                  : AppColors.vehicle.confScoreIconWarning,
                             ),
                             const SizedBox(width: 5),
                             Expanded(
@@ -837,8 +838,8 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 11,
                                   color: _plateController.text.isNotEmpty
-                                      ? (isDark ? const Color(0xFF6EE7B7) : const Color(0xFF047857))
-                                      : (isDark ? const Color(0xFFFCD34D) : const Color(0xFFB45309)),
+                                      ? AppColors.vehicle.confScoreTextSuccess
+                                      : AppColors.vehicle.confScoreTextWarning,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -896,7 +897,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             prefixIcon: Icon(Icons.directions_car, color: theme.textMuted),
                             suffixIcon: Icon(Icons.edit, color: theme.textMuted),
                             filled: true,
-                            fillColor: isDark ? theme.surfaceField : const Color(0xFFF7F5ED),
+                            fillColor: AppColors.vehicle.fieldFill,
                             contentPadding: const EdgeInsets.symmetric(vertical: 14),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -945,7 +946,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                         Row(
                           children: [
                             _ColorBtn(
-                              color: Colors.white,
+                              color: AppColors.vehicle.paintWhite,
                               name: 'Putih Mutiara'.tr,
                               selectedColor: _selectedColor,
                               onSelect: (c) => setState(() => _selectedColor = c),
@@ -953,7 +954,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             ),
                             const SizedBox(width: 12),
                             _ColorBtn(
-                              color: const Color(0xFF171717),
+                              color: AppColors.vehicle.paintBlack,
                               name: 'Hitam Solid'.tr,
                               selectedColor: _selectedColor,
                               onSelect: (c) => setState(() => _selectedColor = c),
@@ -962,7 +963,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             ),
                             const SizedBox(width: 12),
                             _ColorBtn(
-                              color: const Color(0xFF64748B),
+                              color: AppColors.vehicle.paintGrey,
                               name: 'Abu-Abu Metalik'.tr,
                               selectedColor: _selectedColor,
                               onSelect: (c) => setState(() => _selectedColor = c),
@@ -971,7 +972,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             ),
                             const SizedBox(width: 12),
                             _ColorBtn(
-                              color: const Color(0xFFBE123C),
+                              color: AppColors.vehicle.paintRed,
                               name: 'Merah Maroon'.tr,
                               selectedColor: _selectedColor,
                               onSelect: (c) => setState(() => _selectedColor = c),
@@ -980,7 +981,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             ),
                             const SizedBox(width: 12),
                             _ColorBtn(
-                              color: const Color(0xFFD6D3D1),
+                              color: AppColors.vehicle.paintSilver,
                               name: 'Silver Quartz'.tr,
                               selectedColor: _selectedColor,
                               onSelect: (c) => setState(() => _selectedColor = c),
@@ -1026,7 +1027,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
-                                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                                color: AppColors.vehicle.quickScanChipBg,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -1046,7 +1047,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                             height: 120,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: isDark ? theme.surfaceField : const Color(0xFFF8FAFC),
+                              color: AppColors.surfaceField,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: theme.border),
                             ),
@@ -1122,7 +1123,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                       child: Container(
                                         padding: const EdgeInsets.all(6),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFDC2626).withValues(alpha: 0.85),
+                                          color: AppColors.vehicle.plateDeleteWarning,
                                           shape: BoxShape.circle,
                                         ),
                                         child: const Icon(Icons.close, size: 14, color: Colors.white),
@@ -1144,7 +1145,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                     ),
                                     child: Row(
                                       children: [
-                                        const Icon(Icons.check_circle, size: 12, color: Color(0xFF34D399)),
+                                        Icon(Icons.check_circle, size: 12, color: AppColors.vehicle.plateCheckIcon),
                                         const SizedBox(width: 6),
                                         Expanded(
                                           child: Text(
@@ -1171,7 +1172,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                               decoration: BoxDecoration(
-                                color: isDark ? theme.surfaceField : const Color(0xFFF8FAFC),
+                                color: AppColors.surfaceField,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(color: theme.border),
                               ),
@@ -1239,7 +1240,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text('Nomor plat kendaraan wajib diisi! Silakan scan kamera atau ketik manual.'.tr),
-                                    backgroundColor: const Color(0xFFDC2626),
+                                    backgroundColor: AppColors.vehicle.ocrError,
                                     duration: const Duration(seconds: 3),
                                   ),
                                 );
@@ -1260,7 +1261,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text('Kendaraan berhasil disimpan!'.tr),
-                                      backgroundColor: const Color(0xFF10B981),
+                                      backgroundColor: AppColors.vehicle.ocrSuccess,
                                     ),
                                   );
                                   Navigator.pop(context);
@@ -1275,7 +1276,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                               }
                             },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDark ? Colors.white : const Color(0xFF141518),
+                        backgroundColor: AppColors.vehicle.primaryActionButton,
                         foregroundColor: isDark ? Colors.black : Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
@@ -1338,12 +1339,12 @@ class _CategoryBtn extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? (isDark ? Colors.white : const Color(0xFF141518))
+              ? AppColors.vehicle.primaryActionButton
               : (isDark ? theme.surfaceField : Colors.white),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
-                ? (isDark ? Colors.white : const Color(0xFF141518))
+                ? AppColors.vehicle.primaryActionButton
                 : theme.border,
             width: 2,
           ),
@@ -1425,7 +1426,7 @@ class _ColorBtn extends StatelessWidget {
             ? Icon(
                 Icons.check,
                 size: 16,
-                color: isDarkItem ? Colors.white : const Color(0xFF1C1917),
+                color: isDarkItem ? Colors.white : AppColors.vehicle.itemDarkText,
               )
             : null,
       ),

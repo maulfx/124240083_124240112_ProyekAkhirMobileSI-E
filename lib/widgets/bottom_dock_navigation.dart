@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
 import '../features/home/home_screen.dart';
 import '../features/map/explore_map_screen.dart';
 import '../features/profile/profile_screen.dart';
@@ -16,11 +17,11 @@ class BottomDockNavigation extends StatelessWidget {
       height: 64,
       constraints: const BoxConstraints(maxWidth: 280),
       decoration: BoxDecoration(
-        color: const Color(0xFF1C1D1F),
+        color: AppColors.dockBg,
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1C1D1F).withValues(alpha: 0.25),
+            color: AppColors.dockBg.withValues(alpha: 0.25),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -57,7 +58,7 @@ class BottomDockNavigation extends StatelessWidget {
       child: Container(
         width: 46, height: 46,
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFD67B5A) : Colors.transparent,
+          color: isActive ? AppColors.secondary : Colors.transparent,
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,

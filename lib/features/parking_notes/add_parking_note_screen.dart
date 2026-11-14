@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../../core/services/theme_service.dart';
 import '../../core/services/notification_service.dart';
+import '../../theme/app_colors.dart';
 import 'models/parking_note.dart';
 
 class AddParkingNoteScreen extends StatefulWidget {
@@ -130,7 +130,7 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(_isEditMode ? 'Catatan parkir diperbarui!' : 'Catatan parkir disimpan di Hive!'),
-          backgroundColor: const Color(0xFF10B981),
+          backgroundColor: AppColors.notes.saveSuccess,
         ),
       );
       Navigator.pop(context);
@@ -139,11 +139,10 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = ThemeService.instance.isDarkMode;
-    final bg = isDark ? const Color(0xFF121212) : const Color(0xFFF9FAFB);
-    final cardBg = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final textMain = isDark ? Colors.white : const Color(0xFF111827);
-    final textMuted = isDark ? const Color(0xFF9CA3AF) : const Color(0xFF6B7280);
+    final bg = AppColors.background;
+    final cardBg = AppColors.surfaceCard;
+    final textMain = AppColors.textPrimary;
+    final textMuted = AppColors.textMuted;
 
     return Scaffold(
       backgroundColor: bg,
@@ -217,7 +216,7 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
                   children: [
                     Icon(
                       _reminderDateTime != null ? Icons.alarm_on : Icons.alarm,
-                      color: _reminderDateTime != null ? const Color(0xFF3B82F6) : textMuted,
+                      color: _reminderDateTime != null ? AppColors.notes.reminderSelected : textMuted,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -263,7 +262,7 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
                     style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2563EB),
+                    backgroundColor: AppColors.notes.primaryBlue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),

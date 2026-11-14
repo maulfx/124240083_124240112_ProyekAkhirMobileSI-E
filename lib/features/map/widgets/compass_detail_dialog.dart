@@ -1,3 +1,4 @@
+import '../../../theme/app_colors.dart';
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
@@ -30,7 +31,7 @@ class MiniCompassNeedlePainter extends CustomPainter {
       ..close();
 
     final northPaint = Paint()
-      ..color = const Color(0xFFEF4444)
+      ..color = AppColors.map.needleNorth
       ..style = PaintingStyle.fill;
     canvas.drawPath(northPath, northPaint);
 
@@ -42,7 +43,7 @@ class MiniCompassNeedlePainter extends CustomPainter {
       ..close();
 
     final northShadowPaint = Paint()
-      ..color = const Color(0xFFDC2626)
+      ..color = AppColors.map.needleNorthShadow
       ..style = PaintingStyle.fill;
     canvas.drawPath(northShadowPath, northShadowPaint);
 
@@ -54,7 +55,7 @@ class MiniCompassNeedlePainter extends CustomPainter {
       ..close();
 
     final southPaint = Paint()
-      ..color = isDark ? const Color(0xFFCBD5E1) : const Color(0xFF64748B)
+      ..color = AppColors.map.needleSouth
       ..style = PaintingStyle.fill;
     canvas.drawPath(southPath, southPaint);
 
@@ -65,18 +66,18 @@ class MiniCompassNeedlePainter extends CustomPainter {
       ..close();
 
     final southShadowPaint = Paint()
-      ..color = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569)
+      ..color = AppColors.map.needleSouthShadow
       ..style = PaintingStyle.fill;
     canvas.drawPath(southShadowPath, southShadowPaint);
 
     // Titik pivot tengah
     final pivotBorder = Paint()
-      ..color = isDark ? Colors.white : const Color(0xFF1E293B)
+      ..color = AppColors.map.needlePivot
       ..style = PaintingStyle.fill;
     canvas.drawCircle(Offset(cx, cy), r * 0.22, pivotBorder);
 
     final pivotCenter = Paint()
-      ..color = const Color(0xFFEF4444)
+      ..color = AppColors.map.needleNorth
       ..style = PaintingStyle.fill;
     canvas.drawCircle(Offset(cx, cy), r * 0.12, pivotCenter);
   }
@@ -124,19 +125,17 @@ class FullCompassDialPainter extends CustomPainter {
 
     // 3. Garis-garis tanda sudut (Ticks) setiap 2 derajat
     final majorTickPaint = Paint()
-      ..color = isDark ? Colors.white70 : const Color(0xFF1E293B)
+      ..color = AppColors.map.dialMarksMajor
       ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
 
     final medTickPaint = Paint()
-      ..color = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)
+      ..color = AppColors.map.dialMarksMinor
       ..strokeWidth = 1.5
       ..strokeCap = StrokeCap.round;
 
     final minorTickPaint = Paint()
-      ..color = isDark
-          ? const Color(0xFF475569).withValues(alpha: 0.8)
-          : const Color(0xFF94A3B8)
+      ..color = AppColors.map.dialRingBorder
       ..strokeWidth = 1.0;
 
     for (int deg = 0; deg < 360; deg += 2) {
@@ -184,10 +183,8 @@ class FullCompassDialPainter extends CustomPainter {
             fontSize: isNorth ? 18 : (isMajor ? 14 : 11),
             fontWeight: isNorth || isMajor ? FontWeight.w900 : FontWeight.w600,
             color: isNorth
-                ? const Color(0xFFEF4444)
-                : (isDark
-                    ? (isMajor ? Colors.white : const Color(0xFF94A3B8))
-                    : (isMajor ? const Color(0xFF0F172A) : const Color(0xFF64748B))),
+                ? AppColors.map.needleNorth
+                : (isMajor ? AppColors.textPrimary : AppColors.textSecondary),
           ),
         ),
         textDirection: TextDirection.ltr,
@@ -209,7 +206,7 @@ class FullCompassDialPainter extends CustomPainter {
           style: GoogleFonts.outfit(
             fontSize: 10,
             fontWeight: FontWeight.w600,
-            color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+            color: AppColors.textSecondary,
           ),
         ),
         textDirection: TextDirection.ltr,
@@ -220,9 +217,7 @@ class FullCompassDialPainter extends CustomPainter {
 
     // 6. Garis silang halus di tengah (Crosshair)
     final crossHairPaint = Paint()
-      ..color = isDark
-          ? const Color(0xFF334155).withValues(alpha: 0.5)
-          : const Color(0xFFE2E8F0)
+      ..color = AppColors.map.headingCardBorder
       ..strokeWidth = 1.0;
 
     canvas.drawLine(Offset(cx - radius * 0.25, cy), Offset(cx + radius * 0.25, cy), crossHairPaint);
@@ -259,7 +254,7 @@ class FullCompassNeedlePainter extends CustomPainter {
     canvas.drawPath(
       nLeft,
       Paint()
-        ..color = const Color(0xFFFF5252)
+        ..color = AppColors.map.needleNorthAlt
         ..style = PaintingStyle.fill,
     );
 
@@ -272,7 +267,7 @@ class FullCompassNeedlePainter extends CustomPainter {
     canvas.drawPath(
       nRight,
       Paint()
-        ..color = const Color(0xFFD32F2F)
+        ..color = AppColors.map.needleNorthAltDark
         ..style = PaintingStyle.fill,
     );
 
@@ -286,7 +281,7 @@ class FullCompassNeedlePainter extends CustomPainter {
     canvas.drawPath(
       sLeft,
       Paint()
-        ..color = isDark ? const Color(0xFFE2E8F0) : const Color(0xFF64748B)
+        ..color = AppColors.map.needleSouthAlt
         ..style = PaintingStyle.fill,
     );
 
@@ -299,7 +294,7 @@ class FullCompassNeedlePainter extends CustomPainter {
     canvas.drawPath(
       sRight,
       Paint()
-        ..color = isDark ? const Color(0xFF94A3B8) : const Color(0xFF334155)
+        ..color = AppColors.map.needleSouthAltDark
         ..style = PaintingStyle.fill,
     );
 
@@ -309,7 +304,7 @@ class FullCompassNeedlePainter extends CustomPainter {
       Offset(cx, cy),
       r * 0.18,
       Paint()
-        ..color = isDark ? const Color(0xFF1E293B) : Colors.white
+        ..color = AppColors.map.needleCenterDot
         ..style = PaintingStyle.fill,
     );
 
@@ -318,7 +313,7 @@ class FullCompassNeedlePainter extends CustomPainter {
       Offset(cx, cy),
       r * 0.18,
       Paint()
-        ..color = const Color(0xFF64748B)
+        ..color = AppColors.map.dialMarksMinor
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0,
     );
@@ -328,7 +323,7 @@ class FullCompassNeedlePainter extends CustomPainter {
       Offset(cx, cy),
       r * 0.10,
       Paint()
-        ..color = const Color(0xFFEF4444)
+        ..color = AppColors.map.needleNorth
         ..style = PaintingStyle.fill,
     );
   }
@@ -511,7 +506,7 @@ class _CompassDetailDialogState extends State<CompassDetailDialog>
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF1A73E8).withValues(alpha: 0.15),
+                              color: AppColors.map.targetBearingBlue,
                               blurRadius: 40,
                               spreadRadius: 8,
                             ),
@@ -547,11 +542,11 @@ class _CompassDetailDialogState extends State<CompassDetailDialog>
                           width: 4,
                           height: 12,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEF4444),
+                            color: AppColors.map.needleNorth,
                             borderRadius: BorderRadius.circular(2),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFEF4444).withValues(alpha: 0.8),
+                                color: AppColors.map.needleNorth.withValues(alpha: 0.8),
                                 blurRadius: 6,
                               ),
                             ],
@@ -598,7 +593,7 @@ class _CompassDetailDialogState extends State<CompassDetailDialog>
                             style: GoogleFonts.outfit(
                               fontSize: 36,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFFEF4444),
+                              color: AppColors.map.needleNorth,
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -607,7 +602,7 @@ class _CompassDetailDialogState extends State<CompassDetailDialog>
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF38BDF8),
+                              color: AppColors.map.targetBearingIcon,
                             ),
                           ),
                         ],

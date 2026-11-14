@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/services/theme_service.dart';
+import '../../theme/app_colors.dart';
 import '../../core/utils/hash_util.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -44,7 +45,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           message,
           style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFFEF4444),
+        backgroundColor: AppColors.statusOccupied,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -111,7 +112,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               'Kata sandi berhasil diperbarui untuk ${userResponse['email']}. Silakan masuk dengan kata sandi baru.',
               style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.w600),
             ),
-            backgroundColor: const Color(0xFF10B981),
+            backgroundColor: AppColors.statusAvailable,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             duration: const Duration(seconds: 3),
@@ -150,7 +151,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               'Kata sandi admin berhasil diperbarui untuk ${adminResponse['email']}. Silakan masuk dengan kata sandi baru.',
               style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.w600),
             ),
-            backgroundColor: const Color(0xFF10B981),
+            backgroundColor: AppColors.statusAvailable,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             duration: const Duration(seconds: 3),
@@ -183,12 +184,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         final theme = ThemeService.instance;
         final isDark = theme.isDarkMode;
 
-        final Color bg = isDark ? const Color(0xFF111418) : const Color(0xFFF9F9F9);
-        final Color cardBg = isDark ? const Color(0xFF181C22) : Colors.white;
-        final Color textMain = isDark ? Colors.white : const Color(0xFF14202B);
-        final Color textSub = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
-        final Color borderColor = isDark ? const Color(0xFF28303C) : const Color(0xFFD8DEE5);
-        final Color primaryBrand = isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177);
+        final Color bg = AppColors.background;
+        final Color cardBg = AppColors.surfaceCard;
+        final Color textMain = AppColors.textPrimary;
+        final Color textSub = AppColors.textSecondary;
+        final Color borderColor = AppColors.warmBorder;
+        final Color primaryBrand = AppColors.auth.linkBlue;
 
         return Scaffold(
           backgroundColor: bg,
@@ -232,7 +233,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF0F2338) : const Color(0xFFEBF3FC),
+                        color: AppColors.surfaceDim,
                         borderRadius: BorderRadius.circular(20),
                         border: isDark
                             ? Border.all(color: primaryBrand.withValues(alpha: 0.6), width: 1.2)
@@ -369,10 +370,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF161E28) : const Color(0xFFF0F5FA),
+                        color: AppColors.auth.otpCardBg,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: isDark ? const Color(0xFF223447) : const Color(0xFFD6E4F0),
+                          color: AppColors.auth.otpCardBorder,
                         ),
                       ),
                       child: Row(
@@ -381,7 +382,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           Icon(
                             Icons.verified_user_outlined,
                             size: 18,
-                            color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF006A9A),
+                            color: AppColors.auth.linkBlue,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -389,7 +390,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               'Kata sandi akan langsung diubah di database jika email cocok, tanpa memerlukan verifikasi kode OTP.',
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12.5,
-                                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+                                color: AppColors.textSecondary,
                                 height: 1.45,
                               ),
                             ),
@@ -406,7 +407,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _handleResetPassword,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark ? Colors.white : const Color(0xFF114177),
+                          backgroundColor: isDark ? Colors.white : AppColors.primary,
                           foregroundColor: isDark ? Colors.black : Colors.white,
                           elevation: isDark ? 6 : 0,
                           shadowColor: isDark ? Colors.white.withValues(alpha: 0.15) : Colors.transparent,
@@ -462,7 +463,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177),
+                                  color: AppColors.auth.linkBlue,
                                   decoration: TextDecoration.underline,
                                 ),
                               ),
@@ -528,7 +529,7 @@ class _InputField extends StatelessWidget {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E232B) : const Color(0xFFF6F8FA),
+            color: AppColors.surfaceField,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: borderColor),
           ),
@@ -551,7 +552,7 @@ class _InputField extends StatelessWidget {
               prefixIcon: Icon(
                 icon,
                 size: 20,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                color: AppColors.textSecondary,
               ),
               suffixIcon: suffixIcon,
               border: InputBorder.none,

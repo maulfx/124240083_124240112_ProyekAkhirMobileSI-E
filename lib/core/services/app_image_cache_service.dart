@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import '../../theme/app_colors.dart';
 import 'database_cache_balancer_service.dart';
 
 /// Service penyimpanan & caching gambar di disk perangkat (local storage) & memori
@@ -355,9 +356,9 @@ class _AppCachedNetworkImageState extends State<AppCachedNetworkImage> {
     return Container(
       width: widget.width,
       height: widget.height,
-      color: const Color(0xFFF1EEE7),
-      child: const Center(
-        child: Icon(Icons.image_outlined, color: Color(0xFF9CA3AF), size: 24),
+      color: AppColors.system.cachePlaceholderBg,
+      child: Center(
+        child: Icon(Icons.image_outlined, color: AppColors.system.cachePlaceholderIcon, size: 24),
       ),
     );
   }

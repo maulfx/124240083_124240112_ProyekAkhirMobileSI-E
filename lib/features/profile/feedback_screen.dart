@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/services/theme_service.dart';
 import '../../core/services/language_service.dart';
+import '../../theme/app_colors.dart';
 import '../home/home_screen.dart';
 import 'backend/feedback_backend.dart';
 
@@ -91,7 +92,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         final isDark = theme.isDarkMode;
 
         return Scaffold(
-          backgroundColor: isDark ? theme.bg : const Color(0xFFFCF9F2),
+          backgroundColor: AppColors.background,
           body: SafeArea(
             child: Column(
               children: [
@@ -100,7 +101,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   height: 64,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
-                    color: (isDark ? theme.bg : const Color(0xFFFCF9F2)).withValues(alpha: 0.8),
+                    color: (AppColors.background).withValues(alpha: 0.8),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.04),
@@ -120,14 +121,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               width: 44,
                               height: 44,
                               decoration: BoxDecoration(
-                                color: isDark ? const Color(0xFF181C22) : const Color(0xFFF1EEE7),
+                                color: AppColors.surfaceField,
                                 shape: BoxShape.circle,
-                                border: isDark ? Border.all(color: const Color(0xFF2D3542)) : null,
+                                border: Border.all(color: AppColors.warmBorder),
                               ),
                               child: Icon(
                                 Icons.arrow_back,
                                 size: 20,
-                                color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                                color: AppColors.textPrimary,
                               ),
                             ),
                           ),
@@ -137,7 +138,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ],
@@ -156,9 +157,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                             decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(0xFF3B1E1E)
-                                  : const Color(0xFFFFDBD2).withValues(alpha: 0.5),
+                              color: AppColors.secondarySoft,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Row(
@@ -167,7 +166,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                 Icon(
                                   Icons.eco,
                                   size: 14,
-                                  color: isDark ? const Color(0xFFFB923C) : const Color(0xFF9A442D),
+                                  color: AppColors.secondary,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
@@ -175,7 +174,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: isDark ? const Color(0xFFFED7AA) : const Color(0xFF3C0800),
+                                    color: AppColors.textPrimary,
                                   ),
                                 ),
                               ],
@@ -189,7 +188,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 26,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                          color: AppColors.textPrimary,
                           height: 1.2,
                           letterSpacing: -0.5,
                         ),
@@ -199,7 +198,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         'Bantu kami meningkatkan akurasi sensor dan kenyamanan reservasi Anda.'.tr,
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
-                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF45474A),
+                          color: AppColors.textSecondary,
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -208,12 +207,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF181C22) : Colors.white,
+                          color: AppColors.surfaceCard,
                           borderRadius: BorderRadius.circular(24),
-                          border: isDark ? Border.all(color: const Color(0xFF2D3542)) : null,
+                          border: Border.all(color: AppColors.warmBorder),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF1C1D1F).withValues(alpha: 0.04),
+                              color: AppColors.warmBorder.withValues(alpha: 0.1),
                               blurRadius: 16,
                               offset: const Offset(0, 4),
                             ),
@@ -229,7 +228,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF45474A),
+                                    color: AppColors.textSecondary,
                                   ),
                                 ),
                                 Text(
@@ -237,7 +236,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
-                                    color: isDark ? const Color(0xFFFB923C) : const Color(0xFF9A442D),
+                                    color: AppColors.secondary,
                                   ),
                                 ),
                               ],
@@ -259,7 +258,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                       size: 40,
                                       color: isSelected
                                           ? Colors.amber
-                                          : (isDark ? const Color(0xFF334155) : const Color(0xFFE5E2DB)),
+                                          : AppColors.warmBorder,
                                     ),
                                   ),
                                 );
@@ -270,7 +269,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               'Ketuk bintang untuk mengubah penilaian'.tr,
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 11,
-                                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF76777B),
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ],
@@ -287,14 +286,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                              color: AppColors.textPrimary,
                             ),
                           ),
                           Text(
                             'Pilih satu atau lebih'.tr,
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
-                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF76777B),
+                              color: AppColors.textSecondary,
                             ),
                           ),
                         ],
@@ -315,17 +314,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? (isDark ? Colors.white : const Color(0xFF020304))
-                                    : (isDark ? const Color(0xFF181C22) : Colors.white),
+                                    ? (AppColors.primary)
+                                    : (AppColors.surfaceCard),
                                 borderRadius: BorderRadius.circular(24),
                                 border: Border.all(
                                   color: isSelected
-                                      ? (isDark ? Colors.white : const Color(0xFF020304))
-                                      : (isDark ? const Color(0xFF2D3542) : Colors.transparent),
+                                      ? (AppColors.primary)
+                                      : AppColors.warmBorder,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF1C1D1F).withValues(alpha: 0.04),
+                                    color: AppColors.warmBorder.withValues(alpha: 0.1),
                                     blurRadius: 4,
                                     offset: const Offset(0, 2),
                                   ),
@@ -337,8 +336,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: isSelected
-                                      ? (isDark ? const Color(0xFF020304) : Colors.white)
-                                      : (isDark ? Colors.white : const Color(0xFF1C1C18)),
+                                      ? (isDark ? Colors.black : Colors.white)
+                                      : (AppColors.textPrimary),
                                 ),
                               ),
                             ),
@@ -351,10 +350,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF181C22) : Colors.white,
+                          color: AppColors.surfaceCard,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isDark ? const Color(0xFF2D3542) : const Color(0xFFE5E2DB),
+                            color: AppColors.warmBorder,
                           ),
                         ),
                         child: Row(
@@ -363,13 +362,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                color: isDark ? const Color(0xFF262C36) : const Color(0xFFE5E2DB),
+                                color: AppColors.surfaceField,
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
                                 Icons.local_parking,
                                 size: 20,
-                                color: isDark ? Colors.white : const Color(0xFF45474A),
+                                color: AppColors.textPrimary,
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -385,7 +384,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 2),
@@ -396,7 +395,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                     overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 12,
-                                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF45474A),
+                                      color: AppColors.textSecondary,
                                     ),
                                   ),
                                 ],
@@ -405,7 +404,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             Icon(
                               Icons.check,
                               size: 18,
-                              color: isDark ? const Color(0xFF4ADE80) : const Color(0xFF76777B),
+                              color: AppColors.accentTeal,
                             ),
                           ],
                         ),
@@ -416,10 +415,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF181C22) : Colors.white,
+                          color: AppColors.surfaceCard,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isDark ? const Color(0xFF2D3542) : const Color(0xFFE5E2DB),
+                            color: AppColors.warmBorder,
                           ),
                         ),
                         child: TextField(
@@ -427,14 +426,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           maxLines: 3,
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 14,
-                            color: isDark ? Colors.white : const Color(0xFF1C1C18),
+                            color: AppColors.textPrimary,
                           ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Tuliskan ulasan atau masukan detail Anda di sini...'.tr,
                             hintStyle: GoogleFonts.plusJakartaSans(
                               fontSize: 13,
-                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF76777B),
+                              color: AppColors.textSecondary,
                             ),
                           ),
                         ),
@@ -464,17 +463,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                     builder: (dialogCtx) => ListenableBuilder(
                                 listenable: ThemeService.instance,
                                 builder: (context, _) {
-                                  final dlgTheme = ThemeService.instance;
-                                  final dlgIsDark = dlgTheme.isDarkMode;
-
                                   return AlertDialog(
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(28),
                                       side: BorderSide(
-                                        color: dlgIsDark ? const Color(0xFF2D3542) : Colors.transparent,
+                                        color: AppColors.warmBorder,
                                       ),
                                     ),
-                                    backgroundColor: dlgIsDark ? const Color(0xFF181C22) : Colors.white,
+                                    backgroundColor: AppColors.surfaceCard,
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
                                     content: Column(
                                       mainAxisSize: MainAxisSize.min,
@@ -483,13 +479,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                           width: 64,
                                           height: 64,
                                           decoration: BoxDecoration(
-                                            color: dlgIsDark ? const Color(0xFF064E3B) : const Color(0xFFBBEED4),
+                                            color: AppColors.accentTealSoft,
                                             shape: BoxShape.circle,
                                           ),
                                           child: Icon(
                                             Icons.favorite,
                                             size: 32,
-                                            color: dlgIsDark ? const Color(0xFF34D399) : const Color(0xFF1F4F3C),
+                                            color: AppColors.accentTeal,
                                           ),
                                         ),
                                         const SizedBox(height: 18),
@@ -499,7 +495,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                           style: GoogleFonts.plusJakartaSans(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
-                                            color: dlgIsDark ? Colors.white : const Color(0xFF1C1D1F),
+                                            color: AppColors.textPrimary,
                                           ),
                                         ),
                                         const SizedBox(height: 10),
@@ -509,7 +505,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                           style: GoogleFonts.plusJakartaSans(
                                             fontSize: 14,
                                             height: 1.45,
-                                            color: dlgIsDark ? const Color(0xFF94A3B8) : const Color(0xFF45474A),
+                                            color: AppColors.textSecondary,
                                           ),
                                         ),
                                         const SizedBox(height: 24),
@@ -525,17 +521,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                               );
                                             },
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: dlgIsDark ? Colors.white : const Color(0xFF020304),
-                                              foregroundColor: dlgIsDark ? Colors.black : Colors.white,
+                                              backgroundColor: AppColors.buttonPrimary,
+                                              foregroundColor: isDark ? Colors.black : Colors.white,
                                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                                              elevation: dlgIsDark ? 0 : 4,
+                                              elevation: isDark ? 0 : 4,
                                             ),
                                             child: Text(
                                               'Selesai'.tr,
                                               style: GoogleFonts.plusJakartaSans(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.bold,
-                                                color: dlgIsDark ? Colors.black : Colors.white,
+                                                color: isDark ? Colors.black : Colors.white,
                                               ),
                                             ),
                                           ),
@@ -548,11 +544,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isDark ? Colors.white : const Color(0xFF020304),
+                            backgroundColor: AppColors.primary,
                             foregroundColor: isDark ? Colors.black : Colors.white,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                             elevation: isDark ? 0 : 8,
-                            shadowColor: const Color(0xFF020304).withValues(alpha: 0.2),
+                            shadowColor: AppColors.primary.withValues(alpha: 0.2),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
