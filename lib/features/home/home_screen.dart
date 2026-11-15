@@ -1793,11 +1793,9 @@ class _RecommendationsListState extends State<_RecommendationsList> {
                 child: AppCachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    color: AppColors.home.cardPhotoPlaceholderBg,
-                    child: Center(
-                      child: Icon(Icons.local_parking, size: 52, color: AppColors.home.cardPhotoPlaceholderIcon),
-                    ),
+                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                    'assets/images/parking.jpeg',
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
