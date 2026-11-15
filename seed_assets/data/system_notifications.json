@@ -1,0 +1,16 @@
+﻿[
+    {
+        "id":  "76759292-fe23-4be5-ae69-fa588e0257c8",
+        "title":  "Injeksi Saldo Dompet",
+        "message":  "Berhasil menambahkan saldo Rp 500.000 ke dompet Andi Prawono. Keterangan: kayaaa",
+        "is_read":  false,
+        "created_at":  "2026-10-26T09:52:27.766865+00:00"
+    },
+    {
+        "id":  "98c3517f-e563-43e8-ba22-ede023ec6446",
+        "title":  "Saldo Dompet Masuk",
+        "message":  "Saldo sebesar Rp 500.000 telah ditambahkan ke dompet digital Anda oleh Admin Finansial. Keterangan: kayaaa",
+        "is_read":  true,
+        "created_at":  "2026-10-26T09:52:27.882924+00:00"
+    }
+]

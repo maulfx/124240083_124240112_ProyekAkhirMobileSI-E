@@ -353,19 +353,12 @@ class _AppCachedNetworkImageState extends State<AppCachedNetworkImage> {
   }
 
   Widget _defaultPlaceholder() {
-    return Image.asset(
-      'assets/images/parking.jpeg',
+    return Container(
       width: widget.width,
       height: widget.height,
-      fit: widget.fit,
-      alignment: widget.alignment,
-      errorBuilder: (context, error, stackTrace) => Container(
-        width: widget.width,
-        height: widget.height,
-        color: AppColors.system.cachePlaceholderBg,
-        child: Center(
-          child: Icon(Icons.image_outlined, color: AppColors.system.cachePlaceholderIcon, size: 24),
-        ),
+      color: AppColors.system.cachePlaceholderBg,
+      child: Center(
+        child: Icon(Icons.image_outlined, color: AppColors.system.cachePlaceholderIcon, size: 24),
       ),
     );
   }
