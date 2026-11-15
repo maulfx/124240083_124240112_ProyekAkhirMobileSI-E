@@ -74,21 +74,27 @@ class NotificationBackend extends ChangeNotifier {
     try {
       final currentUid = _resolveCurrentUserId();
 
-      // 1. Filter Database PostgREST:
-      // - target_role HANYA 'user' atau 'all' (TIDAK BOLEH menarik notifikasi 'finance', 'operational', 'cs', dll)
-      // - recipient_user_id WAJIB cocok dengan akun yang login, atau NULL jika berupa broadcast publik
-      var query = _client
-          .from('system_notifications')
-          .select('id, title, message, notification_type, action_type, is_read, created_at, recipient_user_id, target_role')
-          .inFilter('target_role', ['user', 'all']);
+      List<dynamic> response;
+      try {
+        var query = _client
+            .from('system_notifications')
+            .select('id, title, message, notification_type, action_type, is_read, created_at, recipient_user_id, target_role')
+            .inFilter('target_role', ['user', 'all']);
 
-      if (currentUid != null && currentUid.isNotEmpty) {
-        query = query.or('recipient_user_id.eq.$currentUid,recipient_user_id.is.null');
-      } else {
-        query = query.filter('recipient_user_id', 'is', null);
+        if (currentUid != null && currentUid.isNotEmpty) {
+          query = query.or('recipient_user_id.eq.$currentUid,recipient_user_id.is.null');
+        } else {
+          query = query.filter('recipient_user_id', 'is', null);
+        }
+
+        response = await query.order('created_at', ascending: false);
+      } catch (_) {
+        // Fallback jika tabel hanya memiliki kolom dasar (id, title, message, type, is_read, created_at)
+        response = await _client
+            .from('system_notifications')
+            .select('id, title, message, type, is_read, created_at')
+            .order('created_at', ascending: false);
       }
-
-      final response = await query.order('created_at', ascending: false);
 
       // 2. Defense-in-depth: In-memory filter tambahan agar TIDAK ADA kebocoran sama sekali
       final rawList = List<Map<String, dynamic>>.from(response);

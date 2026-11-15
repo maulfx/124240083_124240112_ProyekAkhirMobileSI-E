@@ -174,7 +174,7 @@ class HomeBackend extends ChangeNotifier {
       // 1. Ambil semua lokasi aktif dari database Supabase
       final response = await _client
           .from('parking_locations')
-          .select('id, code, name, type, city, address, latitude, longitude, total_capacity, hourly_rate_mobil, hourly_rate_motor, hourly_rate_ev, rating, review_count, status, image_url, images, facilities, operating_hours, is_ev_ready, ev_slots_capacity')
+          .select('id, code, name, type, city, address, latitude, longitude, total_capacity, hourly_rate_mobil, hourly_rate_motor, hourly_rate_ev, rating, review_count, status, image_url, facilities')
           .order('rating', ascending: false);
 
       List<Map<String, dynamic>> rawList = List<Map<String, dynamic>>.from(response);
@@ -292,25 +292,12 @@ class HomeBackend extends ChangeNotifier {
         return;
       }
 
-      var query = _client
+      final data = await _client
           .from('system_notifications')
-          .select('id, recipient_user_id, target_role')
-          .eq('is_read', false)
-          .inFilter('target_role', ['user', 'all']);
+          .select('id')
+          .eq('is_read', false);
 
-      query = query.or('recipient_user_id.eq.$uid,recipient_user_id.is.null');
-
-      final data = await query;
-      final rawList = List<Map<String, dynamic>>.from(data);
-      final filtered = rawList.where((n) {
-        final role = (n['target_role'] ?? 'all').toString().toLowerCase().trim();
-        if (role != 'all' && role != 'user') return false;
-        final rId = n['recipient_user_id']?.toString().trim();
-        if (rId != null && rId.isNotEmpty && rId.toLowerCase() != uid.toLowerCase()) return false;
-        return true;
-      }).toList();
-
-      _unreadNotificationCount = filtered.length;
+      _unreadNotificationCount = (data as List).length;
       notifyListeners();
     } catch (e) {
       debugPrint('[HomeBackend] _fetchUnreadNotifications error: $e');

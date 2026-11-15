@@ -286,7 +286,7 @@ class _ExploreMapScreenState extends State<ExploreMapScreen> {
     try {
       final locRes = await Supabase.instance.client
           .from('parking_locations')
-          .select('id, name, type, operating_hours, total_capacity, status, rating, review_count')
+          .select('id, name, type, total_capacity, status, rating, review_count')
           .eq('id', locationId)
           .maybeSingle();
 

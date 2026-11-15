@@ -41,7 +41,7 @@ class ArNavigationBackend extends ChangeNotifier {
         queryFn: () async {
           return await _client
               .from('parking_locations')
-              .select('id, name, address, latitude, longitude, hourly_rate, available_slots')
+              .select('id, name, address, latitude, longitude, hourly_rate_mobil, total_capacity')
               .eq('id', locationId)
               .maybeSingle();
         },

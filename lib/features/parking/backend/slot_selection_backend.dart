@@ -63,7 +63,7 @@ class SlotSelectionBackend extends ChangeNotifier {
       // 1. Ambil info ringkas lokasi (Targeted Column Query)
       var locQuery = _client
           .from('parking_locations')
-          .select('id, name, address, latitude, longitude, hourly_rate_mobil, hourly_rate_motor, hourly_rate_ev, total_capacity, floors');
+          .select('id, name, address, latitude, longitude, hourly_rate_mobil, hourly_rate_motor, hourly_rate_ev, total_capacity');
 
       if (locationId != null) {
         _currentLocation = await locQuery.eq('id', locationId).maybeSingle();

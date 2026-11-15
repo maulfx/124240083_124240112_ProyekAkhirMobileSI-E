@@ -23,10 +23,10 @@ class ExploreMapBackend extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Targeted Column Query: Mengambil detail lokasi lengkap termasuk operating_hours, is_ev_ready & ev_slots_capacity
+      // Targeted Column Query: Mengambil detail lokasi yang ada di database
       var query = _client
           .from('parking_locations')
-          .select('id, code, name, type, city, address, latitude, longitude, total_capacity, is_ev_ready, ev_slots_capacity, hourly_rate_mobil, hourly_rate_motor, hourly_rate_ev, rating, review_count, status, image_url, images, facilities, operating_hours');
+          .select('id, code, name, type, city, address, latitude, longitude, total_capacity, hourly_rate_mobil, hourly_rate_motor, hourly_rate_ev, rating, review_count, status, image_url, facilities');
 
       if (searchQuery != null && searchQuery.trim().isNotEmpty) {
         query = query.ilike('name', '%${searchQuery.trim()}%');

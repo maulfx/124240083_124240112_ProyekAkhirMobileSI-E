@@ -38,7 +38,7 @@ class ParkingDetailBackend extends ChangeNotifier {
       // 1. Targeted Column Query: Detail Lokasi
       var locQuery = _client
           .from('parking_locations')
-          .select('id, code, name, type, city, address, latitude, longitude, total_capacity, hourly_rate_mobil, hourly_rate_motor, hourly_rate_ev, rating, review_count, status, image_url, images, facilities, floors');
+          .select('id, code, name, type, city, address, latitude, longitude, total_capacity, hourly_rate_mobil, hourly_rate_motor, hourly_rate_ev, rating, review_count, status, image_url, facilities');
 
       final locData = locationId != null
           ? await locQuery.eq('id', locationId).maybeSingle()
