@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import '../../theme/app_colors.dart';
@@ -73,12 +74,35 @@ class AppImageCacheService {
       return _memoryCache[url];
     }
 
+    // 2. Cek apakah ini file gambar yang dibundle langsung di assets aplikasi (Instant 0ms & Offline)
+    final uri = Uri.tryParse(url);
+    final filename = uri != null && uri.pathSegments.isNotEmpty ? uri.pathSegments.last : url;
+    if (filename.startsWith('loc_') && (filename.endsWith('.jpg') || filename.endsWith('.jpeg') || filename.endsWith('.png'))) {
+      try {
+        final byteData = await rootBundle.load('assets/images/parking_locations/$filename');
+        final bytes = byteData.buffer.asUint8List();
+        if (bytes.isNotEmpty) {
+          _memoryCache[url] = bytes;
+          return bytes;
+        }
+      } catch (_) {}
+    } else if (url.startsWith('assets/')) {
+      try {
+        final byteData = await rootBundle.load(url);
+        final bytes = byteData.buffer.asUint8List();
+        if (bytes.isNotEmpty) {
+          _memoryCache[url] = bytes;
+          return bytes;
+        }
+      } catch (_) {}
+    }
+
     try {
       final dir = await getCacheDirectory();
       final key = _urlToKey(url);
       final file = File('${dir.path}/$key.cache');
 
-      // 2. Cek Disk Cache
+      // 3. Cek Disk Cache
       if (file.existsSync() && file.lengthSync() > 0) {
         final bytes = await file.readAsBytes();
         if (bytes.isNotEmpty) {
