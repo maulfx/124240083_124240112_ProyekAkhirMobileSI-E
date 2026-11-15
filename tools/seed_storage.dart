@@ -26,7 +26,7 @@ Map<String, String> loadEnv() {
 
 void main() async {
   print('===============================================================');
-  print('🚀 PARKSMART STORAGE & DATABASE SEEDER (CLEAN SCHEMA MODE)');
+  print('🚀 PARKSMART STORAGE & DATABASE SEEDER (DART)');
   print('===============================================================');
 
   final env = loadEnv();
@@ -49,10 +49,10 @@ void main() async {
     exit(1);
   }
 
-  final buckets = ['parking-locations', 'vehicles', 'avatars'];
+  final buckets = ['avatars', 'vehicles', 'parking-locations', 'kyc-documents'];
 
-  // 1. Validasi & Buat Bucket di Storage (Jika key memiliki izin)
-  print('\n1. MEMVALIDASI BUCKET DI SUPABASE STORAGE...');
+  // 1. Validasi & Buat Bucket di Storage
+  print('\n1. MEMBUAT BUCKET DI SUPABASE STORAGE...');
   for (var bucket in buckets) {
     final bucketUrl = Uri.parse('$supabaseUrl/storage/v1/bucket');
     try {
@@ -76,7 +76,7 @@ void main() async {
         print('[Bucket] Bucket siap / sudah ada: $bucket (${resp.statusCode})');
       }
     } catch (e) {
-      print('[Bucket] Info $bucket: $e');
+      print('[Bucket] Warning $bucket: $e');
     }
   }
 
@@ -111,33 +111,44 @@ void main() async {
           if (resp.statusCode == 200 || resp.statusCode == 201) {
             print('[Upload] Sukses: $bucket/$relativePath');
           } else {
-            print('[Upload] Info ($bucket/$relativePath): ${resp.statusCode}');
+            print('[Upload] Gagal ($bucket/$relativePath): ${resp.statusCode} ${resp.body}');
           }
         } catch (e) {
-          print('[Upload] Info ($bucket/$relativePath): $e');
+          print('[Upload] Error ($bucket/$relativePath): $e');
         }
       }
     }
   }
 
-  // 3. Masukkan Seluruh Data Tabel yang Sesuai dengan Skema Database
+  // 3. Masukkan Seluruh Data Tabel
   print('\n3. MENYINKRONKAN DATA TABEL KE POSTGRESQL...');
   final tableOrder = [
     'users',
     'admins',
+    'system_settings',
     'vehicles',
     'parking_locations',
     'parking_slots',
+    'user_kyc',
+    'user_member_cards',
+    'user_favorites',
+    'bookings',
+    'parking_sessions',
+    'payments',
     'system_notifications',
+    'admin_audit_logs',
+    'arcade_scores',
+    'customer_feedbacks'
   ];
 
-  const originalUrl = 'https://necsdylhtswrrqassvzp.supabase.co';
+  const originalUrl = "https://necsdylhtswrrqassvzp.supabase.co";
 
   for (var table in tableOrder) {
     final jsonFile = File('${dataDir.path}/$table.json');
     if (!jsonFile.existsSync()) continue;
 
     var content = await jsonFile.readAsString();
+    // Ganti URL Supabase lama ke target saat ini
     content = content.replaceAll(originalUrl, supabaseUrl);
 
     final List<dynamic> data = jsonDecode(content);
@@ -146,11 +157,7 @@ void main() async {
       continue;
     }
 
-    var tableUrlStr = '$supabaseUrl/rest/v1/$table';
-    if (table == 'parking_slots') {
-      tableUrlStr += '?on_conflict=location_id,floor_name,slot_code';
-    }
-    final tableUrl = Uri.parse(tableUrlStr);
+    final tableUrl = Uri.parse('$supabaseUrl/rest/v1/$table');
     try {
       final resp = await http.post(
         tableUrl,
@@ -174,6 +181,6 @@ void main() async {
   }
 
   print('\n===============================================================');
-  print('✅ SEEDING SELESAI DENGAN SUKSES! SEMUA DATA COCOK DENGAN SKEMA.');
+  print('✅ SEEDING SELESAI DENGAN SUKSES! SEMUA DATA DAN STORAGE SIAP.');
   print('===============================================================');
 }
