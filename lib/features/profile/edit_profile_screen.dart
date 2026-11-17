@@ -624,10 +624,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     onTap: _selectBirthDate,
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: isDark ? theme.surfaceField : Colors.white,
+                                        color: AppColors.profile.editFieldBg,
                                         borderRadius: BorderRadius.circular(14),
                                         border: Border.all(
-                                          color: AppColors.warmBorder,
+                                          color: AppColors.profile.editFieldBorder,
                                           width: 1,
                                         ),
                                       ),
@@ -780,10 +780,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surfaceField,
+            color: AppColors.profile.editFieldBg,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: AppColors.warmBorder,
+              color: AppColors.profile.editFieldBorder,
               width: 1,
             ),
           ),
@@ -834,13 +834,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: BoxDecoration(
             color: isSelected
                 ? (AppColors.textPrimary)
-                : (AppColors.surfaceField),
+                : AppColors.profile.editFieldBg,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
                   ? (AppColors.textPrimary)
-                  : (AppColors.warmBorder),
-              width: 1.5,
+                  : AppColors.profile.editFieldBorder,
+              width: isSelected ? 1.5 : 1,
             ),
           ),
           child: Row(

@@ -560,12 +560,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                          // Parking Notes button (Modul 6 Hive & Modul 7 Scheduled Reminder)
-                          _NavIconBtn(
-                            icon: Icons.note_alt_outlined,
-                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ParkingNotesScreen())),
-                          ),
-                          const SizedBox(width: 8),
                           // Notification button with dynamic unread badge
                           ListenableBuilder(
                             listenable: HomeBackend.instance,

@@ -824,9 +824,9 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                     ),
                     child: Row(
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
                                 'MULAI DARI'.tr,
@@ -859,8 +859,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                ),
                             ],
                           ),
-                        ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 14),
                         Expanded(
                           child: SizedBox(
                             height: 52,
@@ -905,26 +904,30 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
                                 backgroundColor: isDark ? Colors.white : AppColors.primary,
                                 foregroundColor: isDark ? Colors.black : AppColors.white,
                                 elevation: 0,
+                                padding: const EdgeInsets.symmetric(horizontal: 14),
                                 shape: RoundedRectangleBorder(borderRadius: AppRadii.pillRadius),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Cek Slot Parkir'.tr,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Cek Slot Parkir'.tr,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark ? Colors.black : AppColors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Icon(
+                                      Icons.arrow_forward,
+                                      size: 18,
                                       color: isDark ? Colors.black : AppColors.white,
                                     ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    size: 18,
-                                    color: isDark ? Colors.black : AppColors.white,
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),

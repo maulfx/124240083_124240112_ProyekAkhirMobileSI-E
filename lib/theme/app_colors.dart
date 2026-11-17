@@ -367,6 +367,9 @@ class _AppSlotColors {
 
   /// Teks badge penanda khusus di SlotSelectionScreen.
   Color get badgeSalmonText => const Color(0xFF742814);
+
+  /// Teks tombol lantai aktif (misal: 'Lantai 1') di SlotSelectionScreen (Putih bersih di Light Mode di atas background gelap).
+  Color get activeFloorText => AppColors._isDark ? Colors.black87 : Colors.white;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -517,6 +520,15 @@ class _AppMapColors {
 
   /// Garis tepi selector moda transportasi aktif di ExploreMapScreen.
   Color get modeSelectorActiveBorder => AppColors._isDark ? const Color(0xFF60A5FA) : const Color(0xFF1A73E8);
+
+  /// Latar belakang kotak info cuaca di ExploreMapScreen (Putih bersih pada Light Mode agar senada dengan search bar).
+  Color get weatherBadgeBg => AppColors._isDark ? const Color(0xFF1E232B) : const Color(0xFFFFFFFF);
+
+  /// Latar belakang bilah navigasi bawah (bottom navigation bar Jelajahi, Favorite, Home) di ExploreMapScreen (Putih bersih pada Light Mode agar senada dengan search bar).
+  Color get bottomNavBg => AppColors._isDark ? const Color(0xFF1E232B) : const Color(0xFFFFFFFF);
+
+  /// Latar belakang konten tab detail parkir (Ringkasan, Ulasan, Tentang) di ExploreMapScreen (Putih bersih).
+  Color get detailTabContentBg => AppColors._isDark ? const Color(0xFF1E232B) : const Color(0xFFFFFFFF);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -981,6 +993,14 @@ class _AppProfileColors {
 
   /// Tombol simpan data saran & pesan perkuliahan di ProfileScreen.
   Color get feedbackSaveBtn => AppColors._isDark ? const Color(0xFF2563EB) : const Color(0xFF1E3A8A);
+
+  /// Latar putih field isian data diri & opsi gender deselect di EditProfileScreen.
+  Color get editFieldBg => AppColors._isDark ? const Color(0xFF1E232B) : Colors.white;
+
+  /// Garis tepi outline hitam tipis penegas bentuk kolom field di EditProfileScreen.
+  Color get editFieldBorder => AppColors._isDark
+      ? const Color(0xFF374151)
+      : Colors.black.withValues(alpha: 0.22);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1222,6 +1242,20 @@ class _AppFavoriteColors {
 
   /// Teks filter chip kategori aktif di FavoriteScreen.
   Color get filterChipActiveText => AppColors._isDark ? const Color(0xFF38BDF8) : const Color(0xFF114177);
+
+  /// Latar belakang halaman FavoriteScreen (Putih bersih di Light Mode).
+  Color get pageBg => AppColors._isDark ? AppColors.backgroundDark : const Color(0xFFFFFFFF);
+
+  /// Latar belakang header 'Favorite Parking' di FavoriteScreen (Putih bersih di Light Mode).
+  Color get headerBg => AppColors._isDark ? AppColors.backgroundDark : const Color(0xFFFFFFFF);
+
+  /// Latar belakang kolom field search bar di FavoriteScreen (Putih bersih di Light Mode).
+  Color get searchFieldBg => AppColors._isDark ? AppColors.surfaceFieldDark : const Color(0xFFFFFFFF);
+
+  /// Garis tepi kolom search bar di FavoriteScreen untuk penegas bentuk di atas latar putih.
+  Color get searchFieldBorder => AppColors._isDark
+      ? AppColors.warmBorderDark
+      : Colors.black.withValues(alpha: 0.12);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

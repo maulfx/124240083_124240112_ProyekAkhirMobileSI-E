@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../features/home/home_screen.dart';
 import '../features/map/explore_map_screen.dart';
+import '../features/parking_notes/parking_notes_screen.dart';
 import '../features/profile/profile_screen.dart';
 
-enum DockTab { home, map, profile }
+enum DockTab { home, map, notes, profile }
 
 class BottomDockNavigation extends StatelessWidget {
   final DockTab activeTab;
@@ -15,7 +16,7 @@ class BottomDockNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 64,
-      constraints: const BoxConstraints(maxWidth: 280),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.dockBg,
         borderRadius: BorderRadius.circular(32),
@@ -27,20 +28,27 @@ class BottomDockNavigation extends StatelessWidget {
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.min,
         children: [
           _buildIcon(context, Icons.home_rounded, DockTab.home, () {
             if (activeTab != DockTab.home) {
               Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const HomeScreen()), (route) => false);
             }
           }),
+          const SizedBox(width: 8),
           _buildIcon(context, Icons.map_rounded, DockTab.map, () {
             if (activeTab != DockTab.map) {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ExploreMapScreen()));
             }
           }),
+          const SizedBox(width: 8),
+          _buildIcon(context, Icons.note_alt_rounded, DockTab.notes, () {
+            if (activeTab != DockTab.notes) {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ParkingNotesScreen()));
+            }
+          }),
+          const SizedBox(width: 8),
           _buildIcon(context, Icons.person_rounded, DockTab.profile, () {
             if (activeTab != DockTab.profile) {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
@@ -55,8 +63,10 @@ class BottomDockNavigation extends StatelessWidget {
     final isActive = activeTab == tab;
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
-        width: 46, height: 46,
+        width: 48,
+        height: 48,
         decoration: BoxDecoration(
           color: isActive ? AppColors.secondary : Colors.transparent,
           shape: BoxShape.circle,

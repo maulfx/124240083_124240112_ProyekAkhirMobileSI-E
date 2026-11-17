@@ -61,12 +61,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         final isDark = theme.isDarkMode;
         final backend = FavoriteBackend.instance;
 
-        final bg = AppColors.background;
+        final bg = AppColors.favorite.pageBg;
+        final headerBg = AppColors.favorite.headerBg;
         final textMain = AppColors.textPrimary;
         final textSub = AppColors.textSecondary;
         final cardBg = AppColors.surfaceCard;
         final cardBorder = AppColors.warmBorder;
-        final searchBg = AppColors.surfaceField;
+        final searchBg = AppColors.favorite.searchFieldBg;
+        final searchBorder = AppColors.favorite.searchFieldBorder;
 
         final allFavorites = backend.favorites;
         final displayedFavorites = _searchQuery.isEmpty
@@ -80,7 +82,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         return Scaffold(
           backgroundColor: bg,
           appBar: AppBar(
-            backgroundColor: bg,
+            backgroundColor: headerBg,
             elevation: 0,
             scrolledUnderElevation: 0,
             leading: IconButton(
@@ -107,7 +109,14 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   decoration: BoxDecoration(
                     color: searchBg,
                     borderRadius: BorderRadius.circular(12),
-                    border: isDark ? Border.all(color: cardBorder) : null,
+                    border: Border.all(color: searchBorder, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: TextField(
                     controller: _searchController,

@@ -1965,10 +1965,10 @@ class _ExploreMapScreenState extends State<ExploreMapScreen> {
                                 ),
                               ),
 
-                              // KONTEN TAB: Background agak keruh (#F6F8FA)
+                              // KONTEN TAB: Background putih bersih (Ringkasan, Ulasan, Tentang)
                               SliverToBoxAdapter(
                                 child: Container(
-                                  color: AppColors.background,
+                                  color: AppColors.map.detailTabContentBg,
                                   padding: const EdgeInsets.symmetric(vertical: 16),
                                   child: _buildSelectedTabContent(loc, photos),
                                 ),
@@ -2079,9 +2079,16 @@ class _ExploreMapScreenState extends State<ExploreMapScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                   decoration: BoxDecoration(
-                                    color: AppColors.surfaceField,
+                                    color: AppColors.map.weatherBadgeBg,
                                     borderRadius: BorderRadius.circular(12),
-                                    border: isDark ? Border.all(color: theme.border) : null,
+                                    border: isDark ? Border.all(color: theme.border) : Border.all(color: AppColors.warmBorder.withValues(alpha: 0.6)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.05),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
                                   ),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -2245,10 +2252,17 @@ class _ExploreMapScreenState extends State<ExploreMapScreen> {
               height: totalBottomHeight,
               padding: EdgeInsets.only(bottom: bottomPadding),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: AppColors.map.bottomNavBg,
                 border: Border(
-                  top: BorderSide(color: AppColors.warmBorder, width: 0.8),
+                  top: BorderSide(color: isDark ? theme.border : AppColors.warmBorder, width: 0.8),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
@@ -2463,80 +2477,25 @@ class _ExploreMapScreenState extends State<ExploreMapScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Galeri Foto Area Parkir'.tr,
-                style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: AppColors.map.gpsIconLightBg,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Admin Managed',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.map.brandBlue,
-                  ),
-                ),
-              ),
-            ],
+          child: Text(
+            'Galeri Foto Area Parkir'.tr,
+            style: GoogleFonts.inter(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
           ),
         ),
         const SizedBox(height: 12),
 
-        // Bingkai Foto Admin
+        // Bingkai Foto Area Parkir
         SizedBox(
           height: 140,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: photos.length + 1,
+            itemCount: photos.length,
             itemBuilder: (context, photoIdx) {
-              if (photoIdx == photos.length) {
-                return Container(
-                  width: 140,
-                  margin: const EdgeInsets.only(right: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.map.adminPhotoBorder, width: 1.5),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Mode Admin: Unggah foto area parkir baru.'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.add_photo_alternate_outlined, color: AppColors.map.adminPhotoTeal, size: 32),
-                        const SizedBox(height: 6),
-                        Text(
-                          '+ Tambah Foto'.tr,
-                          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.map.adminPhotoTeal),
-                        ),
-                        Text('oleh Admin'.tr, style: GoogleFonts.inter(fontSize: 10, color: AppColors.textSecondary)),
-                      ],
-                    ),
-                  ),
-                );
-              }
-
               final photoUrl = photos[photoIdx];
               return Container(
                 width: 180,
@@ -2592,7 +2551,9 @@ class _ExploreMapScreenState extends State<ExploreMapScreen> {
             decoration: BoxDecoration(
               color: ThemeService.instance.isDarkMode ? ThemeService.instance.card : Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: ThemeService.instance.isDarkMode ? Border.all(color: ThemeService.instance.border) : null,
+              border: ThemeService.instance.isDarkMode
+                  ? Border.all(color: ThemeService.instance.border)
+                  : Border.all(color: AppColors.warmBorder.withValues(alpha: 0.6)),
               boxShadow: [
                 BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
               ],
@@ -2900,7 +2861,7 @@ class _ExploreMapScreenState extends State<ExploreMapScreen> {
             decoration: BoxDecoration(
               color: cardBg,
               borderRadius: BorderRadius.circular(16),
-              border: isDark ? Border.all(color: theme.border) : null,
+              border: isDark ? Border.all(color: theme.border) : Border.all(color: AppColors.warmBorder.withValues(alpha: 0.6)),
               boxShadow: [
                 BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
               ],
@@ -3113,7 +3074,7 @@ class _ExploreMapScreenState extends State<ExploreMapScreen> {
             decoration: BoxDecoration(
               color: cardBg,
               borderRadius: BorderRadius.circular(16),
-              border: isDark ? Border.all(color: theme.border) : null,
+              border: isDark ? Border.all(color: theme.border) : Border.all(color: AppColors.warmBorder.withValues(alpha: 0.6)),
               boxShadow: [
                 BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
               ],
@@ -3141,7 +3102,7 @@ class _ExploreMapScreenState extends State<ExploreMapScreen> {
             decoration: BoxDecoration(
               color: cardBg,
               borderRadius: BorderRadius.circular(16),
-              border: isDark ? Border.all(color: theme.border) : null,
+              border: isDark ? Border.all(color: theme.border) : Border.all(color: AppColors.warmBorder.withValues(alpha: 0.6)),
               boxShadow: [
                 BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
               ],

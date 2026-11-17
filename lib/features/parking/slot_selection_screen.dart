@@ -222,34 +222,35 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // location + ANPR badge
+                              // location + ANPR badge dengan pengaman teks panjang turun ke bawah
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Icon(Icons.location_on, size: 18, color: AppColors.slot.pinOrange),
-                                      const SizedBox(width: 6),
-                                      ListenableBuilder(
-                                        listenable: SlotSelectionBackend.instance,
-                                        builder: (context, _) {
-                                          final loc = SlotSelectionBackend.instance.currentLocation;
-                                          final locName = loc?['name']?.toString() ?? widget.locationName ?? 'Lokasi Parkir';
-                                          final dist = _getDistanceText(loc);
-                                          return Text(
-                                            '${locName.tr} • $dist',
-                                            style: GoogleFonts.plusJakartaSans(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              letterSpacing: 0.5,
-                                              color: AppColors.slot.textSubtle,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ],
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Icon(Icons.location_on, size: 18, color: AppColors.slot.pinOrange),
                                   ),
-                                  const SizedBox(),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: ListenableBuilder(
+                                      listenable: SlotSelectionBackend.instance,
+                                      builder: (context, _) {
+                                        final loc = SlotSelectionBackend.instance.currentLocation;
+                                        final locName = loc?['name']?.toString() ?? widget.locationName ?? 'Lokasi Parkir';
+                                        final dist = _getDistanceText(loc);
+                                        return Text(
+                                          '${locName.tr} • $dist',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 0.5,
+                                            color: AppColors.slot.textSubtle,
+                                          ),
+                                          softWrap: true,
+                                        );
+                                      },
+                                    ),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8),
@@ -383,7 +384,7 @@ class _SlotSelectionScreenState extends State<SlotSelectionScreen> {
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
                                               color: active
-                                                  ? AppColors.slot.btnVehicleText
+                                                  ? AppColors.slot.activeFloorText
                                                   : AppColors.slot.tipText,
                                             ),
                                           ),
