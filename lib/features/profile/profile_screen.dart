@@ -160,36 +160,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 20),
                   
-                  // Stats
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: ThemeService.instance.card,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: ThemeService.instance.border.withValues(alpha: 0.7)),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Text('TOTAL PARKIR'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w500, color: ThemeService.instance.textSecondary, letterSpacing: 0.5)),
-                              const SizedBox(height: 2),
-                              Text('${profile.totalParking} Kali'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.bold, color: ThemeService.instance.textPrimary)),
-                            ],
+                  // Stats: Total Catatan & Pengingat Aktif (Supabase Cloud + Hive Local)
+                  GestureDetector(
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ParkingNotesScreen()),
+                      );
+                      ProfileBackend.instance.refreshNotesStats();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: ThemeService.instance.card,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: ThemeService.instance.border.withValues(alpha: 0.7)),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text('TOTAL CATATAN'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w500, color: ThemeService.instance.textSecondary, letterSpacing: 0.5)),
+                                const SizedBox(height: 2),
+                                Text('${profile.totalNotes} Catatan'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.bold, color: ThemeService.instance.textPrimary)),
+                              ],
+                            ),
                           ),
-                        ),
-                        Container(width: 1, height: 40, color: ThemeService.instance.divider),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Text('PENGHEMATAN'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w500, color: ThemeService.instance.textSecondary, letterSpacing: 0.5)),
-                              const SizedBox(height: 2),
-                              Text(CurrencyService.instance.format(profile.totalSavings), style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.profile.savingsOrange)),
-                            ],
+                          Container(width: 1, height: 40, color: ThemeService.instance.divider),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text('PENGINGAT AKTIF'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w500, color: ThemeService.instance.textSecondary, letterSpacing: 0.5)),
+                                const SizedBox(height: 2),
+                                Text('${profile.activeReminders} Pengingat'.tr, style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.bold, color: AppColors.notes.primaryBlue)),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),

@@ -5,6 +5,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/services/notification_service.dart';
 import '../../theme/app_colors.dart';
+import '../profile/backend/profile_backend.dart';
+import 'backend/parking_notes_backend.dart';
 import 'models/parking_note.dart';
 
 class AddParkingNoteScreen extends StatefulWidget {
@@ -30,6 +32,7 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
   late final TextEditingController _noteController;
 
   bool _isEditMode = false;
+  String? _existingId;
   DateTime? _reminderDateTime;
 
   Timer? _debounceTimer;
@@ -50,6 +53,7 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
       final raw = box.getAt(widget.noteIndex!);
       if (raw is Map) {
         final note = ParkingNote.fromMap(raw);
+        _existingId = note.id;
         _locationController.text = note.locationName;
         _slotController.text = note.slotNumber;
         _noteController.text = note.note;
@@ -153,35 +157,39 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
   Future<void> _saveNote() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final box = Hive.box('parking_notes');
-    final note = ParkingNote(
-      locationName: _locationController.text.trim(),
-      slotNumber: _slotController.text.trim(),
-      note: _noteController.text.trim(),
-      createdAt: DateTime.now(),
+    final locName = _locationController.text.trim();
+    final slotNum = _slotController.text.trim();
+    final noteTxt = _noteController.text.trim();
+
+    final isCloudSynced = await ParkingNotesBackend.instance.saveNote(
+      locationName: locName,
+      slotNumber: slotNum,
+      noteText: noteTxt,
       reminderTime: _reminderDateTime,
+      editIndex: widget.noteIndex,
+      existingId: _existingId,
     );
 
-    if (_isEditMode) {
-      await box.putAt(widget.noteIndex!, note.toMap());
-    } else {
-      await box.add(note.toMap());
-    }
-
     if (_reminderDateTime != null) {
-      final notifId = widget.noteIndex ?? (box.length - 1);
+      final notifId = widget.noteIndex ?? (ParkingNotesBackend.instance.totalNotesCount - 1);
       await NotificationService().scheduleNotification(
         id: notifId.abs() % 10000 + 100,
-        title: '⏰ Pengingat Parkir: ${_locationController.text.trim()}',
-        body: 'Slot: ${_slotController.text.trim()} — Cek kendaraan atau ketersediaan parkir Anda.',
+        title: '⏰ Pengingat Parkir: $locName',
+        body: 'Slot: $slotNum — Cek kendaraan atau ketersediaan parkir Anda.',
         scheduledDate: _reminderDateTime!,
       );
     }
 
+    await ProfileBackend.instance.refreshNotesStats();
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_isEditMode ? 'Catatan parkir diperbarui!' : 'Catatan parkir disimpan di Hive!'),
+          content: Text(
+            _isEditMode
+                ? (isCloudSynced ? 'Catatan diperbarui di Supabase & Hive!' : 'Catatan diperbarui di Hive!')
+                : (isCloudSynced ? 'Catatan parkir tersimpan ke Supabase!' : 'Catatan parkir disimpan di Hive!'),
+          ),
           backgroundColor: AppColors.notes.saveSuccess,
         ),
       );

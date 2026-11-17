@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/services/session_service.dart';
+import '../../parking_notes/backend/parking_notes_backend.dart';
 
 /// Backend khusus untuk ProfileScreen (lib/features/profile/profile_screen.dart)
 class ProfileBackend extends ChangeNotifier {
@@ -23,6 +24,8 @@ class ProfileBackend extends ChangeNotifier {
   String _memberTier = 'BRONZE';
   int _totalParking = 0;
   int _totalSavings = 0;
+  int _totalNotes = 0;
+  int _activeReminders = 0;
   int _walletBalance = 0;
   int _totalSpent = 0;
   int _monthlySpent = 0;
@@ -49,6 +52,8 @@ class ProfileBackend extends ChangeNotifier {
   String get memberTier => _memberTier;
   int get totalParking => _totalParking;
   int get totalSavings => _totalSavings;
+  int get totalNotes => _totalNotes;
+  int get activeReminders => _activeReminders;
   int get walletBalance => _walletBalance;
   int get totalSpent => _totalSpent;
   int get monthlySpent => _monthlySpent;
@@ -94,6 +99,8 @@ class ProfileBackend extends ChangeNotifier {
     _memberTier = 'BRONZE';
     _totalParking = 0;
     _totalSavings = 0;
+    _totalNotes = 0;
+    _activeReminders = 0;
     _walletBalance = 0;
     _primaryVehicle = 'Belum Ada Kendaraan';
     _kycStatus = 'none';
@@ -234,12 +241,23 @@ class ProfileBackend extends ChangeNotifier {
 
 
       }
+      await refreshNotesStats();
     } catch (e) {
       debugPrint('ProfileBackend fetchProfile error: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  /// Sinkronkan jumlah total catatan dan pengingat aktif dari Supabase / Hive
+  Future<void> refreshNotesStats() async {
+    try {
+      await ParkingNotesBackend.instance.loadNotes();
+      _totalNotes = ParkingNotesBackend.instance.totalNotesCount;
+      _activeReminders = ParkingNotesBackend.instance.activeRemindersCount;
+      notifyListeners();
+    } catch (_) {}
   }
 
   /// Menyimpan saran & pesan perkuliahan Pemrograman Aplikasi Mobile ke Supabase

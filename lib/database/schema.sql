@@ -219,5 +219,20 @@ CREATE POLICY "Public system_settings access" ON public.system_settings FOR ALL 
 DROP POLICY IF EXISTS "Public user_kyc access" ON public.user_kyc;
 CREATE POLICY "Public user_kyc access" ON public.user_kyc FOR ALL USING (true) WITH CHECK (true);
 
+-- 10. TABEL CATATAN & PENGINGAT PARKIR (PARKING NOTES)
+CREATE TABLE IF NOT EXISTS public.parking_notes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id TEXT,
+    location_name TEXT NOT NULL,
+    slot_number TEXT,
+    note TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    reminder_time TIMESTAMPTZ
+);
+
+ALTER TABLE public.parking_notes ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Public parking_notes access" ON public.parking_notes;
+CREATE POLICY "Public parking_notes access" ON public.parking_notes FOR ALL USING (true) WITH CHECK (true);
+
 -- Aktifkan Realtime Replication untuk tabel parking_slots agar ketersediaan slot kosong live
 ALTER PUBLICATION supabase_realtime ADD TABLE public.parking_slots;
