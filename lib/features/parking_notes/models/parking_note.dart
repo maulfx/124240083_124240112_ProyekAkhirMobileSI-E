@@ -6,6 +6,7 @@ class ParkingNote {
   final String note;
   final DateTime createdAt;
   final DateTime? reminderTime;
+  final bool isSynced;
 
   ParkingNote({
     this.id,
@@ -15,7 +16,30 @@ class ParkingNote {
     required this.note,
     required this.createdAt,
     this.reminderTime,
+    this.isSynced = true,
   });
+
+  ParkingNote copyWith({
+    String? id,
+    String? userId,
+    String? locationName,
+    String? slotNumber,
+    String? note,
+    DateTime? createdAt,
+    DateTime? reminderTime,
+    bool? isSynced,
+  }) {
+    return ParkingNote(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      locationName: locationName ?? this.locationName,
+      slotNumber: slotNumber ?? this.slotNumber,
+      note: note ?? this.note,
+      createdAt: createdAt ?? this.createdAt,
+      reminderTime: reminderTime ?? this.reminderTime,
+      isSynced: isSynced ?? this.isSynced,
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -26,6 +50,7 @@ class ParkingNote {
       'note': note,
       'createdAt': createdAt.toIso8601String(),
       'reminderTime': reminderTime?.toIso8601String(),
+      'isSynced': isSynced,
     };
   }
 
@@ -57,6 +82,9 @@ class ParkingNote {
       reminderTime: (map['reminder_time'] ?? map['reminderTime']) != null
           ? DateTime.tryParse((map['reminder_time'] ?? map['reminderTime']) as String)
           : null,
+      isSynced: map['isSynced'] == true ||
+          map['is_synced'] == true ||
+          (map['isSynced'] == null && map['id'] != null),
     );
   }
 }

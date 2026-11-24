@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/services/notification_service.dart';
 import '../../theme/app_colors.dart';
@@ -11,12 +10,14 @@ import 'models/parking_note.dart';
 
 class AddParkingNoteScreen extends StatefulWidget {
   final int? noteIndex;
+  final ParkingNote? note;
   final String? initialLocation;
   final String? initialSlot;
 
   const AddParkingNoteScreen({
     super.key,
     this.noteIndex,
+    this.note,
     this.initialLocation,
     this.initialSlot,
   });
@@ -42,22 +43,27 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
   @override
   void initState() {
     super.initState();
-    _isEditMode = widget.noteIndex != null;
+    _isEditMode = widget.note != null || widget.noteIndex != null;
 
     _locationController = TextEditingController(text: widget.initialLocation ?? '');
     _slotController = TextEditingController(text: widget.initialSlot ?? '');
     _noteController = TextEditingController();
 
     if (_isEditMode) {
-      final box = Hive.box('parking_notes');
-      final raw = box.getAt(widget.noteIndex!);
-      if (raw is Map) {
-        final note = ParkingNote.fromMap(raw);
-        _existingId = note.id;
-        _locationController.text = note.locationName;
-        _slotController.text = note.slotNumber;
-        _noteController.text = note.note;
-        _reminderDateTime = note.reminderTime;
+      ParkingNote? targetNote = widget.note;
+      if (targetNote == null && widget.noteIndex != null) {
+        final currentNotes = ParkingNotesBackend.instance.notes;
+        if (widget.noteIndex! >= 0 && widget.noteIndex! < currentNotes.length) {
+          targetNote = currentNotes[widget.noteIndex!];
+        }
+      }
+
+      if (targetNote != null) {
+        _existingId = targetNote.id;
+        _locationController.text = targetNote.locationName;
+        _slotController.text = targetNote.slotNumber;
+        _noteController.text = targetNote.note;
+        _reminderDateTime = targetNote.reminderTime;
       }
     }
   }
@@ -171,9 +177,9 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
     );
 
     if (_reminderDateTime != null) {
-      final notifId = widget.noteIndex ?? (ParkingNotesBackend.instance.totalNotesCount - 1);
+      final notifId = (_existingId != null ? _existingId!.hashCode : (widget.noteIndex ?? ParkingNotesBackend.instance.totalNotesCount)).abs() % 10000 + 100;
       await NotificationService().scheduleNotification(
-        id: notifId.abs() % 10000 + 100,
+        id: notifId,
         title: '⏰ Pengingat Parkir: $locName',
         body: 'Slot: $slotNum — Cek kendaraan atau ketersediaan parkir Anda.',
         scheduledDate: _reminderDateTime!,

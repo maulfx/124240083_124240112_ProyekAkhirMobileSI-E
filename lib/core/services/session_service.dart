@@ -8,6 +8,7 @@ import '../../features/profile/backend/profile_backend.dart';
 import '../../features/profile/backend/vehicle_backend.dart';
 import '../../features/home/backend/home_backend.dart';
 import '../../features/notification/backend/notification_backend.dart';
+import '../../features/parking_notes/backend/parking_notes_backend.dart';
 import '../../main.dart' show navigatorKey;
 
 // ============================================================================
@@ -360,6 +361,7 @@ class SessionService with WidgetsBindingObserver {
     ParkingNotificationService().stopRealtimeUrgentListener();
     ParkingNotificationService().cancelUrgentNotification();
     ParkingNotificationService.stopBackgroundMonitor();
+    ParkingNotesBackend.instance.clearUserData();
 
     _isLoggedIn = false;
     _userType = null;

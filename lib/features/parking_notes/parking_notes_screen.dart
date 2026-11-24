@@ -244,10 +244,27 @@ class _ParkingNotesScreenState extends State<ParkingNotesScreen> {
                                           ),
                                         ),
                                         const SizedBox(width: 8),
-                                        if (note.id != null && note.id!.isNotEmpty)
+                                        if (note.isSynced)
                                           Icon(Icons.cloud_done, size: 14, color: Colors.green.shade600)
                                         else
-                                          Icon(Icons.sd_storage, size: 14, color: textMuted),
+                                          Tooltip(
+                                            message: 'Tersimpan lokal di Hive (otomatis sync saat online)',
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(Icons.cloud_off, size: 14, color: Colors.orange.shade700),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  'Offline',
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: Colors.orange.shade700,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                       ],
                                     ),
                                   ],
@@ -260,15 +277,18 @@ class _ParkingNotesScreenState extends State<ParkingNotesScreen> {
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => AddParkingNoteScreen(noteIndex: noteIndex),
+                                        builder: (_) => AddParkingNoteScreen(
+                                          noteIndex: noteIndex,
+                                          note: note,
+                                        ),
                                       ),
                                     );
                                     await backend.loadNotes();
                                     await ProfileBackend.instance.refreshNotesStats();
                                   } else if (val == 'delete') {
-                                    final notifId = noteIndex.abs() % 10000 + 100;
+                                    final notifId = (note.id != null ? note.id!.hashCode : noteIndex).abs() % 10000 + 100;
                                     NotificationService().cancelNotification(notifId);
-                                    await backend.deleteNote(noteIndex);
+                                    await backend.deleteNote(note);
                                     await ProfileBackend.instance.refreshNotesStats();
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
