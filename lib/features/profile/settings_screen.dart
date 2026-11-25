@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'edit_profile_screen.dart';
-import '../auth/face_id_scanner_dialog.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/services/currency_service.dart';
 import '../../core/services/theme_service.dart';
@@ -104,7 +103,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
-    final bool faceEnabled = prefs.getBool('face_id_enabled') ?? false;
     final fpEnabled = prefs.getBool('fingerprint_enabled') ?? false;
 
     final profile = ProfileBackend.instance;
@@ -129,72 +127,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _userEmail = email;
         _userPhone = phone;
         _avatarUrl = profile.avatarUrl;
-        _faceIdEnabled = faceEnabled;
         _fingerprintEnabled = fpEnabled;
       });
     }
   }
 
-  bool _faceIdEnabled = false;
   bool _fingerprintEnabled = false;
   bool _notifEnabled = true;
   String _cacheSize = 'Menghitung...';
   bool _isCacheCleared = false;
   String _selectedParkingPref = 'Mobil SUV';
 
-
   // ============================================================================
-  // [PETUNJUK PRESENTASI - BIOMETRIK 1: FACE ID (PEMINDAIAN WAJAH)]
-  // Komponen: FaceIdScannerDialog (Kamera Depan + Deteksi Wajah)
-  // Cara Kerja: Menampilkan kamera pemindai wajah interaktif. Saat wajah terverifikasi,
-  // kredensial user disimpan ke SharedPreferences ('face_id_enabled', 'face_id_user_email').
-  // Di halaman Login, user cukup klik tombol Face ID untuk otentikasi cepat.
-  // ============================================================================
-  Future<void> _handleFaceIdToggle(bool val) async {
-    if (!val) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('face_id_enabled', false);
-      setState(() => _faceIdEnabled = false);
-      _showSuccessToast('Face ID dinonaktifkan');
-      return;
-    }
-
-    try {
-      final bool authenticated = await FaceIdScannerDialog.show(
-        context,
-        title: 'Aktivasi Face ID',
-        subtitle: 'Posisikan wajah Anda di dalam lingkaran untuk aktivasi',
-      );
-
-      if (authenticated) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('face_id_enabled', true);
-        final currentEmail = ProfileBackend.instance.email;
-        final currentUserId = ProfileBackend.instance.userId;
-        await prefs.setString('face_id_user_email', currentEmail);
-        await prefs.setString('face_id_user_id', currentUserId);
-        // Fallback untuk biometrik umum jika belum diset
-        if (prefs.getString('biometric_user_email') == null) {
-          await prefs.setString('biometric_user_email', currentEmail);
-          await prefs.setString('biometric_user_id', currentUserId);
-        }
-        setState(() => _faceIdEnabled = true);
-        _showSuccessToast('Face ID berhasil diaktifkan untuk akun $currentEmail');
-      } else {
-        setState(() => _faceIdEnabled = false);
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('face_id_enabled', false);
-      }
-    } catch (e) {
-      debugPrint('Face ID error: $e');
-      setState(() => _faceIdEnabled = false);
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('face_id_enabled', false);
-    }
-  }
-
-  // ============================================================================
-  // [PETUNJUK PRESENTASI - BIOMETRIK 2: SIDIK JARI (FINGERPRINT / LOCAL_AUTH)]
+  // [PETUNJUK PRESENTASI - BIOMETRIK: SIDIK JARI (FINGERPRINT / LOCAL_AUTH)]
   // Package: local_auth (LocalAuthentication)
   // Cara Kerja:
   // 1. Memeriksa dukungan hardware perangkat (auth.isDeviceSupported & canCheckBiometrics).
@@ -610,12 +555,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     child: Column(
                       children: [
-                        _SettingToggleRow(
-                          icon: Icons.face, title: 'Face ID', subtitle: 'Login dengan pemindaian wajah',
-                          value: _faceIdEnabled,
-                          onChanged: (val) => _handleFaceIdToggle(val),
-                        ),
-                        Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: Divider(color: ThemeService.instance.divider, height: 1)),
                         _SettingToggleRow(
                           icon: Icons.fingerprint, title: 'Fingerprint', subtitle: 'Login dengan sidik jari',
                           value: _fingerprintEnabled,

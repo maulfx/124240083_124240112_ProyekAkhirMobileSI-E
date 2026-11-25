@@ -22,7 +22,6 @@ import '../../theme/app_spacing.dart';
 import '../home/home_screen.dart';
 import '../auth/register_screen.dart';
 import '../auth/forgot_password_screen.dart';
-import 'face_id_scanner_dialog.dart';
 import '../../core/utils/hash_util.dart';
 import '../profile/backend/profile_backend.dart';
 import '../profile/backend/vehicle_backend.dart';
@@ -43,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   bool _obscure = true;
   bool _remember = false;
   bool _fingerprintEnabled = false;
-  bool _faceIdEnabled = false;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -142,118 +140,24 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final prefs = await SharedPreferences.getInstance();
     final bool remember = prefs.getBool('remember_me') ?? false;
     final bool fp = prefs.getBool('fingerprint_enabled') ?? false;
-    final bool face = prefs.getBool('face_id_enabled') ?? false;
-    final String? bioEmail = prefs.getString('face_id_user_email') ?? prefs.getString('biometric_user_email');
+    final String? bioEmail = prefs.getString('biometric_user_email');
 
     if (mounted) {
       setState(() {
         _fingerprintEnabled = fp;
-        _faceIdEnabled = face;
         if (remember) {
           _remember = true;
           final String? savedEmail = prefs.getString('saved_email');
           final String? savedPassword = prefs.getString('saved_password');
           if (_emailController.text.isEmpty && savedEmail != null) _emailController.text = savedEmail;
           if (savedPassword != null) _passwordController.text = savedPassword;
-        } else if ((_fingerprintEnabled || _faceIdEnabled) && bioEmail != null && bioEmail.isNotEmpty) {
+        } else if (_fingerprintEnabled && bioEmail != null && bioEmail.isNotEmpty) {
           // Biometrik aktif: otomatis isi field email jika belum terisi
           if (_emailController.text.isEmpty) {
             _emailController.text = bioEmail;
           }
         }
       });
-
-      // Jika Face ID aktif, jalankan autentikasi biometrik wajah
-      if (_faceIdEnabled) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _authenticateWithFaceId();
-        });
-      }
-    }
-  }
-
-  Future<void> _authenticateWithFaceId() async {
-    if (!_faceIdEnabled) return;
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final String? bioEmail = prefs.getString('face_id_user_email') ?? prefs.getString('biometric_user_email');
-      final targetEmail = _emailController.text.trim().isNotEmpty
-          ? _emailController.text.trim()
-          : (bioEmail ?? '');
-
-      if (!mounted) return;
-      final bool didAuth = await FaceIdScannerDialog.show(
-        context,
-        title: 'Masuk dengan Face ID',
-        subtitle: targetEmail.isNotEmpty
-            ? 'Posisikan wajah Anda untuk akun $targetEmail'
-            : 'Posisikan wajah Anda di dalam lingkaran',
-      );
-
-      if (didAuth && mounted) {
-        if (targetEmail.isNotEmpty) {
-          try {
-            final userResponse = await Supabase.instance.client
-                .from('users')
-                .select('id, full_name, email, phone, member_tier, wallet_balance, status, ban_reason')
-                .eq('email', targetEmail)
-                .maybeSingle();
-            if (userResponse != null && mounted) {
-              if (userResponse['status'] == 'banned' || userResponse['status'] == 'inactive') {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Akun dinonaktifkan: ${userResponse['ban_reason'] ?? 'Hubungi CS'}'),
-                    backgroundColor: Colors.redAccent,
-                  ),
-                );
-                return;
-              }
-
-              final uid = userResponse['id'].toString();
-              final userName = userResponse['full_name'] ?? 'Pengguna';
-              final userEmail = userResponse['email'] ?? targetEmail;
-              final userPhone = userResponse['phone'] ?? '';
-              final memberTier = userResponse['member_tier']?.toString().toUpperCase() ?? 'BRONZE';
-              final walletBalance = userResponse['wallet_balance'] != null
-                  ? (double.tryParse(userResponse['wallet_balance'].toString()) ?? 0).toInt()
-                  : 0;
-
-              ProfileBackend.instance.setLoggedInUser(
-                id: uid,
-                fullName: userName,
-                email: userEmail,
-                phone: userPhone,
-                memberTier: memberTier,
-                walletBalance: walletBalance,
-              );
-              HomeBackend.instance.setLoggedInUser(
-                id: uid,
-                userName: userName,
-                walletBalance: walletBalance.toDouble(),
-                memberTier: memberTier,
-              );
-              VehicleBackend.instance.fetchVehicles();
-            }
-          } catch (_) {}
-        }
-        if (_remember) {
-          await _saveCredentials();
-        }
-        await SessionService.instance.startSession(
-          userType: 'user',
-          identifier: targetEmail.isNotEmpty ? targetEmail : 'user@parksmart.id',
-          userName: ProfileBackend.instance.name,
-          userId: ProfileBackend.instance.userId,
-        );
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
-          );
-        }
-      }
-    } catch (e) {
-      debugPrint('Face ID unlock error: $e');
     }
   }
 
@@ -1081,17 +985,6 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                             }
                                           }
                                         },
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                  ],
-                                  if (_faceIdEnabled) ...[
-                                    Expanded(
-                                      child: _SecondaryButton(
-                                        label: 'Face ID',
-                                        icon: Icons.face,
-                                        isDark: isDark,
-                                        onTap: () => _authenticateWithFaceId(),
                                       ),
                                     ),
                                     const SizedBox(width: 12),
