@@ -123,23 +123,58 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
   }
 
   Future<void> _pickReminderDateTime() async {
+    FocusScope.of(context).unfocus();
+
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final lastDate = today.add(const Duration(days: 30));
+    final initialDate = (_reminderDateTime != null &&
+            !_reminderDateTime!.isBefore(today) &&
+            !_reminderDateTime!.isAfter(lastDate))
+        ? _reminderDateTime!
+        : today;
+
     final pickedDate = await showDatePicker(
       context: context,
-      initialDate: _reminderDateTime ?? now,
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 30)),
+      initialDate: initialDate,
+      firstDate: today,
+      lastDate: lastDate,
+      helpText: 'PILIH TANGGAL PENGINGAT',
+      cancelText: 'BATAL',
+      confirmText: 'LANJUT',
     );
 
     if (pickedDate == null || !mounted) return;
 
+    final defaultTime = DateTime.now().add(const Duration(minutes: 15));
+    final initialTime = _reminderDateTime != null
+        ? TimeOfDay.fromDateTime(_reminderDateTime!)
+        : TimeOfDay.fromDateTime(defaultTime);
+
     final pickedTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(_reminderDateTime ?? now.add(const Duration(minutes: 30))),
+      initialTime: initialTime,
+      helpText: 'PILIH JAM & MENIT (24 JAM)',
+      cancelText: 'BATAL',
+      confirmText: 'SET WAKTU',
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
 
     if (pickedTime == null || !mounted) return;
 
+    final currentNow = DateTime.now();
+    final currentMinute = DateTime(
+      currentNow.year,
+      currentNow.month,
+      currentNow.day,
+      currentNow.hour,
+      currentNow.minute,
+    );
     final combined = DateTime(
       pickedDate.year,
       pickedDate.month,
@@ -148,9 +183,12 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
       pickedTime.minute,
     );
 
-    if (combined.isBefore(DateTime.now())) {
+    if (combined.isBefore(currentMinute)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Waktu pengingat harus berada di masa mendatang')),
+        const SnackBar(
+          content: Text('Waktu pengingat sudah terlewat. Pilih jam/menit setelah waktu sekarang.'),
+          backgroundColor: Colors.redAccent,
+        ),
       );
       return;
     }
@@ -178,11 +216,15 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
 
     if (_reminderDateTime != null) {
       final notifId = (_existingId != null ? _existingId!.hashCode : (widget.noteIndex ?? ParkingNotesBackend.instance.totalNotesCount)).abs() % 10000 + 100;
+      final now = DateTime.now();
+      final scheduleAt = _reminderDateTime!.isAfter(now)
+          ? _reminderDateTime!
+          : now.add(const Duration(seconds: 5));
       await NotificationService().scheduleNotification(
         id: notifId,
         title: '⏰ Pengingat Parkir: $locName',
         body: 'Slot: $slotNum — Cek kendaraan atau ketersediaan parkir Anda.',
-        scheduledDate: _reminderDateTime!,
+        scheduledDate: scheduleAt,
       );
     }
 
@@ -385,49 +427,53 @@ class _AddParkingNoteScreenState extends State<AddParkingNoteScreen> {
                 style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 15, color: textMain),
               ),
               const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: cardBg,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.withAlpha(50)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      _reminderDateTime != null ? Icons.alarm_on : Icons.alarm,
-                      color: _reminderDateTime != null ? AppColors.notes.reminderSelected : textMuted,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _reminderDateTime != null
-                                ? 'Pengingat Aktif'
-                                : 'Belum ada pengingat',
-                            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 14, color: textMain),
-                          ),
-                          Text(
-                            _reminderDateTime != null
-                                ? '${_reminderDateTime!.day}/${_reminderDateTime!.month}/${_reminderDateTime!.year} - ${_reminderDateTime!.hour.toString().padLeft(2, '0')}:${_reminderDateTime!.minute.toString().padLeft(2, '0')}'
-                                : 'Pilih waktu pengingat parkir',
-                            style: GoogleFonts.plusJakartaSans(color: textMuted, fontSize: 12),
-                          ),
-                        ],
+              InkWell(
+                onTap: _pickReminderDateTime,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: cardBg,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.withAlpha(50)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _reminderDateTime != null ? Icons.alarm_on : Icons.alarm,
+                        color: _reminderDateTime != null ? AppColors.notes.reminderSelected : textMuted,
                       ),
-                    ),
-                    TextButton(
-                      onPressed: _pickReminderDateTime,
-                      child: Text(_reminderDateTime != null ? 'Ubah' : 'Set Waktu'),
-                    ),
-                    if (_reminderDateTime != null)
-                      IconButton(
-                        icon: const Icon(Icons.clear, size: 20, color: Colors.redAccent),
-                        onPressed: () => setState(() => _reminderDateTime = null),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _reminderDateTime != null
+                                  ? 'Pengingat Aktif'
+                                  : 'Belum ada pengingat',
+                              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 14, color: textMain),
+                            ),
+                            Text(
+                              _reminderDateTime != null
+                                  ? '${_reminderDateTime!.day}/${_reminderDateTime!.month}/${_reminderDateTime!.year} - ${_reminderDateTime!.hour.toString().padLeft(2, '0')}:${_reminderDateTime!.minute.toString().padLeft(2, '0')}'
+                                  : 'Pilih waktu pengingat parkir',
+                              style: GoogleFonts.plusJakartaSans(color: textMuted, fontSize: 12),
+                            ),
+                          ],
+                        ),
                       ),
-                  ],
+                      TextButton(
+                        onPressed: _pickReminderDateTime,
+                        child: Text(_reminderDateTime != null ? 'Ubah' : 'Set Waktu'),
+                      ),
+                      if (_reminderDateTime != null)
+                        IconButton(
+                          icon: const Icon(Icons.clear, size: 20, color: Colors.redAccent),
+                          onPressed: () => setState(() => _reminderDateTime = null),
+                        ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 32),

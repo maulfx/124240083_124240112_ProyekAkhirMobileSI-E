@@ -65,22 +65,11 @@ class AppTheme {
           borderSide: BorderSide(color: Color(0xFFE4DFD5)),
         ),
       ),
-            timePickerTheme: TimePickerThemeData(
-        backgroundColor: const Color(0xFF1E232B),
-        dialBackgroundColor: const Color(0xFF262C36),
-        dialHandColor: const Color(0xFF2DD4BF),
-        dialTextColor: Colors.white,
-        hourMinuteColor: const Color(0xFF262C36),
-        hourMinuteTextColor: Colors.white,
-        dayPeriodColor: const Color(0xFF262C36),
-        dayPeriodTextColor: Colors.white,
-        entryModeIconColor: Colors.white70,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      ),
+      timePickerTheme: _buildTimePickerTheme(isDark: false),
       dialogTheme: const DialogThemeData(
-              backgroundColor: Colors.white,
-            ),
-            elevatedButtonTheme: ElevatedButtonThemeData(
+        backgroundColor: Colors.white,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF1C1C18),
           foregroundColor: Colors.white,
@@ -151,6 +140,7 @@ class AppTheme {
             borderSide: BorderSide(color: Color(0xFF334155)),
           ),
         ),
+        timePickerTheme: _buildTimePickerTheme(isDark: true),
         elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF333C4A),
@@ -158,6 +148,43 @@ class AppTheme {
           elevation: 0,
         ),
       ),
+    );
+  }
+
+  static TimePickerThemeData _buildTimePickerTheme({required bool isDark}) {
+    final bg = isDark ? const Color(0xFF1E232B) : Colors.white;
+    final surfaceVariant = isDark ? const Color(0xFF262C36) : const Color(0xFFF3F4F6);
+    final accent = isDark ? const Color(0xFF2DD4BF) : const Color(0xFF114177);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1C1C18);
+    final textSelectedOnDial = isDark ? const Color(0xFF111418) : Colors.white;
+    final textMuted = isDark ? Colors.white70 : const Color(0xFF4B5563);
+    final chipBgSelected = accent.withValues(alpha: isDark ? 0.2 : 0.14);
+
+    return TimePickerThemeData(
+      backgroundColor: bg,
+      dialBackgroundColor: surfaceVariant,
+      dialHandColor: accent,
+      dialTextColor: WidgetStateColor.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? textSelectedOnDial : textPrimary),
+      hourMinuteColor: WidgetStateColor.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? chipBgSelected : surfaceVariant),
+      hourMinuteTextColor: WidgetStateColor.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? accent : textPrimary),
+      dayPeriodColor: WidgetStateColor.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? chipBgSelected : surfaceVariant),
+      dayPeriodTextColor: WidgetStateColor.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? accent : textPrimary),
+      entryModeIconColor: textMuted,
+      helpTextStyle: TextStyle(color: textMuted, fontSize: 13, fontWeight: FontWeight.w600),
+      confirmButtonStyle: TextButton.styleFrom(
+        foregroundColor: accent,
+        textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+      ),
+      cancelButtonStyle: TextButton.styleFrom(
+        foregroundColor: textMuted,
+        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
     );
   }
 }
