@@ -3,13 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'edit_profile_screen.dart';
-import 'ktp_camera_screen.dart';
 import '../auth/face_id_scanner_dialog.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/services/currency_service.dart';
 import '../../core/services/theme_service.dart';
 import '../../core/services/language_service.dart';
-import '../../core/services/maintenance_service.dart';
 import '../../core/services/app_image_cache_service.dart';
 import 'backend/profile_backend.dart';
 import 'widgets/currency_selection_modal.dart';
@@ -612,141 +610,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     child: Column(
                       children: [
-                        ListenableBuilder(
-                          listenable: ProfileBackend.instance,
-                          builder: (context, _) {
-                            final kycStatus = ProfileBackend.instance.kycStatus.toLowerCase();
-                            final isApproved = kycStatus == 'approved';
-                            final isPending = kycStatus == 'pending';
-                            final isRejected = kycStatus == 'rejected';
-
-                            String kycSubtitle = 'Belum Terverifikasi';
-                            Color? kycSubtitleColor;
-                            Widget kycActionWidget = Icon(Icons.chevron_right, color: ThemeService.instance.iconColor);
-                            VoidCallback kycOnTap = () {
-                              if (MaintenanceService.instance.isKycMaintenance) {
-                                MaintenanceService.showModularMaintenanceDialog(
-                                  context,
-                                  title: 'Modul Wajib KYC KTP Sedang Maintenance',
-                                  message:
-                                      'Layanan verifikasi identitas KTP sementara dinonaktifkan untuk pembaharuan sistem. Fitur jelajah dan reservasi tetap berjalan.',
-                                  icon: Icons.shield_outlined,
-                                );
-                                return;
-                              }
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const KtpCameraScreen())).then((_) {
-                                ProfileBackend.instance.fetchProfile();
-                              });
-                            };
-
-                            if (isApproved) {
-                              kycSubtitle = 'Terverifikasi';
-                              kycSubtitleColor = AppColors.profile.kycVerified;
-                              kycActionWidget = Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.profile.kycVerified.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: AppColors.profile.kycVerified.withValues(alpha: 0.4)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.verified, size: 14, color: AppColors.profile.kycVerified),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'TERVERIFIKASI',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.profile.kycVerified,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                              kycOnTap = () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: const Text('Identitas e-KTP Anda telah terverifikasi resmi oleh Super Admin.'),
-                                    backgroundColor: AppColors.profile.kycVerified,
-                                  ),
-                                );
-                              };
-                            } else if (isPending) {
-                              kycSubtitle = 'Menunggu Verifikasi (Sedang Ditinjau)';
-                              kycSubtitleColor = AppColors.profile.kycPending;
-                              kycActionWidget = Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.profile.kycPending.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: AppColors.profile.kycPending.withValues(alpha: 0.4)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.schedule, size: 13, color: AppColors.profile.kycPending),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'DITINJAU',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 10.5,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.profile.kycPending,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                              kycOnTap = () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: const Text('Pengajuan verifikasi e-KTP Anda sedang dalam antrean review oleh Super Admin.'),
-                                    backgroundColor: AppColors.profile.kycPending,
-                                  ),
-                                );
-                              };
-                            } else if (isRejected) {
-                              kycSubtitle = 'Ditolak (Ketuk untuk Ajukan Ulang)';
-                              kycSubtitleColor = AppColors.profile.kycRejected;
-                              kycActionWidget = Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.profile.kycRejected.withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: AppColors.profile.kycRejected.withValues(alpha: 0.4)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.error_outline, size: 13, color: AppColors.profile.kycRejected),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'AJUKAN ULANG',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.profile.kycRejected,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-
-                            return _SettingActionRow(
-                              icon: Icons.badge,
-                              title: 'Verifikasi KTP',
-                              subtitle: kycSubtitle,
-                              subtitleColor: kycSubtitleColor,
-                              actionWidget: kycActionWidget,
-                              onTap: kycOnTap,
-                            );
-                          },
-                        ),
-                        Padding(padding: const EdgeInsets.symmetric(vertical: 16), child: Divider(color: ThemeService.instance.divider, height: 1)),
-
                         _SettingToggleRow(
                           icon: Icons.face, title: 'Face ID', subtitle: 'Login dengan pemindaian wajah',
                           value: _faceIdEnabled,
@@ -1046,7 +909,6 @@ class _SettingActionRow extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final Color? subtitleColor;
   final Widget? actionWidget;
   final VoidCallback? onTap;
 
@@ -1054,7 +916,6 @@ class _SettingActionRow extends StatelessWidget {
     required this.icon, 
     required this.title, 
     required this.subtitle, 
-    this.subtitleColor,
     this.actionWidget, 
     this.onTap,
   });
@@ -1093,8 +954,7 @@ class _SettingActionRow extends StatelessWidget {
                     subtitle, 
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 13, 
-                      fontWeight: subtitleColor != null ? FontWeight.w600 : FontWeight.normal,
-                      color: subtitleColor ?? ThemeService.instance.textSecondary,
+                      color: ThemeService.instance.textSecondary,
                     ),
                   ),
               ],

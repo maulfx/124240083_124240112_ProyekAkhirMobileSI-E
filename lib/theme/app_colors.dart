@@ -1310,6 +1310,12 @@ class _AppNotificationColors {
   /// Ikon tanda seru info notifikasi sukses di ProfileScreen & NotificationScreen.
   Color get infoIcon => AppColors._isDark ? const Color(0xFF60A5FA) : const Color(0xFF1E429F);
 
+  /// Lingkaran latar tombol pengujian notifikasi timer pada menu Test Notifications di ProfileScreen.
+  Color get timerBg => AppColors._isDark ? const Color(0xFF78350F).withValues(alpha: 0.35) : const Color(0xFFFEF3C7);
+
+  /// Ikon jam hitung mundur pengujian notifikasi timer pada menu Test Notifications di ProfileScreen.
+  Color get timerIcon => AppColors._isDark ? const Color(0xFFFBBF24) : const Color(0xFFB45309);
+
   /// Ikon tipe notifikasi promo di NotificationScreen.
   Color get typePromo => const Color(0xFF2A9D8F);
 

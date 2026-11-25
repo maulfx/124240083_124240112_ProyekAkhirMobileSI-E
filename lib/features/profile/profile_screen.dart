@@ -1,10 +1,14 @@
+import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../../widgets/bottom_dock_navigation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/services/currency_service.dart';
 import '../../core/services/theme_service.dart';
+import '../../core/services/notification_service.dart';
 import '../auth/login_screen.dart' as auth;
 import 'vehicle_screen.dart' as vehicle;
 import 'settings_screen.dart' as settings;
@@ -634,13 +638,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 
 void _showNotificationTestMenu(BuildContext context) {
+  final rootContext = context;
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-    builder: (context) => ListenableBuilder(
+    builder: (sheetContext) => ListenableBuilder(
       listenable: ThemeService.instance,
-      builder: (context, _) {
+      builder: (sheetContext, _) {
         final theme = ThemeService.instance;
         final isDark = theme.isDarkMode;
         return Container(
@@ -698,8 +703,8 @@ void _showNotificationTestMenu(BuildContext context) {
                   ),
                   trailing: Icon(Icons.chevron_right, color: theme.textSecondary),
                   onTap: () {
-                    Navigator.pop(context);
-                    _showSystemUrgentNotification(context);
+                    Navigator.pop(sheetContext);
+                    _showSystemUrgentNotification(rootContext);
                   },
                 ),
               ),
@@ -731,8 +736,41 @@ void _showNotificationTestMenu(BuildContext context) {
                   ),
                   trailing: Icon(Icons.chevron_right, color: theme.textSecondary),
                   onTap: () {
-                    Navigator.pop(context);
-                    _showSystemInfoNotification(context);
+                    Navigator.pop(sheetContext);
+                    _showSystemInfoNotification(rootContext);
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceField,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: theme.border),
+                ),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: AppColors.notification.timerBg,
+                    child: Icon(Icons.hourglass_bottom_rounded, color: AppColors.notification.timerIcon),
+                  ),
+                  title: Text(
+                    'Notifikasi by Timer',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w600,
+                      color: theme.textPrimary,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Hitung mundur 00:00:00 (High Priority)',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      color: theme.textSecondary,
+                    ),
+                  ),
+                  trailing: Icon(Icons.chevron_right, color: theme.textSecondary),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showTimerNotificationDialog(rootContext);
                   },
                 ),
               ),
@@ -742,6 +780,14 @@ void _showNotificationTestMenu(BuildContext context) {
         );
       },
     ),
+  );
+}
+
+void _showTimerNotificationDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (_) => _TimerNotificationDialog(hostContext: context),
   );
 }
 
@@ -974,6 +1020,569 @@ class _ShimmerMemberBadgeState extends State<_ShimmerMemberBadge>
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TimerNotificationDialog extends StatefulWidget {
+  final BuildContext hostContext;
+  const _TimerNotificationDialog({required this.hostContext});
+
+  @override
+  State<_TimerNotificationDialog> createState() => _TimerNotificationDialogState();
+}
+
+class _TimerNotificationDialogState extends State<_TimerNotificationDialog> {
+  int _hours = 0;
+  int _minutes = 0;
+  int _seconds = 0;
+  bool _isRunning = false;
+  bool _isLoading = true;
+  int? _targetMs;
+  Timer? _ticker;
+  String? _errorMsg;
+
+  @override
+  void initState() {
+    super.initState();
+    _restoreTimerIfActive();
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _restoreTimerIfActive() async {
+    final activeTarget = await NotificationService().getActiveTimerTargetMs();
+    if (!mounted) return;
+    if (activeTarget != null && activeTarget > DateTime.now().millisecondsSinceEpoch) {
+      _targetMs = activeTarget;
+      _isRunning = true;
+      _updateFromRemaining();
+      _startTicker();
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  void _updateFromRemaining() {
+    if (_targetMs == null) return;
+    final remainingMs = _targetMs! - DateTime.now().millisecondsSinceEpoch;
+    if (remainingMs <= 0) {
+      _onTimerReachedZero();
+      return;
+    }
+    final totalSec = (remainingMs / 1000).ceil();
+    _hours = totalSec ~/ 3600;
+    _minutes = (totalSec % 3600) ~/ 60;
+    _seconds = totalSec % 60;
+  }
+
+  void _startTicker() {
+    _ticker?.cancel();
+    _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) {
+      if (!mounted) return;
+      final prevTotal = _hours * 3600 + _minutes * 60 + _seconds;
+      _updateFromRemaining();
+      final nextTotal = _hours * 3600 + _minutes * 60 + _seconds;
+      if (_isRunning && nextTotal != prevTotal) {
+        setState(() {});
+      }
+    });
+  }
+
+  Future<void> _onTimerReachedZero() async {
+    _ticker?.cancel();
+    _ticker = null;
+    if (!mounted) return;
+    setState(() {
+      _isRunning = false;
+      _targetMs = null;
+      _hours = 0;
+      _minutes = 0;
+      _seconds = 0;
+    });
+    await NotificationService().handleForegroundTimerZero();
+  }
+
+  void _adjustUnit(String unit, int delta) {
+    if (_isRunning) return;
+    setState(() {
+      _errorMsg = null;
+      if (unit == 'h') {
+        _hours = (_hours + delta) % 24;
+        if (_hours < 0) _hours += 24;
+      } else if (unit == 'm') {
+        _minutes = (_minutes + delta) % 60;
+        if (_minutes < 0) _minutes += 60;
+      } else {
+        _seconds = (_seconds + delta) % 60;
+        if (_seconds < 0) _seconds += 60;
+      }
+    });
+  }
+
+  Future<void> _editUnitDirectly(String unit, String label, int maxVal, int currentVal) async {
+    if (_isRunning) return;
+    final controller = TextEditingController(text: currentVal.toString().padLeft(2, '0'));
+    final result = await showDialog<int>(
+      context: context,
+      builder: (ctx) {
+        final theme = ThemeService.instance;
+        return AlertDialog(
+          backgroundColor: theme.card,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Text(
+            'Atur $label (0 - $maxVal)',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: theme.textPrimary,
+            ),
+          ),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            textAlign: TextAlign.center,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: theme.textPrimary,
+            ),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: AppColors.surfaceField,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: theme.border),
+              ),
+            ),
+            onSubmitted: (val) {
+              final parsed = int.tryParse(val) ?? currentVal;
+              Navigator.pop(ctx, parsed.clamp(0, maxVal));
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: theme.textSecondary)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final parsed = int.tryParse(controller.text) ?? currentVal;
+                Navigator.pop(ctx, parsed.clamp(0, maxVal));
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    controller.dispose();
+    if (result != null && mounted) {
+      setState(() {
+        _errorMsg = null;
+        if (unit == 'h') _hours = result;
+        if (unit == 'm') _minutes = result;
+        if (unit == 's') _seconds = result;
+      });
+    }
+  }
+
+  Future<void> _onPlayPressed() async {
+    if (_isRunning) return;
+    final duration = Duration(hours: _hours, minutes: _minutes, seconds: _seconds);
+    if (duration.inSeconds <= 0) {
+      setState(() {
+        _errorMsg = 'Atur durasi minimal 1 detik terlebih dahulu.';
+      });
+      return;
+    }
+
+    setState(() {
+      _errorMsg = null;
+    });
+
+    final targetMs = await NotificationService().startTimerNotification(duration: duration);
+    if (!mounted) return;
+    setState(() {
+      _targetMs = targetMs;
+      _isRunning = true;
+      _updateFromRemaining();
+    });
+    _startTicker();
+  }
+
+  Future<void> _onCancelPressed() async {
+    if (_isRunning) {
+      _ticker?.cancel();
+      _ticker = null;
+      await NotificationService().cancelTimerNotification();
+      if (!mounted) return;
+      Navigator.pop(context);
+      if (widget.hostContext.mounted) {
+        ScaffoldMessenger.of(widget.hostContext).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Timer notifikasi dibatalkan.',
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+            ),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ThemeService.instance;
+    final isDark = theme.isDarkMode;
+
+    String scheduledClockText = '';
+    if (_isRunning && _targetMs != null) {
+      final dt = DateTime.fromMillisecondsSinceEpoch(_targetMs!);
+      scheduledClockText =
+          '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}:${dt.second.toString().padLeft(2, '0')}';
+    }
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 360),
+        child: Container(
+          decoration: BoxDecoration(
+            color: theme.card,
+            borderRadius: BorderRadius.circular(24),
+            border: isDark ? Border.all(color: theme.border) : null,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 24,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(24),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: AppColors.notification.timerBg,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.hourglass_bottom_rounded,
+                        color: AppColors.notification.timerIcon,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Timer Notifikasi',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: theme.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            _isRunning
+                                ? 'Aktif hingga pukul $scheduledClockText'
+                                : 'Prioritas High • Jalan di latar belakang',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11.5,
+                              color: _isRunning
+                                  ? AppColors.profile.kycVerified
+                                  : theme.textSecondary,
+                              fontWeight: _isRunning ? FontWeight.w600 : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: Icon(Icons.close, size: 20, color: theme.textSecondary),
+                      tooltip: 'Tutup dialog',
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                if (_isLoading)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: CircularProgressIndicator(),
+                  )
+                else ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildTimeSegment(
+                        label: 'Jam',
+                        value: _hours,
+                        onInc: () => _adjustUnit('h', 1),
+                        onDec: () => _adjustUnit('h', -1),
+                        onTapDigit: () => _editUnitDirectly('h', 'Jam', 23, _hours),
+                        theme: theme,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: _isRunning ? 18 : 22, left: 6, right: 6),
+                        child: Text(
+                          ':',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
+                            color: theme.textPrimary,
+                          ),
+                        ),
+                      ),
+                      _buildTimeSegment(
+                        label: 'Menit',
+                        value: _minutes,
+                        onInc: () => _adjustUnit('m', 1),
+                        onDec: () => _adjustUnit('m', -1),
+                        onTapDigit: () => _editUnitDirectly('m', 'Menit', 59, _minutes),
+                        theme: theme,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(bottom: _isRunning ? 18 : 22, left: 6, right: 6),
+                        child: Text(
+                          ':',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
+                            color: theme.textPrimary,
+                          ),
+                        ),
+                      ),
+                      _buildTimeSegment(
+                        label: 'Detik',
+                        value: _seconds,
+                        onInc: () => _adjustUnit('s', 1),
+                        onDec: () => _adjustUnit('s', -1),
+                        onTapDigit: () => _editUnitDirectly('s', 'Detik', 59, _seconds),
+                        theme: theme,
+                      ),
+                    ],
+                  ),
+
+                  if (_isRunning) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppColors.profile.kycVerified.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.profile.kycVerified.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: AppColors.profile.kycVerified,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'Timer berjalan di OS. Tetap berbunyi walau app ditutup & latar belakang bersih.',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.profile.kycVerified,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  if (_errorMsg != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      _errorMsg!,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.statusOccupied,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+
+                  const SizedBox(height: 22),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: _onCancelPressed,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: _isRunning
+                                ? AppColors.statusOccupied
+                                : theme.textPrimary,
+                            side: BorderSide(
+                              color: _isRunning
+                                  ? AppColors.statusOccupied
+                                  : theme.border,
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          child: Text(
+                            'Cancel',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _isRunning ? null : _onPlayPressed,
+                          icon: const Icon(Icons.play_arrow_rounded, size: 20),
+                          label: Text(
+                            _isRunning ? 'Running' : 'Play',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.secondary,
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor:
+                                AppColors.secondary.withValues(alpha: 0.45),
+                            disabledForegroundColor: Colors.white,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeSegment({
+    required String label,
+    required int value,
+    required VoidCallback onInc,
+    required VoidCallback onDec,
+    required VoidCallback onTapDigit,
+    required ThemeService theme,
+  }) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (!_isRunning)
+          InkWell(
+            onTap: onInc,
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+              child: Icon(
+                Icons.keyboard_arrow_up_rounded,
+                size: 24,
+                color: theme.textSecondary,
+              ),
+            ),
+          ),
+        GestureDetector(
+          onTap: _isRunning ? null : onTapDigit,
+          child: Container(
+            width: 64,
+            height: 60,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceField,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: _isRunning ? AppColors.secondary : theme.border,
+                width: _isRunning ? 1.5 : 1,
+              ),
+            ),
+            child: Text(
+              value.toString().padLeft(2, '0'),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: theme.textPrimary,
+                fontFeatures: const [ui.FontFeature.tabularFigures()],
+              ),
+            ),
+          ),
+        ),
+        if (!_isRunning)
+          InkWell(
+            onTap: onDec,
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+              child: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 24,
+                color: theme.textSecondary,
+              ),
+            ),
+          ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: theme.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 }
