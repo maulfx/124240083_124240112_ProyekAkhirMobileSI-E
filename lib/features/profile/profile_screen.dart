@@ -10,7 +10,6 @@ import '../../core/services/currency_service.dart';
 import '../../core/services/theme_service.dart';
 import '../../core/services/notification_service.dart';
 import '../auth/login_screen.dart' as auth;
-import 'vehicle_screen.dart' as vehicle;
 import 'settings_screen.dart' as settings;
 
 import '../../core/services/session_service.dart';
@@ -208,12 +207,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 20),
                   
                   // Menu Items
-                  _MenuItem(
-                    icon: Icons.directions_car, subtitle: 'KENDARAAN TERDAFTAR'.tr, title: profile.primaryVehicle.tr,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const vehicle.VehicleScreen())),
-                  ),
-                  const SizedBox(height: 12),
-
                   // Menu Pilih Bahasa
                   _MenuItem(
                     icon: Icons.language,
